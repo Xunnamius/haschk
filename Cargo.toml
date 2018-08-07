@@ -1,6 +1,0 @@
-[package]
-name = "DNSCHK"
-version = "0.1.0"
-authors = ["Richard Alvarez <rawalvarez731@gmail.com>"]
-
-[dependencies]
