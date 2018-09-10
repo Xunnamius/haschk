@@ -13,6 +13,7 @@ The research and development behind DNSCHK was a joint effort by [team members](
 - [Usage](#usage)
 - [Motivation](#motivation)
 - [Further Reading](#further-reading)
+- [Contribution Guidelines](#contribution-guidelines)
 - [Meet the Team](#meet-the-team)
 - [References](#references)
 
@@ -33,6 +34,10 @@ The research and development behind DNSCHK was a joint effort by [team members](
 ## Further Reading
 
 (todo)
+
+## Contribution Guidelines
+
+(todo)(run npmi)
 
 ## Meet the Team
 

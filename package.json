@@ -8,10 +8,10 @@
   "version": "0.1.0",
   "scripts": {
     "test": "npx jest",
-    "install-types": "npm run clean-types && npx flow-typed install",
+    "install-types": "npx flow-typed install",
     "clean-types": "gulp clean-types",
     "regenerate": "gulp regenerate",
-    "prepare": "npm run install-types",
+    "prepare": "npm run install-types"
   },
   "author": "Richard Alvarez",
   "license": "MIT",
@@ -31,6 +31,9 @@
     "gulp": "^4.0.0"
   },
   "devDependencies": {
+    "del": "^3.0.0",
+    "gulp-tap": "^1.0.1",
+    "parse-gitignore": "^1.0.1",
     "@babel/cli": "^7.0.0",
     "@babel/register": "^7.0.0",
     "babel-eslint": "^9.0.0",
@@ -45,6 +48,6 @@
     "source-map": "^0.7.3",
     "source-map-support": "^0.5.9",
     "stylelint": "^9.5.0",
-    "stylelint-config-standard": "^18.2.0",
+    "stylelint-config-standard": "^18.2.0"
   }
 }
