@@ -3,7 +3,7 @@
   "description": "A pre-alpha proof-of-concept WebExtension tailored to Google Chrome that implements the DNSCHK protocol",
   "repository": {
     "type": "git",
-    "url": "https://git.xunn.io/shopify/<THIS URL NEEDS TO BE UPDATED>"
+    "url": "https://github.com/morty-c137-prime/DNSCHK"
   },
   "version": "0.1.0",
   "scripts": {
