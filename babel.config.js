@@ -1,14 +1,6 @@
 const sourceMapPlugin = 'babel-plugin-source-map-support';
 const sourceMapValue = 'inline';
 
-const devNextBabel = ['next/babel', {
-    '@babel/preset-env': {
-        // targets: {
-        //     node: true
-        // }
-    }
-}];
-
 module.exports = {
     plugins: [
         '@babel/plugin-proposal-class-properties',
@@ -19,28 +11,27 @@ module.exports = {
         '@babel/plugin-proposal-optional-chaining'
     ],
     presets: [
-        ['@babel/preset-flow'],
-        ['@babel/preset-react'],
-        ['next/babel']
+        ['@babel/preset-flow']
     ],
     env: {
         production: {},
         development: {
-            /* sourceMaps: sourceMapValue,
-            plugins: [sourceMapPlugin], */
-            presets: [devNextBabel]
+            sourceMaps: sourceMapValue,
+            plugins: [sourceMapPlugin],
         },
         debug: {
-            /* sourceMaps: sourceMapValue,
-            plugins: [sourceMapPlugin], */
-            presets: [
-                devNextBabel,
-                ['@babel/preset-react', { development: true }],
-            ]
+            sourceMaps: sourceMapValue,
+            plugins: [sourceMapPlugin],
         },
         generator: {
             comments: false,
-            presets: ['@babel/preset-env']
+            presets: [
+                ['@babel/preset-env', {
+                    targets: {
+                        node: true
+                    }
+                }]
+            ]
         }
     }
 };
