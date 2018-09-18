@@ -1,3 +1,5 @@
+# DNSCHK (pronounced "dns check")
+
 Lordy, these aren't ya grandparents' checksums! `DNSCHK` is a low-overhead security layer built on top of DNS that uses checksums to ensure the integrity of files downloaded over the web in an automated and non-interactive fashion.
 
 The research and development behind DNSCHK was a joint effort by [team members](#meet-the-team) from University of Chicago and Walter Payton College Preparatory High School.
@@ -8,14 +10,15 @@ The research and development behind DNSCHK was a joint effort by [team members](
 
 <!-- TOC -->
 
-- [Table of Contents](#table-of-contents)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Motivation](#motivation)
-- [Further Reading](#further-reading)
-- [Contribution Guidelines](#contribution-guidelines)
-- [Meet the Team](#meet-the-team)
-- [References](#references)
+- [DNSCHK (pronounced "dns check")](#dnschk-pronounced-dns-check)
+    - [Table of Contents](#table-of-contents)
+    - [Installation](#installation)
+    - [Usage](#usage)
+    - [Motivation](#motivation)
+    - [Further Reading](#further-reading)
+    - [Contribution Guidelines](#contribution-guidelines)
+    - [Meet the Team](#meet-the-team)
+    - [References](#references)
 
 <!-- /TOC -->
 
@@ -37,7 +40,7 @@ The research and development behind DNSCHK was a joint effort by [team members](
 
 ## Contribution Guidelines
 
-(todo)(run npmi)
+(todo)(run npm)
 
 ## Meet the Team
 
