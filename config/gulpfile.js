@@ -22,7 +22,7 @@ import config from './webpack.config'
 
 require('dotenv').config();
 
-const { NODE_ENV, WEBPACK_PORT } = process.env;
+const { WEBPACK_PORT } = process.env;
 
 if(typeof WEBPACK_PORT !== 'string')
     throw new TypeError('WEBPACK_PORT is improperly defined');
