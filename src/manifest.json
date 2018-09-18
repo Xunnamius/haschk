@@ -9,6 +9,8 @@
     },
     "options_page": "options.html",
     "permissions": [
-        "file://*"
+        "file://*",
+        "downloads",
+        "<all_urls>"
     ]
 }

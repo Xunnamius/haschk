@@ -91,7 +91,7 @@ regenerate.description = 'Invokes babel on the files in config, transpiling them
 
 const build = () => {
     process.env.NODE_ENV = 'production';
-    webpack(config, err => { if(err) throw `WEBPACK BUILD ERROR: ${err}` });
+    return webpack(config, err => { if(err) throw `WEBPACK BUILD ERROR: ${err}` });
 };
 
 build.description = 'Yields a production-ready extension ready to be packaged';
@@ -117,7 +117,7 @@ const wpdevserv = () => {
         headers: { 'Access-Control-Allow-Origin': '*' }
     });
 
-    server.listen(DEV_PORT, '0.0.0.0', err => { if(err) throw `WEBPACK-DEV-SERVER ERROR: ${err}` });
+    server.listen(DEV_PORT);
 };
 
 wpdevserv.description = 'Launches the Webpack Development Server for testing purposes';

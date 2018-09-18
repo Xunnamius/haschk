@@ -1,3 +1,3 @@
 import './index.css'
 
-window.alert('it works!');
+alert('it works!');

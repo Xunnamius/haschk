@@ -26,6 +26,8 @@ const assetExtensions = ['jpg', 'jpeg', 'png', `gif`, "eot", 'otf', 'svg', 'ttf'
 
 const options: Object = {};
 
+options.mode = DEV_ENV ? 'development' : 'production';
+
 options.entry = {
     background: `${paths.components}/background/index.js`,
     options: `${paths.components}/options/index.js`,
