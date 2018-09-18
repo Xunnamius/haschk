@@ -16,6 +16,18 @@ import log from 'fancy-log'
 import parseGitIgnore from 'parse-gitignore'
 import { transformSync as babel } from '@babel/core'
 import { relative as relPath } from 'path'
+import webpack from 'webpack'
+import webpackDevServer from 'webpack-dev-server'
+import config from './webpack.config'
+
+require('dotenv').config();
+
+const { NODE_ENV, WEBPACK_PORT } = process.env;
+
+if(typeof WEBPACK_PORT !== 'string')
+    throw new TypeError('WEBPACK_PORT is improperly defined');
+
+const DEV_PORT = parseInt(WEBPACK_PORT, 10);
 
 const paths = {};
 
@@ -30,6 +42,7 @@ paths.envDist = 'dist.env';
 paths.gitProjectDir = '.git';
 paths.gitIgnore = '.gitignore';
 paths.packageLockJson = 'package-lock.json';
+paths.build = `${__dirname}/build`;
 
 paths.regenTargets = [
     `${paths.configs}/*.js`
@@ -74,4 +87,39 @@ const regenerate = () => {
 
 regenerate.description = 'Invokes babel on the files in config, transpiling them into their project root versions';
 
-export { regenerate, cleanTypes };
+// * BUILD (production)
+
+const build = () => {
+    process.env.NODE_ENV = 'production';
+    webpack(config, err => { if(err) throw `WEBPACK BUILD ERROR: ${err}` });
+};
+
+build.description = 'Yields a production-ready extension ready to be packaged';
+
+// * WPDEVSERV
+
+const wpdevserv = () => {
+    Object.keys(config.entry).forEach(entryKey => config.entry[entryKey] = [
+        `webpack-dev-server/client?http://0.0.0.0:${DEV_PORT}`,
+        'webpack/hot/dev-server',
+        config.entry[entryKey]
+    ]);
+
+    config.plugins = [
+        new webpack.HotModuleReplacementPlugin(),
+        ...(config.plugins ?? [])
+    ];
+
+    const packer = webpack(config);
+    const server = new webpackDevServer(packer, {
+        hot: true,
+        contentBase: paths.build,
+        headers: { 'Access-Control-Allow-Origin': '*' }
+    });
+
+    server.listen(DEV_PORT, '0.0.0.0', err => { if(err) throw `WEBPACK-DEV-SERVER ERROR: ${err}` });
+};
+
+wpdevserv.description = 'Launches the Webpack Development Server for testing purposes';
+
+export { regenerate, cleanTypes, wpdevserv, build };

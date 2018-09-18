@@ -11,16 +11,16 @@ module.exports = {
         '@babel/plugin-proposal-optional-chaining'
     ],
     presets: [
-        ['@babel/preset-flow'],
-        ['@babel/preset-react']
+        ['@babel/preset-env'],
+        ['@babel/preset-flow']
     ],
     env: {
         production: {},
         debug: {},
         development: {
-            // ? Handled by Next.js and Webpack
-            sourceMaps: sourceMapValue,
-            plugins: [sourceMapPlugin],
+            // ? Handled by Webpack
+            /*sourceMaps: sourceMapValue,
+            plugins: [sourceMapPlugin],*/
         },
         generator: {
             sourceMaps: sourceMapValue,
@@ -36,10 +36,3 @@ module.exports = {
         }
     }
 };
-
-// ? The "debug" environment copies the "development" environment, with a twist!
-module.exports.env.debug = Object.assign({}, module.exports.env.development);
-module.exports.env.debug.presets = [
-    ...module.exports.env.debug.presets,
-    ['@babel/preset-react', { development: true }],
-];
