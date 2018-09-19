@@ -33,6 +33,8 @@ const paths = {};
 
 paths.flowTyped = 'flow-typed';
 paths.flowTypedGitIgnore = `${paths.flowTyped}/.gitignore`;
+paths.build = `build`;
+paths.buildGitIgnore = `${paths.build}/.gitignore`;
 paths.configs = 'config';
 paths.packageJson = 'package.json';
 paths.launchJson = '.vscode/launch.json';
@@ -63,6 +65,17 @@ const cleanTypes = async () => {
 
     log(`Deletion targets @ ${paths.flowTyped}/: "${targets.join('" "')}"`);
     del(targets, { cwd: paths.flowTyped });
+};
+
+cleanTypes.description = `Resets the ${paths.flowTyped} directory to a pristine state`;
+
+// * CLEANBUILD
+
+const cleanBuild = async () => {
+    const targets = parseGitIgnore(await readFileAsync(paths.buildGitIgnore));
+
+    log(`Deletion targets @ ${paths.buildGitIgnore}/: "${targets.join('" "')}"`);
+    del(targets, { cwd: paths.buildGitIgnore });
 };
 
 cleanTypes.description = `Resets the ${paths.flowTyped} directory to a pristine state`;
@@ -122,4 +135,4 @@ const wpdevserv = () => {
 
 wpdevserv.description = 'Launches the Webpack Development Server for testing purposes';
 
-export { regenerate, cleanTypes, wpdevserv, build };
+export { regenerate, cleanTypes, cleanBuild, wpdevserv, build };
