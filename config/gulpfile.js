@@ -74,8 +74,8 @@ cleanTypes.description = `Resets the ${paths.flowTyped} directory to a pristine 
 const cleanBuild = async () => {
     const targets = parseGitIgnore(await readFileAsync(paths.buildGitIgnore));
 
-    log(`Deletion targets @ ${paths.buildGitIgnore}/: "${targets.join('" "')}"`);
-    del(targets, { cwd: paths.buildGitIgnore });
+    log(`Deletion targets @ ${paths.build}/: "${targets.join('" "')}"`);
+    del(targets, { cwd: paths.build });
 };
 
 cleanTypes.description = `Resets the ${paths.flowTyped} directory to a pristine state`;

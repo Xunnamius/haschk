@@ -3,6 +3,8 @@
         "flow-typed": true
     },
     "cSpell.words": [
+        "cleanbuild",
+        "cleantypes",
         "davidcash",
         "pluginville",
         "ravenben",

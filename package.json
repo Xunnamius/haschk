@@ -9,6 +9,7 @@
   "scripts": {
     "test": "npx jest",
     "install-types": "npx flow-typed install",
+    "clean-build": "npx gulp cleanBuild",
     "clean-types": "npx gulp cleanTypes",
     "regenerate": "npx gulp regenerate",
     "generate": "BABEL_ENV=generator npx babel config --out-dir .",
