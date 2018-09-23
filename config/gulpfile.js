@@ -22,10 +22,13 @@ import config from './webpack.config'
 
 require('dotenv').config();
 
-const { WEBPACK_PORT } = process.env;
+const { WEBPACK_PORT, DEV_ENDPOINT } = process.env;
 
 if(typeof WEBPACK_PORT !== 'string')
     throw new TypeError('WEBPACK_PORT is improperly defined');
+
+if(typeof DEV_ENDPOINT !== 'string')
+    throw new TypeError('DEV_ENDPOINT is improperly defined');
 
 const DEV_PORT = parseInt(WEBPACK_PORT, 10);
 
@@ -113,7 +116,7 @@ build.description = 'Yields a production-ready extension ready to be packaged';
 
 const wpdevserv = () => {
     Object.keys(config.entry).forEach(entryKey => config.entry[entryKey] = [
-        `webpack-dev-server/client?http://0.0.0.0:${DEV_PORT}`,
+        `webpack-dev-server/client?http://${DEV_ENDPOINT}:${DEV_PORT}`,
         'webpack/hot/dev-server',
         config.entry[entryKey]
     ]);
