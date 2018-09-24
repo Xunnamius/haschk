@@ -19,6 +19,7 @@ const paths = {};
 
 paths.src = `${__dirname}/src`;
 paths.build = `${__dirname}/build`;
+paths.buildGitIgnore = `${paths.build}/.gitignore`;
 paths.srcManifest = `${paths.src}/manifest.json`;
 paths.components = `${paths.src}/components`;
 
@@ -104,16 +105,17 @@ options.plugins = [
     new WriteFileWebpackPlugin()
 ];
 
+// ? See: https://webpack.js.org/configuration/devtool
 if(NODE_ENV === 'development')
     options.devtool = 'cheap-module-eval-source-map';
 
-// ? This is necessary so CleanWebpackPlugin doesn't kill build/.gitignore
-const exclude = parseGitIgnore(readFileSync(paths.flowTypedGitIgnore))
+    const exclude = parseGitIgnore(readFileSync(paths.buildGitIgnore))
     .filter(path => path.startsWith('!'))
     .map(path => path.substr(1));
 
+// ? This following is necessary so CleanWebpackPlugin doesn't kill build/.gitignore
 options.plugins = [
-    new CleanWebpackPlugin(['build'], { exclude }),
+    new CleanWebpackPlugin([paths.build], { exclude }),
     ...options.plugins
 ];
 
