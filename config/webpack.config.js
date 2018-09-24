@@ -7,6 +7,8 @@ import CleanWebpackPlugin from 'clean-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import WriteFileWebpackPlugin from 'write-file-webpack-plugin'
+import parseGitIgnore from 'parse-gitignore'
+import { readFileSync } from 'fs'
 
 require('dotenv').config();
 
@@ -60,8 +62,8 @@ options.module = {
 };
 
 options.plugins = [
-    // ? Clean paths.build
-    new CleanWebpackPlugin(['build']),
+    // ? Clean paths.build (see below)
+    // new CleanWebpackPlugin(['build']),
 
     // ? Expose desired environment variables in the packed bundle
     new webpack.DefinePlugin({
@@ -104,5 +106,15 @@ options.plugins = [
 
 if(NODE_ENV === 'development')
     options.devtool = 'cheap-module-eval-source-map';
+
+// ? This is necessary so CleanWebpackPlugin doesn't kill build/.gitignore
+const exclude = parseGitIgnore(readFileSync(paths.flowTypedGitIgnore))
+    .filter(path => path.startsWith('!'))
+    .map(path => path.substr(1));
+
+options.plugins = [
+    new CleanWebpackPlugin(['build'], { exclude }),
+    ...options.plugins
+];
 
 module.exports = options;
