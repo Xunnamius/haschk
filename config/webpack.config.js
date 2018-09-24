@@ -109,7 +109,7 @@ options.plugins = [
 if(NODE_ENV === 'development')
     options.devtool = 'cheap-module-eval-source-map';
 
-    const exclude = parseGitIgnore(readFileSync(paths.buildGitIgnore))
+const exclude = parseGitIgnore(readFileSync(paths.buildGitIgnore))
     .filter(path => path.startsWith('!'))
     .map(path => path.substr(1));
 
