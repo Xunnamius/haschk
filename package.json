@@ -16,7 +16,6 @@
     "debug-remote": "node --inspect-brk='0.0.0.0:7777'",
     "debug-remote-gulp": "node --inspect-brk='0.0.0.0:7777' ./node_modules/.bin/gulp",
     "debug-remote-jest": "node --inspect-brk='0.0.0.0:7777' ./node_modules/.bin/jest --runInBand",
-    "debug-remote-next": "next --inspect-brk='0.0.0.0:7777'",
     "build": "npx gulp build",
     "dev": "npx gulp wpdevserv"
   },
