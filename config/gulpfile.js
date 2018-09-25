@@ -28,10 +28,10 @@ require('dotenv').config();
 const {WEBPACK_PORT, DEV_ENDPOINT} = process.env;
 
 if(typeof WEBPACK_PORT !== 'string')
-    throw new TypeError('WEBPACK_PORT is improperly defined');
+    throw new TypeError('WEBPACK_PORT is improperly defined. Did you copy dist.env -> .env ?');
 
 if(typeof DEV_ENDPOINT !== 'string')
-    throw new TypeError('DEV_ENDPOINT is improperly defined');
+    throw new TypeError('DEV_ENDPOINT is improperly defined. Did you copy dist.env -> .env ?');
 
 const DEV_PORT = parseInt(WEBPACK_PORT, 10);
 
