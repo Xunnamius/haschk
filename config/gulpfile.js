@@ -124,7 +124,7 @@ regenerate.description = 'Invokes babel on the files in config, transpiling them
 
 // * BUILD (production)
 
-const build: Promise<void> = () => {
+const build = (): Promise<void> => {
     process.env.NODE_ENV = 'production';
     return new Promise(resolve => {
         webpack(config, (err, stats) => {
@@ -165,14 +165,15 @@ const wpdevserv = () => {
 
     const packer = webpack(config);
 
-    packer.hooks.afterCompile.tap('Generate Docs', () => {
+    // TODO: spin this off as a separate gulp command instead of hooking into the dev server (e.g. npx gulp generate-docs)
+    /* packer.hooks.afterCompile.tap('Generate Docs', () => {
         generateDocs();
-    });
+    }); */
 
     const server = new webpackDevServer(packer, {
         hot: true,
         contentBase: paths.build,
-        headers: {'Access-Control-Allow-Origin': '*'}
+        headers: { 'Access-Control-Allow-Origin': '*' }
     });
 
     server.listen(DEV_PORT, err => { if(err) throw `WEBPACK DEV SERVER ERROR: ${err}` });

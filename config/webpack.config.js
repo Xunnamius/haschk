@@ -111,8 +111,16 @@ options.plugins = [
 ];
 
 // ? See: https://webpack.js.org/configuration/devtool
-if(NODE_ENV === 'development')
+if(DEV_ENV)
     options.devtool = 'cheap-module-eval-source-map';
+
+if(NODE_ENV !== 'generator')
+{
+    // ? See: https://github.com/ipfs/js-ipfs-api/pull/777
+    options.resolve = {
+        mainFields: ['browser', 'main']
+    };
+}
 
 const exclude = parseGitIgnore(readFileSync(paths.buildGitIgnore))
     .filter(path => path.startsWith('!'))
