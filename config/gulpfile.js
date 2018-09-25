@@ -122,7 +122,7 @@ regenerate.description = 'Invokes babel on the files in config, transpiling them
 
 // * BUILD (production)
 
-const build: Promise = () => {
+const build: Promise<void> = () => {
     process.env.NODE_ENV = 'production';
     return new Promise(resolve => {
         webpack(config, (err, stats) => {
