@@ -122,9 +122,27 @@ regenerate.description = 'Invokes babel on the files in config, transpiling them
 
 // * BUILD (production)
 
-const build = () => {
+const build: Promise = () => {
     process.env.NODE_ENV = 'production';
-    return webpack(config, err => {if(err) throw `WEBPACK BUILD ERROR: ${err}`});
+    return new Promise(resolve => {
+        webpack(config, (err, stats) => {
+            if(err)
+            {
+                const details = err.details ? `\n\t${err.details}` : '';
+                throw `WEBPACK FATAL BUILD ERROR: ${err}${details}`;
+            }
+
+            const info = stats.toJson();
+
+            if(stats.hasErrors())
+                throw `WEBPACK COMPILATION ERROR: ${info.errors}`;
+
+            if(stats.hasWarnings())
+                console.warn(`WEBPACK COMPILATION WARNING: ${info.warnings}`)
+
+            resolve();
+        });
+    });
 };
 
 build.description = 'Yields a production-ready extension ready to be packaged';
@@ -155,7 +173,7 @@ const wpdevserv = () => {
         headers: {'Access-Control-Allow-Origin': '*'}
     });
 
-    server.listen(DEV_PORT);
+    server.listen(DEV_PORT, err => { if(err) throw `WEBPACK DEV SERVER ERROR: ${err}` });
 };
 
 wpdevserv.description = 'Launches the Webpack Development Server for testing purposes';

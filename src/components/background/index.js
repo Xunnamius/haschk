@@ -1,10 +1,8 @@
-/* @flow */
-/**
- * Hello ""
- *
- * @param {string} name person/thing you want to say hello to.
- * @returns {string} Hello + name 
- */
-function hello(name) {
-    return "Hello " + name + "!";
-}
+import http from 'faxios'
+
+const DNS_TARGET_FQDN_URI = 'bernarddickens.com';
+const GOOGLE_DNS_TARGET_URI = (resourceHash1, resourceHash2, targetDomain) =>
+    `https://dns.google.com/resolve?name=${resourceHash1}.${resourceHash2}._dnschk.${targetDomain}&type=TXT`;
+
+// ? This event fires with the DownloadItem object when a download begins
+chrome.downloads.onCreated.addListener(downloadItem => console.log('downloads.onCreated listener called!', downloadItem));

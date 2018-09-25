@@ -7,6 +7,8 @@ import CleanWebpackPlugin from 'clean-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import WriteFileWebpackPlugin from 'write-file-webpack-plugin'
+import parseGitIgnore from 'parse-gitignore'
+import { readFileSync } from 'fs'
 
 require('dotenv').config();
 
@@ -17,6 +19,7 @@ const paths = {};
 
 paths.src = `${__dirname}/src`;
 paths.build = `${__dirname}/build`;
+paths.buildGitIgnore = `${paths.build}/.gitignore`;
 paths.srcManifest = `${paths.src}/manifest.json`;
 paths.components = `${paths.src}/components`;
 
@@ -60,8 +63,8 @@ options.module = {
 };
 
 options.plugins = [
-    // ? Clean paths.build
-    new CleanWebpackPlugin(['build']),
+    // ? Clean paths.build (see below)
+    // new CleanWebpackPlugin(['build']),
 
     // ? Expose desired environment variables in the packed bundle
     new webpack.DefinePlugin({
@@ -102,7 +105,18 @@ options.plugins = [
     new WriteFileWebpackPlugin()
 ];
 
+// ? See: https://webpack.js.org/configuration/devtool
 if(NODE_ENV === 'development')
     options.devtool = 'cheap-module-eval-source-map';
+
+const exclude = parseGitIgnore(readFileSync(paths.buildGitIgnore))
+    .filter(path => path.startsWith('!'))
+    .map(path => path.substr(1));
+
+// ? This following is necessary so CleanWebpackPlugin doesn't kill build/.gitignore
+options.plugins = [
+    new CleanWebpackPlugin([paths.build], { exclude }),
+    ...options.plugins
+];
 
 module.exports = options;
