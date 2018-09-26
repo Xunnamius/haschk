@@ -6,7 +6,6 @@
 import http from 'faxios'
 import createHash from 'create-hash'
 import ParsedUrl from 'url-parse'
-import {AssertionError} from 'assert';
 
 const DNS_TARGET_FQDN_URI = 'bernarddickens.com';
 
@@ -54,13 +53,13 @@ chrome.downloads.onChanged.addListener(targetItem => {
             const authedHashRaw = $authedHash.data.Answer.slice(-1)[0].data;
             const authedHash = authedHashRaw.replace(/[^0-9a-f]/gi, '');
 
-            if(authedHash.length !== authedHashRaw.length - 2)
-                throw new AssertionError(`Received malformed or unexpected DNS response { ${authedHashRaw} }`);
-
             // ? Compare DNS result (auth) with hashed local file data (nonauthed)
-            console.log('authedHash:', authedHash);
-            console.log('nonauthedH:', nonauthedHash);
-            console.log('judgement:', authedHash === nonauthedHash ? 'SAFE' : 'UNSAFE');
+            if(authedHash.length !== authedHashRaw.length - 2)
+                console.log('judgement: RESOURCE IDENTIFIER NOT FOUND');
+
+            else {
+                console.log('judgement:', authedHash === nonauthedHash ? 'SAFE' : 'UNSAFE');
+            }
         });
     }
 });
