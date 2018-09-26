@@ -7,8 +7,8 @@
 // ! all required packages listed under "dependencies" instead of
 // ! "devDependencies" in this project's package.json
 
-import {readFile} from 'fs'
-import {promisify} from 'util'
+import { readFile } from 'fs'
+import { promisify } from 'util'
 import gulp from 'gulp'
 import tap from 'gulp-tap'
 import del from 'del'
@@ -156,4 +156,4 @@ const wpdevserv = () => {
 
 wpdevserv.description = 'Launches the Webpack Development Server for testing purposes';
 
-export {regenerate, cleanTypes, cleanBuild, wpdevserv, build};
+export { regenerate, cleanTypes, cleanBuild, wpdevserv, build };
