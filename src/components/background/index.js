@@ -59,7 +59,7 @@ chrome.downloads.onChanged.addListener(targetItem => {
 
             // ? Compare DNS result (auth) with hashed local file data (nonauthed)
             console.log('authedHash:', authedHash);
-            console.log('nonauthedHash:', nonauthedHash);
+            console.log('nonauthedH:', nonauthedHash);
             console.log('judgement:', authedHash === nonauthedHash ? 'SAFE' : 'UNSAFE');
         });
     }
