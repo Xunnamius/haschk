@@ -1,3 +1,8 @@
+/**
+ * DNSCHK background functionality
+ * @name Background
+ */
+
 import http from 'faxios'
 
 const DNS_TARGET_FQDN_URI = 'bernarddickens.com';
