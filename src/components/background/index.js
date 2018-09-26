@@ -14,8 +14,11 @@ chrome.downloads.onChanged.addListener(targetItem => {
     if(targetItem?.state?.current == 'complete')
     {
         chrome.downloads.search({ id: targetItem.id }, async ([ downloadItem ]) => {
-            const fileContents = await http(`file://${downloadItem.filename}`).GET;
-            console.log('file:', fileContents);
+            const file = await http(`file://${downloadItem.filename}`).GET;
+            // hash file data with proper algorithm
+            // hash file path with proper algorithm and split; make http request to google DNS
+            // compare dns result with local hash of file data, log result
+            console.log('file:', file);
         });
     }
 });
