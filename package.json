@@ -36,8 +36,10 @@
     "@babel/plugin-proposal-throw-expressions": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-flow": "^7.0.0",
+    "create-hash": "^1.2.0",
     "dotenv": "^6.0.0",
-    "faxios": "^0.5.3"
+    "faxios": "^0.5.3",
+    "url-parse": "^1.4.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.0",

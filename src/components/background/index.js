@@ -4,10 +4,23 @@
  */
 
 import http from 'faxios'
+import createHash from 'create-hash'
+import ParsedUrl from 'url-parse'
+import {AssertionError} from 'assert';
 
 const DNS_TARGET_FQDN_URI = 'bernarddickens.com';
-const GOOGLE_DNS_TARGET_URI = (resourceHash1, resourceHash2, targetDomain) =>
-    `https://dns.google.com/resolve?name=${resourceHash1}.${resourceHash2}._dnschk.${targetDomain}&type=TXT`;
+
+// ? Returns a string HTTPS endpoint URI that will yield the desired resource
+// ? identifier hash
+const GOOGLE_DNS_HTTPS_RI_FN = (riHashLeft, riHashRight, originDomain) =>
+    `https://dns.google.com/resolve?name=${riHashLeft}.${riHashRight}._ri._dnschk.${originDomain}&type=TXT`;
+
+// ? Returns a string HTTPS endpoint URI that will yield the desired resource
+// ? range string
+const GOOGLE_DNS_HTTPS_RR_FN = (originDomain) =>
+    `https://dns.google.com/resolve?name=_rr._dnschk.${originDomain}&type=TXT`;
+
+const { HASHING_ALGORITHM, HASHING_OUTPUT_LENGTH } = process.env;
 
 declare var chrome:any;
 
@@ -16,14 +29,38 @@ declare var chrome:any;
 
 // ? This event fires with a DownloadItem object when some download-related event changes
 chrome.downloads.onChanged.addListener(targetItem => {
+    // ? Only trigger the moment a download completes
     if(targetItem?.state?.current == 'complete')
     {
+        // ? We need to ask for the full DownloadItem instance due to security
         chrome.downloads.search({ id: targetItem.id }, async ([ downloadItem ]) => {
-            const file = await http(`file://${downloadItem.filename}`).GET;
-            // hash file data with proper algorithm
-            // hash file path with proper algorithm and split; make http request to google DNS
-            // compare dns result with local hash of file data, log result
-            console.log('file:', file);
+            // ? Since it's finished downloading, grab the file's data
+            const $file = await http(`file://${downloadItem.filename}`).GET;
+
+            // ? Hash file data with proper algorithm
+            const nonauthedHash = createHash(HASHING_ALGORITHM).update($file.data).digest('hex').toString();
+
+            // ? Determine resource identifier and prepare for DNS request
+            const resourcePath = (new ParsedUrl(downloadItem.url, {})).pathname;
+            const resourceIdentifier = createHash(HASHING_ALGORITHM).update(resourcePath).digest('hex').toString();
+
+            const [ riLeft, riRight ] = [
+                resourceIdentifier.slice(0, HASHING_OUTPUT_LENGTH / 2),
+                resourceIdentifier.slice(HASHING_OUTPUT_LENGTH / 2, HASHING_OUTPUT_LENGTH)
+            ];
+
+            // ? Make https-based DNS request
+            const $authedHash = await http(GOOGLE_DNS_HTTPS_RI_FN(riLeft, riRight, DNS_TARGET_FQDN_URI)).GET;
+            const authedHashRaw = $authedHash.data.Answer.slice(-1)[0].data;
+            const authedHash = authedHashRaw.replace(/[^0-9a-f]/gi, '');
+
+            if(authedHash.length !== authedHashRaw.length - 2)
+                throw new AssertionError(`Received malformed or unexpected DNS response { ${authedHashRaw} }`);
+
+            // ? Compare DNS result (auth) with hashed local file data (nonauthed)
+            console.log('authedHash:', authedHash);
+            console.log('nonauthedHash:', nonauthedHash);
+            console.log('judgement:', authedHash === nonauthedHash ? 'SAFE' : 'UNSAFE');
         });
     }
 });

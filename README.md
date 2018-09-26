@@ -36,7 +36,7 @@ The research and development behind DNSCHK was a joint effort by [team members](
 
 ## Further Reading
 
-(todo)
+(todo)(if you want to use process.env.* in the src/ directory, you must mutate the webpack DefinePlugin config entry)
 
 ## Contribution Guidelines
 

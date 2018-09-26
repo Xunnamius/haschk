@@ -12,7 +12,7 @@ import { readFileSync } from 'fs'
 
 require('dotenv').config();
 
-const { NODE_ENV } = process.env;
+const { NODE_ENV, HASHING_ALGORITHM, HASHING_OUTPUT_LENGTH } = process.env;
 const DEV_ENV = NODE_ENV === 'development';
 
 const paths = {};
@@ -73,7 +73,11 @@ options.plugins = [
 
     // ? Expose desired environment variables in the packed bundle
     new webpack.DefinePlugin({
-        'process.env.NODE_ENV': JSON.stringify(NODE_ENV)
+        'process.env': {
+            NODE_ENV: JSON.stringify(NODE_ENV),
+            HASHING_ALGORITHM: JSON.stringify(HASHING_ALGORITHM),
+            HASHING_OUTPUT_LENGTH: JSON.stringify(HASHING_OUTPUT_LENGTH),
+        },
     }),
 
     new CopyWebpackPlugin([{
