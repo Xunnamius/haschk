@@ -30,6 +30,9 @@ if(typeof WEBPACK_PORT !== 'string')
 if(typeof DEV_ENDPOINT !== 'string')
     throw new TypeError('DEV_ENDPOINT is improperly defined. Did you copy dist.env -> .env ?');
 
+if(typeof HASHING_ALGORITHM !== 'string' || typeof HASHING_OUTPUT_LENGTH !== 'string')
+    throw new TypeError('DEV_ENDPOINT is improperly defined. Did you copy dist.env -> .env ?');
+
 const DEV_PORT = parseInt(WEBPACK_PORT, 10);
 
 const paths = {};
