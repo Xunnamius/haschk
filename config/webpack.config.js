@@ -19,10 +19,11 @@ const paths = {};
 
 paths.src = `${__dirname}/src`;
 paths.build = `${__dirname}/build`;
+paths.buildAssets = `${paths.build}/assets`;
 paths.buildGitIgnore = `${paths.build}/.gitignore`;
 paths.srcManifest = `${paths.src}/manifest.json`;
 paths.components = `${paths.src}/components`;
-
+paths.assets = `${paths.src}/assets/*`;
 const assetExtensions = ['jpg', 'jpeg', 'png', `gif`, "eot", 'otf', 'svg', 'ttf', 'woff', 'woff2'];
 
 // * Webpack configuration options
@@ -91,6 +92,11 @@ options.plugins = [
             'content_security_policy': `script-src 'self'${DEV_ENV ? " 'unsafe-eval'" : ''}; object-src 'self'`,
             ...JSON.parse(content.toString())
         }))
+    }]),
+
+    new CopyWebpackPlugin([{
+        from: paths.assets,
+        to: paths.buildAssets
     }]),
 
     new HtmlWebpackPlugin({

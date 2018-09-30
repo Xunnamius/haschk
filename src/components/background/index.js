@@ -6,6 +6,7 @@
 import http from 'faxios'
 import createHash from 'create-hash'
 import ParsedUrl from 'url-parse'
+import {icons, getIcon } from '../common'
 
 const DNS_TARGET_FQDN_URI = 'bernarddickens.com';
 
@@ -55,11 +56,16 @@ chrome.downloads.onChanged.addListener(targetItem => {
             const authedHash = authedHashRaw.replace(/[^0-9a-f]/gi, '');
 
             // ? Compare DNS result (auth) with hashed local file data (nonauthed)
-            if(authedHash.length !== authedHashRaw.length - 2)
+            if(authedHash.length !== authedHashRaw.length - 2) {
                 console.log('judgement: RESOURCE IDENTIFIER NOT FOUND');
-
-            else {
-                console.log('judgement:', authedHash === nonauthedHash ? 'SAFE' : 'UNSAFE');
+                chrome.browserAction.setIcon({ path: getIcon(icons.neutral) }, () => {});
+            } else {
+                let judgement = authedHash === nonauthedHash;
+                console.log('judgement:', judgement ? 'SAFE' : 'UNSAFE');
+                if(judgement)
+                    chrome.browserAction.setIcon({ path: getIcon(icons.safe) }, () => {});
+                else
+                    chrome.browserAction.setIcon({ path: getIcon(icons.unsafe) }, () => {});
             }
         });
     }
