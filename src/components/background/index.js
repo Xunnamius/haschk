@@ -42,10 +42,11 @@ chrome.downloads.onChanged.addListener(targetItem => {
             // ? Determine resource identifier and prepare for DNS request
             const resourcePath = (new ParsedUrl(downloadItem.url, {})).pathname;
             const resourceIdentifier = createHash(HASHING_ALGORITHM).update(resourcePath).digest('hex').toString();
+            const outputLength = parseInt(HASHING_OUTPUT_LENGTH);
 
             const [ riLeft, riRight ] = [
-                resourceIdentifier.slice(0, HASHING_OUTPUT_LENGTH / 2),
-                resourceIdentifier.slice(HASHING_OUTPUT_LENGTH / 2, HASHING_OUTPUT_LENGTH)
+                resourceIdentifier.slice(0, outputLength / 2),
+                resourceIdentifier.slice(outputLength / 2, outputLength)
             ];
 
             // ? Make https-based DNS request
