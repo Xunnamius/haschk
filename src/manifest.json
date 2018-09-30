@@ -12,5 +12,11 @@
         "file://*",
         "downloads",
         "<all_urls>"
-    ]
+    ],
+    "icons": {
+        "16": "assets/icon/nuetral/16x16.png",
+        "57": "assets/icon/nuetral/57x57.png",
+        "120": "assets/icon/nuetral/120x120.png",
+        "310": "assets/icon/nuetral/310x310.png"
+    }
 }
