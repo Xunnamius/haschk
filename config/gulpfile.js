@@ -22,16 +22,16 @@ import config from './webpack.config'
 
 require('dotenv').config();
 
-const {WEBPACK_PORT, DEV_ENDPOINT} = process.env;
+const {WEBPACK_PORT, DEV_ENDPOINT, HASHING_ALGORITHM, HASHING_OUTPUT_LENGTH} = process.env;
 
 if(typeof WEBPACK_PORT !== 'string')
     throw new TypeError('WEBPACK_PORT is improperly defined. Did you copy dist.env -> .env ?');
 
 if(typeof DEV_ENDPOINT !== 'string')
-    throw new TypeError('DEV_ENDPOINT is improperly defined. Did you copy dist.env -> .env ?');
+    throw new TypeError('DEV_ENDPOINT is impropnpm npm erly defined. Did you copy dist.env -> .env ?');
 
 if(typeof HASHING_ALGORITHM !== 'string' || typeof HASHING_OUTPUT_LENGTH !== 'string')
-    throw new TypeError('DEV_ENDPOINT is improperly defined. Did you copy dist.env -> .env ?');
+    throw new TypeError('HASHING_ALGORITHM is improperly defined. Did you copy dist.env -> .env ?');
 
 const DEV_PORT = parseInt(WEBPACK_PORT, 10);
 
