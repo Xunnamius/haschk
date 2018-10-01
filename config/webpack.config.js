@@ -96,7 +96,8 @@ options.plugins = [
 
     new CopyWebpackPlugin([{
         from: `${paths.assets}/icon/**/*.png`,
-        to: paths.buildAssets
+        to: `${paths.buildAssets}/icon/[1]`,
+        test: /.*\/icon\/(.*)$/
     }]),
 
     new HtmlWebpackPlugin({
