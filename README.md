@@ -17,6 +17,7 @@ The research and development behind DNSCHK was a joint effort by [team members](
     - [Motivation](#motivation)
     - [Further Reading](#further-reading)
     - [Contribution Guidelines](#contribution-guidelines)
+        - [Branch Workflow](#branch-workflow)
     - [Meet the Team](#meet-the-team)
     - [References](#references)
 
@@ -40,7 +41,11 @@ The research and development behind DNSCHK was a joint effort by [team members](
 
 ## Contribution Guidelines
 
-(todo)(run npm)
+(todo)(run npmi)
+
+### Branch Workflow
+
+(todo)(everyone has their own branch --> PR into develop --> PR into master)
 
 ## Meet the Team
 
