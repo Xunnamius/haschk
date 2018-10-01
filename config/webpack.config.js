@@ -23,7 +23,7 @@ paths.buildAssets = `${paths.build}/assets`;
 paths.buildGitIgnore = `${paths.build}/.gitignore`;
 paths.srcManifest = `${paths.src}/manifest.json`;
 paths.components = `${paths.src}/components`;
-paths.assets = `${paths.src}/assets/*`;
+paths.assets = `${paths.src}/assets`;
 const assetExtensions = ['jpg', 'jpeg', 'png', `gif`, "eot", 'otf', 'svg', 'ttf', 'woff', 'woff2'];
 
 // * Webpack configuration options
@@ -95,7 +95,7 @@ options.plugins = [
     }]),
 
     new CopyWebpackPlugin([{
-        from: paths.assets,
+        from: `${paths.assets}/icon/**/*.png`,
         to: paths.buildAssets
     }]),
 
