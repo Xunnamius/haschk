@@ -30,8 +30,7 @@ declare var chrome:any;
 // ? This event fires with a DownloadItem object when some download-related event changes
 chrome.downloads.onChanged.addListener(targetItem => {
     // ? Only trigger the moment a download completes
-    if(targetItem?.state?.current == 'complete')
-    {
+    if(targetItem?.state?.current == 'complete') {
         // ? We need to ask for the full DownloadItem instance due to security
         chrome.downloads.search({ id: targetItem.id }, async ([ downloadItem ]) => {
             // ? Since it's finished downloading, grab the file's data
@@ -57,10 +56,12 @@ chrome.downloads.onChanged.addListener(targetItem => {
 
             // ? Compare DNS result (auth) with hashed local file data (nonauthed)
             if(authedHash.length !== authedHashRaw.length - 2) {
-                console.log('judgement: RESOURCE IDENTIFIER NOT FOUND');
+                console.log('judgement: UNKNOWN');
                 chrome.browserAction.setIcon({ path: getIcon(icons.neutral) }, () => {});
-            } else {
-                let judgement = authedHash === nonauthedHash;
+            }
+
+            else {
+                const judgement = authedHash === nonauthedHash;
                 console.log('judgement:', judgement ? 'SAFE' : 'UNSAFE');
                 if(judgement)
                     chrome.browserAction.setIcon({ path: getIcon(icons.safe) }, () => {});
