@@ -6,6 +6,7 @@
 import http from 'faxios'
 import createHash from 'create-hash'
 import ParsedUrl from 'url-parse'
+import {icons, getIcon } from '../common'
 
 const DNS_TARGET_FQDN_URI = 'bernarddickens.com';
 
@@ -29,8 +30,7 @@ declare var chrome:any;
 // ? This event fires with a DownloadItem object when some download-related event changes
 chrome.downloads.onChanged.addListener(targetItem => {
     // ? Only trigger the moment a download completes
-    if(targetItem?.state?.current == 'complete')
-    {
+    if(targetItem?.state?.current == 'complete') {
         // ? We need to ask for the full DownloadItem instance due to security
         chrome.downloads.search({ id: targetItem.id }, async ([ downloadItem ]) => {
             // ? Since it's finished downloading, grab the file's data
@@ -42,10 +42,11 @@ chrome.downloads.onChanged.addListener(targetItem => {
             // ? Determine resource identifier and prepare for DNS request
             const resourcePath = (new ParsedUrl(downloadItem.url, {})).pathname;
             const resourceIdentifier = createHash(HASHING_ALGORITHM).update(resourcePath).digest('hex').toString();
+            const outputLength = parseInt(HASHING_OUTPUT_LENGTH);
 
             const [ riLeft, riRight ] = [
-                resourceIdentifier.slice(0, HASHING_OUTPUT_LENGTH / 2),
-                resourceIdentifier.slice(HASHING_OUTPUT_LENGTH / 2, HASHING_OUTPUT_LENGTH)
+                resourceIdentifier.slice(0, outputLength / 2),
+                resourceIdentifier.slice(outputLength / 2, outputLength)
             ];
 
             // ? Make https-based DNS request
@@ -54,11 +55,18 @@ chrome.downloads.onChanged.addListener(targetItem => {
             const authedHash = authedHashRaw.replace(/[^0-9a-f]/gi, '');
 
             // ? Compare DNS result (auth) with hashed local file data (nonauthed)
-            if(authedHash.length !== authedHashRaw.length - 2)
-                console.log('judgement: RESOURCE IDENTIFIER NOT FOUND');
+            if(authedHash.length !== authedHashRaw.length - 2) {
+                console.log('judgement: UNKNOWN');
+                chrome.browserAction.setIcon({ path: getIcon(icons.neutral) }, () => {});
+            }
 
             else {
-                console.log('judgement:', authedHash === nonauthedHash ? 'SAFE' : 'UNSAFE');
+                const judgement = authedHash === nonauthedHash;
+                console.log('judgement:', judgement ? 'SAFE' : 'UNSAFE');
+                if(judgement)
+                    chrome.browserAction.setIcon({ path: getIcon(icons.safe) }, () => {});
+                else
+                    chrome.browserAction.setIcon({ path: getIcon(icons.unsafe) }, () => {});
             }
         });
     }
