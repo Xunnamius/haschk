@@ -11,6 +11,7 @@ import registerUIEvents from './events.ui'
 
 declare var chrome:any;
 
+<<<<<<< HEAD
 const oracle = new EventEmitter();
 
 registerChromeEvents(oracle, chrome);

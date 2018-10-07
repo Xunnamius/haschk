@@ -7,10 +7,10 @@
     "browser_action": {
         "default_popup": "popup.html",
         "default_icon": {
-            "16": "assets/icon/neutral/16x16.png",
-            "57": "assets/icon/neutral/57x57.png",
-            "120": "assets/icon/neutral/120x120.png",
-            "310": "assets/icon/neutral/310x310.png"
+            "16": "assets/icon/16x16.png",
+            "57": "assets/icon/57x57.png",
+            "120": "assets/icon/120x120.png",
+            "310": "assets/icon/310x310.png"
         }
     },
     "options_page": "options.html",
