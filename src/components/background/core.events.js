@@ -72,7 +72,7 @@ export default (oracle, chrome) => {
             map = chrome.runtime.lastError ? {} : map;
             // TODO: this needs a content script to read the urls on the page and generate this mapping
             map[tab.id] = originDomain;
-            chrome.storage.local.set({ 'tab=>od': map });
+            chrome.storage.local.set({ 'di=>od': map });
         });
     });
 };
