@@ -11,14 +11,14 @@ class DnschkEventEmitter extends EventEmitter {
 
     emit(event, ...args) {
         try {
-            this.emit(event, ...args);
+            super.emit(event, ...args);
         }
 
         catch(error) {
             error.eventName = event;
             error.eventArgs = args;
 
-            this.emit('error', error);
+            super.emit('error', error);
         }
     }
 }

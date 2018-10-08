@@ -16,8 +16,10 @@
     "options_page": "options.html",
     "permissions": [
         "file://*",
+        "<all_urls>",
         "downloads",
-        "<all_urls>"
+        "tabs",
+        "storage"
     ],
     "icons": {
         "16": "assets/icon/neutral/16x16.png",

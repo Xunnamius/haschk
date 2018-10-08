@@ -1,5 +1,5 @@
 /** @flow
- * @description All higher-level extension event hooks go here
+ * @description All higher-level extension event logic is here
  */
 
 import { OriginDomain } from 'dnschk-utils'
@@ -7,12 +7,12 @@ import { OriginDomain } from 'dnschk-utils'
 export default (oracle, chrome) => {
     // ? This event fires whenever a tab completely finishes loading a page
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-        const originDomain = new OriginDomain;
+        if(changeInfo.status == 'complete') {
+            const originDomain = new OriginDomain;
 
-        if(changeInfo.status == 'complete')
             oracle.emit('origin.resolving', tab, originDomain);
-
-        oracle.emit('origin.resolved', originDomain);
+            oracle.emit('origin.resolved', tab, originDomain.toString());
+        }
     });
 
     // ? This event fires with a DownloadItem object when a new download begins

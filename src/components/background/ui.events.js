@@ -1,5 +1,5 @@
 /** @flow
- * @description All DNSCHK event hooks go here, including popup/options hooks
+ * @description All DNSCHK UI event hooks go here, including for popup/options
  */
 
 import {
@@ -12,7 +12,8 @@ import {
 // ?
 // ? Currently, events include:
 // ?    * origin.resolving      origin domain resolution logic should run now
-// ?    * origin.resolved       origin domain has been resolved (or error)
+// ?    * origin.resolved       origin domain has been resolved successfully
+// ?    * download.
 // ?    * download.new          a new download has been observed
 // ?    * download.completed    a download has completed
 // ?    * judgement.safe        a resource's content is as expected
@@ -24,6 +25,12 @@ import {
 // ? available for handlers of the different events.
 
 export default (oracle, chrome) => {
+    // ? This is our generic error handler
+    oracle.addListener('error', err => {
+        // TODO: indicate error condition in the UI
+        console.error(`DNSCHK ERROR: ${err}`);
+    });
+
     oracle.addListener('judgement.unknown', downloadItem => {
         console.log(`file "${downloadItem.filename}" judgement: UNKNOWN`);
         chrome.browserAction.setIcon({ path: getIcon(icons.neutral) });
