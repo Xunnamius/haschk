@@ -6,7 +6,8 @@
 import http from 'faxios'
 import createHash from 'create-hash'
 import ParsedUrl from 'url-parse'
-import {icons, getIcon } from '../common'
+import EventEmitter from 'eventemitter3'
+import { icons, getIcon } from '../common'
 
 const DNS_TARGET_FQDN_URI = 'bernarddickens.com';
 
@@ -22,10 +23,30 @@ const GOOGLE_DNS_HTTPS_RR_FN = (originDomain) =>
 
 const { HASHING_ALGORITHM, HASHING_OUTPUT_LENGTH } = process.env;
 
+// ? Emits events that plugin developers should be hooking in to. Feel free to
+// ? add more events as they become necessary.
+// ?
+// ? Events include:
+// ?    * origin.resolving      origin domain resolution logic should run now
+// ?    * origin.resolved       origin domain has been resolved (or error)
+// ?    * download.created      a new download has been observed
+// ?    * download.completed    a download has completed
+// ?    * error                 a new error event has occurred
+const oracle = new EventEmitter();
+
 declare var chrome:any;
 
-// ? This event fires with the DownloadItem object when a download begins
-// chrome.downloads.onCreated.addListener(downloadItem => console.log('downloads.onCreated listener called!', downloadItem));
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if(changeInfo.status == 'complete') {
+        try {
+            oracle.emit('origin.resolving');
+        }
+
+        catch(error) {
+            oracle.emit('error', error);
+        }
+    }
+});
 
 // ? This event fires with a DownloadItem object when some download-related event changes
 chrome.downloads.onChanged.addListener(targetItem => {
