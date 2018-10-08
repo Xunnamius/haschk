@@ -13,7 +13,6 @@ import {
 // ? Currently, events include:
 // ?    * origin.resolving      origin domain resolution logic should run now
 // ?    * origin.resolved       origin domain has been resolved successfully
-// ?    * download.
 // ?    * download.new          a new download has been observed
 // ?    * download.completed    a download has completed
 // ?    * judgement.safe        a resource's content is as expected
@@ -29,6 +28,18 @@ export default (oracle, chrome) => {
     oracle.addListener('error', err => {
         // TODO: indicate error condition in the UI
         console.error(`DNSCHK ERROR: ${err}`);
+    });
+
+    // TODO: need to document the events and their API (like below) in wiki
+    oracle.addListener('download.new', (downloadItem, approve, reject) => {
+        if(downloadItem.isCrossOrigin)
+        {
+            // TODO: must ask user if they approve/reject the download from the
+            // TODO: external domain (outside origin)
+        }
+
+        // TODO: remove this when above logic is implemented!
+        approve();
     });
 
     oracle.addListener('judgement.unknown', downloadItem => {

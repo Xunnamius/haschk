@@ -21,6 +21,7 @@ export default (oracle, chrome) => {
         oracle.emit('download.new', downloadItem);
     });
 
+    // TODO: consider changing this to onDeterminingFilename to make this cancelable (tied to approve/reject)
     // ? This event fires with a DownloadItem object when some download-related
     // ? event changes
     chrome.downloads.onChanged.addListener(targetItem => {
