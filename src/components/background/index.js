@@ -5,9 +5,9 @@
 
 import { EventEmitter } from 'dnschk-utils/events'
 
-import registerChromeEvents from './chrome.events'
-import registerCoreEvents from './core.events'
-import registerUIEvents from './ui.events'
+import registerChromeEvents from './events.chrome'
+import registerCoreEvents from './events.core'
+import registerUIEvents from './events.ui'
 
 declare var chrome:any;
 
