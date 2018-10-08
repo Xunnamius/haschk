@@ -31,6 +31,9 @@ const { HASHING_ALGORITHM, HASHING_OUTPUT_LENGTH } = process.env;
 // ?    * origin.resolved       origin domain has been resolved (or error)
 // ?    * download.created      a new download has been observed
 // ?    * download.completed    a download has completed
+// ?    * judgement.safe        a resource's content is as expected
+// ?    * judgement.unsafe      a resource's content is mutated/corrupted
+// ?    * judgement.unknown     a resource's content cannot be judged
 // ?    * error                 a new error event has occurred
 const oracle = new EventEmitter();
 
@@ -39,7 +42,7 @@ declare var chrome:any;
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if(changeInfo.status == 'complete') {
         try {
-            oracle.emit('origin.resolving');
+            oracle.emit('origin.resolving', tab);
         }
 
         catch(error) {
