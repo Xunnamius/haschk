@@ -121,6 +121,13 @@ options.plugins = [
     new WriteFileWebpackPlugin()
 ];
 
+options.resolve = {
+    // ? These are aliases that can be used during JS import calls
+    alias: {
+        'dnschk-utils': `${__dirname}/src/components/utils/`
+    }
+};
+
 // ? See: https://webpack.js.org/configuration/devtool
 if(DEV_ENV)
     options.devtool = 'cheap-module-eval-source-map';
@@ -128,9 +135,7 @@ if(DEV_ENV)
 if(NODE_ENV !== 'generator')
 {
     // ? See: https://github.com/ipfs/js-ipfs-api/pull/777
-    options.resolve = {
-        mainFields: ['browser', 'main']
-    };
+    options.resolve.mainFields = ['browser', 'main'];
 }
 
 const exclude = parseGitIgnore(readFileSync(paths.buildGitIgnore))

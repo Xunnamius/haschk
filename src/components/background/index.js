@@ -1,67 +1,45 @@
 /** @flow
- * DNSCHK background functionality
+ * @description DNSCHK background functionality
  * @name Background
  */
+
+import { EventEmitter } from 'dnschk-utils/events'
+
+import registerChromeEvents from './chrome.events'
+import registerDnschkEvents from './dnschk.events'
 
 import http from 'faxios'
 import createHash from 'create-hash'
 import ParsedUrl from 'url-parse'
-import EventEmitter from 'eventemitter3'
-import { icons, getIcon } from '../common'
 
-const DNS_TARGET_FQDN_URI = 'bernarddickens.com';
-
-// ? Returns a string HTTPS endpoint URI that will yield the desired resource
-// ? identifier hash
-const GOOGLE_DNS_HTTPS_RI_FN = (riHashLeft, riHashRight, originDomain) =>
-    `https://dns.google.com/resolve?name=${riHashLeft}.${riHashRight}._ri._dnschk.${originDomain}&type=TXT`;
-
-// ? Returns a string HTTPS endpoint URI that will yield the desired resource
-// ? range string
-const GOOGLE_DNS_HTTPS_RR_FN = (originDomain) =>
-    `https://dns.google.com/resolve?name=_rr._dnschk.${originDomain}&type=TXT`;
-
-const { HASHING_ALGORITHM, HASHING_OUTPUT_LENGTH } = process.env;
-
-// ? Emits events that plugin developers should be hooking in to. Feel free to
-// ? add more events as they become necessary.
-// ?
-// ? Events include:
-// ?    * origin.resolving      origin domain resolution logic should run now
-// ?    * origin.resolved       origin domain has been resolved (or error)
-// ?    * download.created      a new download has been observed
-// ?    * download.completed    a download has completed
-// ?    * judgement.safe        a resource's content is as expected
-// ?    * judgement.unsafe      a resource's content is mutated/corrupted
-// ?    * judgement.unknown     a resource's content cannot be judged
-// ?    * error                 a new error event has occurred
-const oracle = new EventEmitter();
+import {
+    DNS_TARGET_FQDN_URI,
+    GOOGLE_DNS_HTTPS_RI_FN,
+    GOOGLE_DNS_HTTPS_RR_FN,
+    HASHING_ALGORITHM,
+    HASHING_OUTPUT_LENGTH
+} from 'dnschk-utils'
 
 declare var chrome:any;
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if(changeInfo.status == 'complete') {
+const oracle = new EventEmitter();
+
+registerChromeEvents(oracle, chrome);
+
+// ? This is the NAH vs AH core "judgement" logic
+oracle.addListener('download.completed', () => {
+    (async (downloadItem) => {
+        let authedHash, nonauthedHash, authedHashRaw;
+        let completed = false;
+
         try {
-            oracle.emit('origin.resolving', tab);
-        }
-
-        catch(error) {
-            oracle.emit('error', error);
-        }
-    }
-});
-
-// ? This event fires with a DownloadItem object when some download-related event changes
-chrome.downloads.onChanged.addListener(targetItem => {
-    // ? Only trigger the moment a download completes
-    if(targetItem?.state?.current == 'complete') {
-        // ? We need to ask for the full DownloadItem instance due to security
-        chrome.downloads.search({ id: targetItem.id }, async ([ downloadItem ]) => {
             // ? Since it's finished downloading, grab the file's data
+            // TODO: is this the source of issue
+            // TODO: https://github.com/morty-c137-prime/DNSCHK/issues/22
             const $file = await http(`file://${downloadItem.filename}`).GET;
 
             // ? Hash file data with proper algorithm
-            const nonauthedHash = createHash(HASHING_ALGORITHM).update($file.data).digest('hex').toString();
+            nonauthedHash = createHash(HASHING_ALGORITHM).update($file.data).digest('hex').toString();
 
             // ? Determine resource identifier and prepare for DNS request
             const resourcePath = (new ParsedUrl(downloadItem.url, {})).pathname;
@@ -75,23 +53,31 @@ chrome.downloads.onChanged.addListener(targetItem => {
 
             // ? Make https-based DNS request
             const $authedHash = await http(GOOGLE_DNS_HTTPS_RI_FN(riLeft, riRight, DNS_TARGET_FQDN_URI)).GET;
-            const authedHashRaw = $authedHash.data.Answer.slice(-1)[0].data;
-            const authedHash = authedHashRaw.replace(/[^0-9a-f]/gi, '');
+            authedHashRaw = $authedHash.data.Answer.slice(-1)[0].data;
+            authedHash = authedHashRaw.replace(/[^0-9a-f]/gi, '');
 
+            completed = true;
+        }
+
+        catch(error) {
+            oracle.emit('error', error);
+        }
+
+        // ! We want to make sure we don't catch any errors from oracle.emit
+        if(completed) {
             // ? Compare DNS result (auth) with hashed local file data (nonauthed)
-            if(authedHash.length !== authedHashRaw.length - 2) {
-                console.log('judgement: UNKNOWN');
-                chrome.browserAction.setIcon({ path: getIcon(icons.neutral) }, () => {});
-            }
+            if(authedHash.length !== authedHashRaw.length - 2)
+                oracle.emit('judgement.unknown', downloadItem);
 
             else {
-                const judgement = authedHash === nonauthedHash;
-                console.log('judgement:', judgement ? 'SAFE' : 'UNSAFE');
-                if(judgement)
-                    chrome.browserAction.setIcon({ path: getIcon(icons.safe) }, () => {});
+                if(authedHash === nonauthedHash)
+                    oracle.emit('judgement.safe', downloadItem);
+
                 else
-                    chrome.browserAction.setIcon({ path: getIcon(icons.unsafe) }, () => {});
+                    oracle.emit('judgement.unsafe', downloadItem);
             }
-        });
-    }
+        }
+    })();
 });
+
+registerDnschkEvents(oracle, chrome);

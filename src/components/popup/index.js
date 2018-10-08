@@ -1,5 +1,5 @@
 /** @flow
- * DNSCHK popup functionality
+ * @description DNSCHK popup functionality
  * @name Popup
  */
 
