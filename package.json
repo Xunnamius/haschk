@@ -40,7 +40,6 @@
     "dotenv": "^6.0.0",
     "eventemitter3": "^3.1.0",
     "faxios": "^0.5.3",
-    "materialize-css": "^1.0.0-rc.2",
     "url-parse": "^1.4.3"
   },
   "devDependencies": {
