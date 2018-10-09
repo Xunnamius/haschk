@@ -2,10 +2,6 @@
  * @description All DNSCHK UI event hooks go here, including for popup/options
  */
 
-import {
-    icons,
-    getIcon
-} from 'dnschk-utils'
 
 // ? `oracle` emits the events that you should be hooking into. Feel free to add
 // ? more events as they become necessary.
@@ -44,16 +40,13 @@ export default (oracle, chrome) => {
 
     oracle.addListener('judgement.unknown', downloadItem => {
         console.log(`file "${downloadItem.filename}" judgement: UNKNOWN`);
-        chrome.browserAction.setIcon({ path: getIcon(icons.neutral) });
     });
 
     oracle.addListener('judgement.safe', downloadItem => {
         console.log(`file "${downloadItem.filename}" judgement: SAFE`);
-        chrome.browserAction.setIcon({ path: getIcon(icons.safe) });
     });
 
     oracle.addListener('judgement.unsafe', downloadItem => {
         console.log(`file "${downloadItem.filename}" judgement: UNSAFE`);
-        chrome.browserAction.setIcon({ path: getIcon(icons.unsafe) });
     });
 };
