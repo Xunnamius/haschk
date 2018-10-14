@@ -7,18 +7,53 @@ import createHash from 'create-hash'
 import ParsedUrl from 'url-parse'
 
 import {
+    extractDomainFromURL,
     DNS_TARGET_FQDN_URI,
     GOOGLE_DNS_HTTPS_RI_FN,
-    GOOGLE_DNS_HTTPS_RR_FN,
+////GOOGLE_DNS_HTTPS_RR_FN,
     HASHING_ALGORITHM,
     HASHING_OUTPUT_LENGTH
+// flow-disable-line
 } from 'dnschk-utils'
 
-export default (oracle, chrome) => {
+// flow-disable-line
+import { DownloadCrossOriginEventFrame } from 'dnschk-utils/events'
+
+export default (oracle: any, chrome: any, context: any) => {
+    oracle.addListener('download.incoming', (dnschk, downloadItem) => {
+        const eventFrame = new DownloadCrossOriginEventFrame(dnschk.continue);
+
+        if(downloadItem.originDomain != downloadItem.urlDomain)
+            oracle.emit('download.crossOrigin', eventFrame, downloadItem);
+        // TODO Use promise here
+        // ? If the event was ended prematurely, assume downloadItem was handled
+        // ? elsewhere in the event flow
+        if(!eventFrame.stopped)
+            eventFrame.finish();
+    });
+
+    oracle.addListener('origin.resolving', (tab, originDomainInstance) => {
+        originDomainInstance.update(extractDomainFromURL(tab.url));
+    });
+
+    oracle.addListener('origin.resolved', (tab, originDomain) => {
+        chrome.storage.local.get('di=>od', map => {
+            map = chrome.runtime.lastError ? {} : map;
+            // TODO: this needs a content script to read the urls on the page and generate this mapping
+            map[tab.id] = originDomain;
+            chrome.storage.local.set({ 'di=>od': map });
+        });
+    });
+
     // ? This is the NAH vs AH core "judgement" logic
-    oracle.addListener('download.completed', dlItemActual => {
+    oracle.addListener('download.completed', downloadItem => {
+        if(context.handledDownloadItems.has(downloadItem.id))
+            return;
+
         (async (downloadItem) => {
-            let authedHash, nonauthedHash, authedHashRaw;
+            let authedHash: ?string;
+            let nonauthedHash: ?string;
+            let authedHashRaw: ?string;
             let completed = false;
 
             try {
@@ -54,25 +89,15 @@ export default (oracle, chrome) => {
 
             // ! We want to make sure we don't catch any errors from oracle.emit
             if(completed) {
+                if(!authedHash || !authedHashRaw)
+                    throw new TypeError('unexpected null type encountered');
+
                 // ? Compare DNS result (auth) with hashed local file data (nonauthed)
                 if(authedHash.length !== authedHashRaw.length - 2)
                     oracle.emit('judgement.unknown', downloadItem);
                 else
                     oracle.emit(`judgement.${ authedHash !== nonauthedHash ? 'un' : '' }safe`, downloadItem);
             }
-        })(dlItemActual);
-    });
-
-    oracle.addListener('origin.resolving', (tab, originDomainInstance) => {
-        originDomainInstance.update(RegExp(/^.*?:\/\/+(.+?)(\/.*)?$/g).exec(tab.url)[1]);
-    });
-
-    oracle.addListener('origin.resolved', (tab, originDomain) => {
-        chrome.storage.local.get('di=>od', map => {
-            map = chrome.runtime.lastError ? {} : map;
-            // TODO: this needs a content script to read the urls on the page and generate this mapping
-            map[tab.id] = originDomain;
-            chrome.storage.local.set({ 'di=>od': map });
-        });
+        })(downloadItem);
     });
 };

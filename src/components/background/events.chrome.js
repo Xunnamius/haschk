@@ -2,9 +2,12 @@
  * @description All higher-level extension event logic is here
  */
 
-import { OriginDomain } from 'dnschk-utils'
+// flow-disable-line
+import OriginDomain from 'dnschk-utils/OriginDomain'
+// flow-disable-line
+import { DownloadNewEventFrame } from 'dnschk-utils/events'
 
-export default (oracle, chrome) => {
+export default (oracle: any, chrome: any, context: any) => {
     // ? This event fires whenever a tab completely finishes loading a page
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         if(changeInfo.status == 'complete') {
@@ -16,17 +19,24 @@ export default (oracle, chrome) => {
     });
 
     // ? This event fires with a DownloadItem object when a new download begins
-    // ? in chrome
-    chrome.downloads.onCreated.addListener(downloadItem => {
-        oracle.emit('download.new', downloadItem);
+    // ? in chrome; also allows suggesting a filename via callback function
+    chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggestFilename) => {
+        const eventFrame = new DownloadNewEventFrame(suggestFilename);
+
+        oracle.emit('download.incoming', eventFrame, downloadItem);
+
+        if(eventFrame.stopped)
+            context.handledDownloadItems.add(downloadItem.id);
+
+        eventFrame.finish();
     });
 
-    // TODO: consider changing this to onDeterminingFilename to make this cancelable (tied to approve/reject)
     // ? This event fires with a DownloadItem object when some download-related
     // ? event changes
     chrome.downloads.onChanged.addListener(targetItem => {
-        // ? Only trigger the moment a download completes
-        if(targetItem?.state?.current == 'complete') {
+        // ? Only trigger the moment a download completes and only if this event
+        // ? has not already been cancelled
+        if(targetItem?.state?.current == 'complete' && !context.handledDownloadItems.has(targetItem.id)) {
             // ? We need to ask for the full DownloadItem instance due to
             // ? security
             chrome.downloads.search({ id: targetItem.id }, ([ downloadItem ]) => {

@@ -121,11 +121,11 @@ options.plugins = [
     new WriteFileWebpackPlugin()
 ];
 
-options.resolve = {
-    // ? These are aliases that can be used during JS import calls
-    alias: {
-        'dnschk-utils': `${__dirname}/src/components/utils/`
-    }
+options.resolve = {};
+
+// ? These are aliases that can be used during JS import calls
+options.resolve.alias = {
+    'dnschk-utils': `${__dirname}/src/utils/`
 };
 
 // ? See: https://webpack.js.org/configuration/devtool

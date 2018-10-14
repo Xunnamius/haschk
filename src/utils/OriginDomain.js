@@ -1,5 +1,7 @@
 /* @flow */
 
+// TODO: document me!
+
 export default class OriginDomain {
     _originDomain: string = '';
 
@@ -15,6 +17,7 @@ export default class OriginDomain {
         return this._originDomain;
     }
 
+    // flow-disable-line
     [Symbol.toPrimitive](hint) {
         if(hint == 'number')
             throw new TypeError('OriginDomain instance cannot be coerced into a number!');
@@ -22,6 +25,7 @@ export default class OriginDomain {
         return this.toString();
     }
 
+    // flow-disable-line
     get [Symbol.toStringTag]() {
         return 'OriginDomain';
     }
