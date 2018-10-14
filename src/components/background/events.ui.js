@@ -6,7 +6,7 @@ import {
     icons,
     getIcon
 // flow-disable-line
-} from 'dnschk-utils'
+} from 'dnschk-utils/ui'
 
 // TODO: need to move this type of documentation into the wiki
 
