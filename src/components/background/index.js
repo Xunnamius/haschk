@@ -19,6 +19,8 @@ const context = {
     handledDownloadItems: new Set()
 };
 
+// TODO: configure storage dictionaries
+
 registerChromeEvents(oracle, chrome, context);
 registerCoreEvents(oracle, chrome, context);
 registerUIEvents(oracle, chrome, context);

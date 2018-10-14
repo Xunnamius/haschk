@@ -21,7 +21,7 @@ import { DownloadCrossOriginEventFrame } from 'dnschk-utils/events'
 
 export default (oracle: any, chrome: any, context: any) => {
     oracle.addListener('download.incoming', (dnschk, downloadItem) => {
-        const eventFrame = new DownloadCrossOriginEventFrame(dnschk.continue);
+        const eventFrame = new DownloadCrossOriginEventFrame(oracle, context, dnschk.continue);
 
         if(downloadItem.originDomain != downloadItem.urlDomain)
             oracle.emit('download.crossOrigin', eventFrame, downloadItem);
