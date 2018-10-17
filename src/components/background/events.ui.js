@@ -74,18 +74,15 @@ export default (oracle: any, chrome: any, context: any) => {
     // ? This event fires whenever dnschk decides it cannot judge a download
     oracle.addListener('judgement.unknown', downloadItem => {
         console.log(`file "${downloadItem.filename}" judgement: UNKNOWN`);
-        chrome.browserAction.setIcon({ path: getIcon(icons.neutral) });
     });
 
     // ? This event fires whenever dnschk decides a download is safe
     oracle.addListener('judgement.safe', downloadItem => {
         console.log(`file "${downloadItem.filename}" judgement: SAFE`);
-        chrome.browserAction.setIcon({ path: getIcon(icons.safe) });
     });
 
     // ? This event fires whenever dnschk decides a download is NOT safe
     oracle.addListener('judgement.unsafe', downloadItem => {
         console.log(`file "${downloadItem.filename}" judgement: UNSAFE`);
-        chrome.browserAction.setIcon({ path: getIcon(icons.unsafe) });
     });
 };
