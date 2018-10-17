@@ -2,12 +2,6 @@
  * @description All DNSCHK UI event hooks go here, including for popup/options
  */
 
-import {
-    icons,
-    getIcon
-// flow-disable-line
-} from 'dnschk-utils/ui'
-
 // TODO: need to move this type of documentation into the wiki
 
 // ? `oracle` emits the events that you should be hooking into. Feel free to add

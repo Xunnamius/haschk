@@ -3,10 +3,12 @@
         "flow-typed": true
     },
     "cSpell.words": [
+        "authed",
         "cleanbuild",
         "cleantypes",
         "davidcash",
         "devseed",
+        "dnschk's",
         "hash",
         "nonauthed",
         "pluginville",
