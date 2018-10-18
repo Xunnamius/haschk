@@ -4,6 +4,7 @@
 
 export default class EventFrame {
     stopped = false;
+    finished = false;
     _continueFn: HandlerFn;
     _finishedFn: HandlerFn;
 
@@ -22,7 +23,11 @@ export default class EventFrame {
 
     // ? Should always be called eventually
     finish(...args: Array<any>) {
-        this._finishedFn(...args);
+        if(!this.finished)
+        {
+            this.finished = true;
+            this._finishedFn(...args);
+        }
     }
 }
 

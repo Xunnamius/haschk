@@ -27,12 +27,12 @@ export default (oracle: any, chrome: any, context: any) => {
         downloadItem.originDomain = extractDomainFromURI();
         downloadItem.urlDomain = extractDomainFromURI(downloadItem.url);
 
-        oracle.emit('download.incoming', eventFrame, downloadItem);
+        oracle.emit('download.incoming', eventFrame, downloadItem).then(() => {
+            if(eventFrame.stopped)
+                context.handledDownloadItems.add(downloadItem.id);
 
-        if(eventFrame.stopped)
-            context.handledDownloadItems.add(downloadItem.id);
-
-        eventFrame.finish();
+            eventFrame.finish();
+        });
     });
 
     // ? This event fires with a DownloadItem object when some download-related

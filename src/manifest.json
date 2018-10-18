@@ -15,7 +15,6 @@
     },
     "options_page": "options.html",
     "permissions": [
-        "file://*",
         "<all_urls>",
         "downloads",
         "tabs",
@@ -23,11 +22,8 @@
     ],
     "content_scripts": [
         {
-            "matches": [
-                "http://*",
-                "https://*"
-            ],
-            "js": ["src/components/content/index.js"],
+            "matches": ["<all_urls>"],
+            "js": ["content.packed.js"],
             "run_at": "document_end"
         }
     ],

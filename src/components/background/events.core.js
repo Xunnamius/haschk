@@ -16,16 +16,19 @@ import {
 // flow-disable-line
 } from 'dnschk-utils'
 
+// TODO: add new core events
+
 // flow-disable-line
 import { DownloadCrossOriginEventFrame } from 'dnschk-utils/events'
 
 export default (oracle: any, chrome: any, context: any) => {
-    oracle.addListener('download.incoming', (dnschk, downloadItem) => {
+    oracle.addListener('download.incoming', async (dnschk, downloadItem) => {
+        // TODO: can't call finish twice! is dnschk.continue supposed to be passed in here?
         const eventFrame = new DownloadCrossOriginEventFrame(oracle, context, dnschk.continue);
 
         if(downloadItem.originDomain != downloadItem.urlDomain)
-            oracle.emit('download.crossOrigin', eventFrame, downloadItem);
-        // TODO Use promise here
+            await oracle.emit('download.crossOrigin', eventFrame, downloadItem);
+
         // ? If the event was ended prematurely, assume downloadItem was handled
         // ? elsewhere in the event flow
         if(!eventFrame.stopped)
@@ -37,9 +40,9 @@ export default (oracle: any, chrome: any, context: any) => {
     });
 
     oracle.addListener('origin.resolved', (tab, originDomain) => {
-        chrome.storage.local.get('di=>od', map => {
+        chrome.storage.local.get('tabMeta', map => {
             map = chrome.runtime.lastError ? {} : map;
-            // TODO: this needs a content script to read the urls on the page and generate this mapping
+            // TODO: plug this into the content script w/ message passing
             map[tab.id] = originDomain;
             chrome.storage.local.set({ 'di=>od': map });
         });
