@@ -21,7 +21,7 @@ export default class EventFrame {
         this.stopped = true;
     }
 
-    // ? Should always be called eventually
+    // ? Should always be called eventually; is idempotent
     finish(...args: Array<any>) {
         if(!this.finished)
         {
