@@ -61,8 +61,6 @@ export default (oracle: any, chrome: any, context: any) => {
 
             try {
                 // ? Since it's finished downloading, grab the file's data
-                // TODO: is this the source of issue
-                // TODO: https://github.com/morty-c137-prime/DNSCHK/issues/22
                 const $file = await http(`file://${downloadItem.filename}`).GET;
 
                 // ? Hash file data with proper algorithm

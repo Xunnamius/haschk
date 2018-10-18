@@ -11,8 +11,7 @@ export const icons = {
 // ? See https://flow.org/en/docs/types/utilities/#toc-keys for details
 export type Icon = $Keys<typeof icons>;
 
-// TODO: document what this does with comments, including explaining the API
-// TODO: @morty-c137-prime
+// TODO: is this code useful or should it all be removed, @morty-c137-prime?
 export const getIcon = (iconType: Icon) => {
     if(!icons[iconType])
         throw Error(`requested invalid icon type "${iconType}"`);
