@@ -19,11 +19,10 @@ const checkEventFrame = (eventName: string, eventFrame: EventFrame) => {
 
 export default class DnschkEventEmitter extends EventEmitter {
     _frameworkEvents = [];
-    _$lastPromise: Promise<void>;
 
-    constructor(frameworkEvents: Array<string>, ...args: Array<any>) {
+    constructor(frameworkEvents: ?Array<string>, ...args: Array<any>) {
         super(...args);
-        this._frameworkEvents = frameworkEvents;
+        this._frameworkEvents = frameworkEvents || [];
     }
 
     // ? Modify emit to handle async handlers and errors in handlers

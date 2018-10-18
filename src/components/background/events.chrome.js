@@ -24,7 +24,7 @@ export default (oracle: any, chrome: any, context: any) => {
     // ? in chrome; also allows suggesting a filename via callback function
     chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggestFilename) => {
         const eventFrame = new DownloadNewEventFrame(suggestFilename);
-        downloadItem.originDomain = extractDomainFromURI();
+        //downloadItem.originDomain = tabMeta[].originDomain || extractDomainFromURI();
         downloadItem.urlDomain = extractDomainFromURI(downloadItem.url);
 
         oracle.emit('download.incoming', eventFrame, downloadItem).then(() => {
