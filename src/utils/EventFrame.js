@@ -2,14 +2,12 @@
 
 // TODO: document me!
 
-export default class EventFrame extends Promise {
+export default class EventFrame {
     stopped = false;
     _continueFn: HandlerFn;
     _finishedFn: HandlerFn;
 
     constructor(continueFn: HandlerFn, finishedFn: HandlerFn) {
-        super();
-
         this._continueFn = continueFn;
         this._finishedFn = finishedFn;
     }
