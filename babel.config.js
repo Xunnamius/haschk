@@ -19,6 +19,10 @@ module.exports = {
     env: {
         production: {},
         debug: {},
+        test: {
+            sourceMaps: sourceMapValue,
+            plugins: [sourceMapPlugin],
+        },
         development: {
             // ? Handled by Webpack
             /*sourceMaps: sourceMapValue,

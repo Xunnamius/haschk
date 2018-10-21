@@ -25,7 +25,7 @@ The research and development behind DNSCHK was a joint effort by [team members](
 
 ## Installation
 
-(todo)
+(todo)(the error event handler is triggered asynchronously; see EE test for example)
 
 ## Usage
 

@@ -6,10 +6,10 @@ export default class DownloadCrossOriginEventFrame extends EventFrame {
     _oracle: any;
     _context: any;
 
-    constructor(oracle: any, context: any, callback: () => void) {
+    constructor(oracle: any, context: any, callback: ?() => void) {
         super(
             () => {},
-            callback
+            callback || (() => {})
         );
 
         this._oracle = oracle;

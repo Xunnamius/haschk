@@ -125,8 +125,10 @@ options.plugins = [
 options.resolve = {};
 
 // ? These are aliases that can be used during JS import calls
+// ! Note that you must also change these same aliases in .flowconfig
+// ! Note that you must also change these same aliases in package.json (jest)
 options.resolve.alias = {
-    'dnschk-utils': `${__dirname}/src/utils/`
+    'universe': `${__dirname}/src/utils/`
 };
 
 // ? See: https://webpack.js.org/configuration/devtool

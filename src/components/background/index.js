@@ -4,9 +4,9 @@
  */
 
 // flow-disable-line
-import { FRAMEWORK_EVENTS } from 'dnschk-utils'
+import { FRAMEWORK_EVENTS } from 'universe'
 // flow-disable-line
-import { EventEmitter } from 'dnschk-utils/events'
+import { EventEmitter } from 'universe/events'
 
 import registerChromeEvents from './events.chrome'
 import registerCoreEvents from './events.core'

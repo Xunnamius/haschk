@@ -3,11 +3,11 @@
  */
 
 // flow-disable-line
-import { extractDomainFromURI } from 'dnschk-utils'
+import { extractDomainFromURI } from 'universe'
 // flow-disable-line
-import OriginDomain from 'dnschk-utils/OriginDomain'
+import OriginDomain from 'universe/OriginDomain'
 // flow-disable-line
-import { DownloadNewEventFrame } from 'dnschk-utils/events'
+import { DownloadNewEventFrame } from 'universe/events'
 
 export default (oracle: any, chrome: any, context: any) => {
     // ? This event fires whenever a tab completely finishes loading a page

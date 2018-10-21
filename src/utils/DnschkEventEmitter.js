@@ -1,18 +1,42 @@
 /* @flow */
 
 import EventEmitter from 'eventemitter3'
-import EventFrame from './EventFrame';
+import { EventFrame } from 'universe/events';
+import type { ListenerFn as SuperListenerFn } from 'eventemitter3'
+import type { ListenerFn } from 'universe/events'
 
-const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+const AsyncFunction: () => Promise<void> = ((Object.getPrototypeOf(async function(){}).constructor: any): () => Promise<void>);
 
 // TODO: document me!
+
+const asyncEmit = async (index: number, listeners: Array<ListenerFn>, args: Array<any>): Promise<void> => {
+    const handler: ?ListenerFn = listeners[index];
+    let retPromise: Promise<void>;
+
+    if(!handler)
+        return Promise.resolve();
+
+    if(handler instanceof AsyncFunction)
+        retPromise = handler(...args);
+
+    else
+    {
+        retPromise = new Promise(resolve => {
+            handler(...args);
+            resolve();
+        });
+    }
+
+    await retPromise;
+    await asyncEmit(index + 1, listeners, args);
+};
 
 const checkEventFrame = (eventName: string, eventFrame: EventFrame) => {
     if(!(eventFrame instanceof EventFrame))
     {
         throw new TypeError(
             `first argument (arg1) passed to handlers via emit('${eventName}', arg1, ...) `
-        +`must be an EventFrame instance, got ${eventFrame} instead`
+           +`must be an EventFrame instance, got ${eventFrame} instead`
         );
     }
 }
@@ -27,32 +51,9 @@ export default class DnschkEventEmitter extends EventEmitter {
 
     // ? Modify emit to handle async handlers and errors in handlers
     // flow-disable-line
-    emit(event: string, ...args: Array<any>): Promise<void> {
+    async emit(event: string, ...args: Array<any>) {
         try {
-            const listeners = this.listeners(event);
-
-            const asyncEmit = (index: number): Promise<void> => {
-                const handler: ?any = listeners[index];
-                let retPromise: Promise<void>;
-
-                if(!handler)
-                    return Promise.resolve();
-
-                if(handler instanceof AsyncFunction)
-                    retPromise = handler(...args);
-
-                else
-                {
-                    retPromise = new Promise(resolve => {
-                        handler(...args);
-                        resolve();
-                    });
-                }
-
-                return retPromise.then(() => asyncEmit(index + 1), e => { throw e; });
-            };
-
-            return asyncEmit(0);
+            await asyncEmit(0, ((this.listeners(event): any): Array<ListenerFn>), args);
         }
 
         catch(error) {
@@ -64,7 +65,7 @@ export default class DnschkEventEmitter extends EventEmitter {
     }
 
     // ? Modify addListener to stop event chains when event frames are stopped
-    addListener(eventName: string | Symbol, eventHandler: any): this {
+    addListener(eventName: string | Symbol, eventHandler: ListenerFn): this {
         if(this._frameworkEvents.includes(eventName)) {
             const handlerActual = eventHandler;
 
@@ -87,7 +88,7 @@ export default class DnschkEventEmitter extends EventEmitter {
             }
         }
 
-        super.addListener(eventName, eventHandler);
+        super.addListener(eventName, ((eventHandler: any): SuperListenerFn));
         return this;
     }
 }

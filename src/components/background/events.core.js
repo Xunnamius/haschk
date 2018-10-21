@@ -14,17 +14,17 @@ import {
     HASHING_ALGORITHM,
     HASHING_OUTPUT_LENGTH
 // flow-disable-line
-} from 'dnschk-utils'
+} from 'universe'
 
 // TODO: add new core events
 
 // flow-disable-line
-import { DownloadCrossOriginEventFrame } from 'dnschk-utils/events'
+import { DownloadCrossOriginEventFrame } from 'universe/events'
 
 export default (oracle: any, chrome: any, context: any) => {
     oracle.addListener('download.incoming', async (dnschk, downloadItem) => {
         // TODO: can't call finish twice! is dnschk.continue supposed to be passed in here?
-        const eventFrame = new DownloadCrossOriginEventFrame(oracle, context, dnschk.continue);
+        const eventFrame = new DownloadCrossOriginEventFrame(oracle, context);
 
         if(downloadItem.originDomain != downloadItem.urlDomain)
             await oracle.emit('download.crossOrigin', eventFrame, downloadItem);
