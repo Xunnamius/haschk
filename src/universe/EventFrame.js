@@ -31,4 +31,4 @@ export default class EventFrame {
     }
 }
 
-export type HandlerFn = (...args: Array<any>) => void;
+export type HandlerFn = (...args: Array<any>) => any;

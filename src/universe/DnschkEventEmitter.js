@@ -5,38 +5,24 @@ import { EventFrame } from 'universe/events';
 import type { ListenerFn as SuperListenerFn } from 'eventemitter3'
 import type { ListenerFn } from 'universe/events'
 
-const AsyncFunction: () => Promise<void> = ((Object.getPrototypeOf(async function(){}).constructor: any): () => Promise<void>);
-
 // TODO: document me!
 
-const asyncEmit = async (index: number, listeners: Array<ListenerFn>, args: Array<any>): Promise<void> => {
+const asyncEmit = async (index: number, listeners: Array<ListenerFn>, args: Array<any>) => {
     const handler: ?ListenerFn = listeners[index];
-    let retPromise: Promise<void>;
 
     if(!handler)
         return Promise.resolve();
 
-    if(handler instanceof AsyncFunction)
-        retPromise = handler(...args);
-
-    else
-    {
-        retPromise = new Promise(resolve => {
-            handler(...args);
-            resolve();
-        });
-    }
-
-    await retPromise;
-    await asyncEmit(index + 1, listeners, args);
+    await Promise.resolve(handler(...args));
+    await asyncEmit(index + 1, listeners, args); // ? I've unwound the loop here and made each iteration async!
 };
 
 const checkEventFrame = (eventName: string, eventFrame: EventFrame) => {
-    if(!(eventFrame instanceof EventFrame))
+    if(typeof eventFrame.stopped !== 'boolean')
     {
         throw new TypeError(
             `first argument (arg1) passed to handlers via emit('${eventName}', arg1, ...) `
-           +`must be an EventFrame instance, got ${eventFrame} instead`
+           +`must be an EventFrame instance or expose compatible interface, got ${eventFrame.toString()} instead`
         );
     }
 }
@@ -64,27 +50,14 @@ export default class DnschkEventEmitter extends EventEmitter {
         }
     }
 
-    // ? Modify addListener to stop event chains when event frames are stopped
+    // ? Modify addListener to interrupt event loop when EventFrames are stop()ed
     addListener(eventName: string | Symbol, eventHandler: ListenerFn): this {
         if(this._frameworkEvents.includes(eventName)) {
             const handlerActual = eventHandler;
 
-            if(handlerActual instanceof AsyncFunction)
-            {
-                eventHandler = async (eventFrame: EventFrame, ...args: Array<any>) => {
-                    checkEventFrame(eventName.toString(), eventFrame);
-                    await !eventFrame.stopped ? handlerActual(eventFrame, ...args) : Promise.resolve();
-                }
-            }
-
-            else
-            {
-                eventHandler = (eventFrame: EventFrame, ...args: Array<any>) => {
-                    checkEventFrame(eventName.toString(), eventFrame);
-
-                    if(!eventFrame.stopped)
-                        handlerActual(eventFrame, ...args);
-                }
+            eventHandler = async (eventFrame: EventFrame, ...args: Array<any>) => {
+                checkEventFrame(eventName.toString(), eventFrame);
+                await Promise.resolve(eventFrame.stopped || handlerActual(eventFrame, ...args));
             }
         }
 

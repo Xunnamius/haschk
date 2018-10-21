@@ -2,6 +2,8 @@
 
 import EventFrame from './EventFrame'
 
+// TODO: document me!
+
 export default class DownloadCrossOriginEventFrame extends EventFrame {
     _oracle: any;
     _context: any;
@@ -16,22 +18,25 @@ export default class DownloadCrossOriginEventFrame extends EventFrame {
         this._context = context;
     }
 
-    _shortCircuitEventLoop(eventName: string, downloadItem: any, ...args: Array<any>) {
+    async _shortCircuitEventLoop(eventName: string, downloadItem: any, ...args: Array<any>) {
         this.stop();
         this._context.handledDownloadItems.add(downloadItem.id);
         this.finish(...args);
-        this._oracle.emit(eventName, downloadItem);
+        await this._oracle.emit(eventName, downloadItem);
     }
 
+    // ? Returns a Promise!
     judgeUnsafe(downloadItem: any, ...args: Array<any>) {
-        this._shortCircuitEventLoop('judgement.unsafe', downloadItem, ...args);
+        return this._shortCircuitEventLoop('judgement.unsafe', downloadItem, ...args);
     }
 
+    // ? Returns a Promise!
     judgeSafe(downloadItem: any, ...args: Array<any>) {
-        this._shortCircuitEventLoop('judgement.safe', downloadItem, ...args);
+        return this._shortCircuitEventLoop('judgement.safe', downloadItem, ...args);
     }
 
+    // ? Returns a Promise!
     judgeUnknown(downloadItem: any, ...args: Array<any>) {
-        this._shortCircuitEventLoop('judgement.unknown', downloadItem, ...args);
+        return this._shortCircuitEventLoop('judgement.unknown', downloadItem, ...args);
     }
 }

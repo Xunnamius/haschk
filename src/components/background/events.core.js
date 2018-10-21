@@ -13,12 +13,10 @@ import {
 ////GOOGLE_DNS_HTTPS_RR_FN,
     HASHING_ALGORITHM,
     HASHING_OUTPUT_LENGTH
-// flow-disable-line
 } from 'universe'
 
 // TODO: add new core events
 
-// flow-disable-line
 import { DownloadCrossOriginEventFrame } from 'universe/events'
 
 export default (oracle: any, chrome: any, context: any) => {

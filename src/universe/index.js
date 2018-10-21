@@ -18,4 +18,5 @@ export const { HASHING_ALGORITHM, HASHING_OUTPUT_LENGTH } = process.env;
 
 export const FRAMEWORK_EVENTS = ['download.incoming', 'download.crossOrigin'];
 
-export const extractDomainFromURI = (url: string) => (RegExp(/^.*?:\/\/+(.+?)(\/.*)?$/g).exec(url) ?? [])[1];
+import OriginDomain from './OriginDomain';
+export { OriginDomain };

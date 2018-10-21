@@ -32,7 +32,7 @@
 // ? `judgement.*` events will be triggered.
 
 // ? All events triggered in flows #2/3 receive an EventFrame instance that
-// ? allows access to DNSCHK's internals. See `src/utils/EventFrame` classes.
+// ? allows access to DNSCHK's internals. See `src/universe/EventFrame` classes.
 
 // ? The `download.incoming` and `download.crossOrigin` events receive a
 // ? modified downloadItem object with the following extra props:

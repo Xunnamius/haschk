@@ -2,11 +2,8 @@
  * @description All higher-level extension event logic is here
  */
 
-// flow-disable-line
 import { extractDomainFromURI } from 'universe'
-// flow-disable-line
-import OriginDomain from 'universe/OriginDomain'
-// flow-disable-line
+import { OriginDomain } from 'universe'
 import { DownloadNewEventFrame } from 'universe/events'
 
 export default (oracle: any, chrome: any, context: any) => {

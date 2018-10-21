@@ -128,7 +128,7 @@ options.resolve = {};
 // ! Note that you must also change these same aliases in .flowconfig
 // ! Note that you must also change these same aliases in package.json (jest)
 options.resolve.alias = {
-    'universe': `${__dirname}/src/utils/`
+    'universe': `${__dirname}/src/universe/`
 };
 
 // ? See: https://webpack.js.org/configuration/devtool

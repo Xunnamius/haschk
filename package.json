@@ -31,8 +31,10 @@
       "^.+\\.js$": "<rootDir>/jest.preprocess.js"
     },
     "moduleNameMapper": {
-      "^universe(\/.*)?$": "<rootDir>/src/utils$1"
-    }
+      "^universe$": "<rootDir>/src/universe",
+      "^universe\/(.*)$": "<rootDir>/src/universe/$1"
+    },
+    "testPathIgnorePatterns": ["/node_modules/", "/test/components/background/"]
   },
   "dependencies": {
     "@babel/core": "^7.1.2",

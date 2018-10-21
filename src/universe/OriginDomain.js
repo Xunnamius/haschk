@@ -5,6 +5,8 @@
 export default class OriginDomain {
     _originDomain: string = '';
 
+    static extractDomainFromURI = (url: string) => (RegExp(/^(.*?:\/\/+)?(.+?)(\/.*)?$/g).exec(url) ?? [])[2];
+
     constructor(originDomain: string = '') {
         this._originDomain = originDomain;
     }
