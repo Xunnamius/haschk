@@ -7,7 +7,7 @@ import createHash from 'create-hash'
 import ParsedUrl from 'url-parse'
 
 import {
-    extractDomainFromURI,
+    OriginDomain,
     DNS_TARGET_FQDN_URI,
     GOOGLE_DNS_HTTPS_RI_FN,
 ////GOOGLE_DNS_HTTPS_RR_FN,
@@ -34,7 +34,7 @@ export default (oracle: any, chrome: any, context: any) => {
     });
 
     oracle.addListener('origin.resolving', (tab, originDomainInstance) => {
-        originDomainInstance.update(extractDomainFromURI(tab.url));
+        originDomainInstance.update(OriginDomain.extractDomainFromURI(tab.url));
     });
 
     oracle.addListener('origin.resolved', (tab, originDomain) => {

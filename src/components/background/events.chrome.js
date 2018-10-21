@@ -2,7 +2,6 @@
  * @description All higher-level extension event logic is here
  */
 
-import { extractDomainFromURI } from 'universe'
 import { OriginDomain } from 'universe'
 import { DownloadNewEventFrame } from 'universe/events'
 
@@ -21,8 +20,8 @@ export default (oracle: any, chrome: any, context: any) => {
     // ? in chrome; also allows suggesting a filename via callback function
     chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggestFilename) => {
         const eventFrame = new DownloadNewEventFrame(suggestFilename);
-        //downloadItem.originDomain = tabMeta[].originDomain || extractDomainFromURI();
-        downloadItem.urlDomain = extractDomainFromURI(downloadItem.url);
+        //downloadItem.originDomain = tabMeta[].originDomain || OriginDomain.extractDomainFromURI();
+        downloadItem.urlDomain = OriginDomain.extractDomainFromURI(downloadItem.url);
 
         oracle.emit('download.incoming', eventFrame, downloadItem).then(() => {
             if(eventFrame.stopped)
