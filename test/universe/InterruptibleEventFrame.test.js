@@ -1,12 +1,13 @@
 /* @flow */
 
 import { InterruptibleEventFrame } from 'universe/events';
+import type { FrameworkEventEmitter } from 'universe/events';
 
 let oracle;
 let emitted;
 
 beforeEach(() => {
-    oracle = { emit(emission, item){ emitted = [emission, item]; } };
+    oracle = (({ emit(emission, item){ emitted = [emission, item]; } }: any): FrameworkEventEmitter);
     emitted = [];
 });
 

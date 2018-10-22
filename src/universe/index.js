@@ -20,10 +20,11 @@ export const FRAMEWORK_EVENTS = ['download.incoming', 'download.completed', 'dow
 
 export const extractDomainFromURI = (url: string) => (RegExp(/^(.*?:\/\/+)?(.+?)(\/.*)?$/g).exec(url) ?? [])[2];
 
-export const extendDownloadItemInstance = downloadItem => {
-    downloadItem.originDomain = extractDomainFromURI(
-        downloadItem.referrer || downloadItem.url || throw new Error('cannot determine originDomain')
-    );
+export const extendDownloadItemInstance = (downloadItem: any) => {
+    const uri: string = downloadItem.referrer || downloadItem.url;
 
+    if(!uri) throw new Error('cannot determine originDomain');
+
+    downloadItem.originDomain = extractDomainFromURI(uri);
     return downloadItem;
 };

@@ -63,8 +63,12 @@ export default class FrameworkEventEmitter extends EventEmitter {
 
         super.addListener(eventName, ((eventHandler: any): SuperListenerFn), context);
 
+        // flow-disable-line
         if(prepend && !this._events[eventName].fn)
+        {
+            // flow-disable-line
             this._events[eventName] = [this._events[eventName].pop(), ...this._events[eventName]];
+        }
 
         return this;
     }
@@ -72,7 +76,12 @@ export default class FrameworkEventEmitter extends EventEmitter {
     prependListener(eventName: string | Symbol, eventHandler: ListenerFn, context: ?{}) {
         return this.addListener(eventName, eventHandler, context, true);
     }
-}
 
-FrameworkEventEmitter.prototype.on = FrameworkEventEmitter.prototype.addListener;
-FrameworkEventEmitter.prototype.appendListener = FrameworkEventEmitter.prototype.addListener;
+    appendListener(...args: Array<any>) {
+        return this.addListener(...args);
+    }
+
+    on(...args: Array<any>) {
+        return this.addListener(...args);
+    }
+}

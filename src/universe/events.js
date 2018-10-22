@@ -13,5 +13,6 @@ export {
     EventFrame,
     InterruptibleEventFrame,
     DownloadEventFrame,
+    FrameworkEventEmitter,
     FrameworkEventEmitter as EventEmitter,
 };

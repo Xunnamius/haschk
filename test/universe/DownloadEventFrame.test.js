@@ -1,13 +1,14 @@
 /* @flow */
 
 import { DownloadEventFrame } from 'universe/events';
+import type { FrameworkEventEmitter } from 'universe/events';
 
-let oracle;
+let oracle: FrameworkEventEmitter;
 let context;
 let emitted;
 
 beforeEach(() => {
-    oracle = { emit(emission, item){ emitted = [emission, item]; } };
+    oracle = (({ emit(emission, item){ emitted = [emission, item]; } }: any): FrameworkEventEmitter);
     context = { handledDownloadItems: new Set };
     emitted = [];
 });
