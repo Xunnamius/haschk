@@ -52,9 +52,7 @@ export default (oracle: any, chrome: any, context: any) => {
     // ? This event fires whenever a new download is observed
     oracle.addListener('download.incoming', async (e, downloadItem) => {
         // TODO: add new download to popup UI
-        // ! Note how this function is async, which means you can await Promises.
-        // ! You should use async/await syntax to ensure the extension waits for
-        // ! the UI to finish before continuing
+        // ! Note how this function is async, which means you can await Promises
         console.log(`file "${downloadItem.filename}" incoming`);
     });
 
@@ -62,7 +60,7 @@ export default (oracle: any, chrome: any, context: any) => {
     // ? verified manually by the user
     oracle.addListener('download.suspiciousOrigin', async (e, downloadItem) => {
         // TODO: must ask user to approve downloadItem.urlDomain via the UI
-        // ! Note how this function is async, which means you can await Promises.
+        // ! Note how this function is async, i.e. means you can await Promises!
         // ! You should use async/await syntax to ensure the extension waits for
         // ! the UI to finish before continuing
         console.log(`file "${downloadItem.filename}" flagged for suspicious origin`);
