@@ -9,7 +9,6 @@
 // ? events must be added with oracle::prependListener().
 
 // ? Currently, events include:
-<<<<<<< b26b92e487627c08dcdcd2fc330c0676a709411b
 // ?    * core.init                 the extension is loaded by chrome (once)    () => {}
 // ?    * download.incoming         a new download has been observed            async (e, downloadItem) => {}
 // ?    * download.suspiciousOrigin a new download has been observed            async (e, downloadItem) => {}
@@ -18,20 +17,6 @@
 // ?    * judgement.unsafe          a resource's content is mutated/corrupted   (downloadItem) => {}
 // ?    * judgement.unknown         a resource's content cannot be judged       (downloadItem) => {}
 // ?    * error                     a new error event has occurred              (err) => {}
-=======
-// ?    * origin.resolving      origin domain resolution logic should run now   (tab:chrome, instance:OriginDomain) => {}
-// ?    * origin.resolved       origin domain has been resolved successfully    (tab:chrome, originDomain:string) => {}
-// ?    * download.incoming     a new download has been observed                (tab:chrome, instance:OriginDomain) => {}
-// ?    * download.completed    a download has completed                        (downloadItem:chrome) => {}
-// ?    * judgement.safe        a resource's content is as expected             (tab:chrome, instance:OriginDomain) => {}
-// ?    * judgement.unsafe      a resource's content is mutated/corrupted       (tab:chrome, instance:OriginDomain) => {}
-// ?    * judgement.unknown     a resource's content cannot be judged           (tab:chrome, instance:OriginDomain) => {}
-// ?    * ui.clear              ui set to neutral state                         () => {}
-// ?    * error                 a new error event has occurred                  (error:Error) => {}
-// ?
-// ? See ./index.js and other events for examples of what parameters are
-// ? available for handlers of the different events.
->>>>>>> bridge event; popup demo; basic storage (not-functional)
 
 // ? Extension event flows:
 // ?    1. Chrome enables extension (only once):    => core.init

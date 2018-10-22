@@ -20,13 +20,6 @@
         "tabs",
         "runtime"
     ],
-    "content_scripts": [
-        {
-            "matches": ["<all_urls>"],
-            "js": ["content.packed.js"],
-            "run_at": "document_end"
-        }
-    ],
     "icons": {
         "16": "assets/icon/16x16.png",
         "57": "assets/icon/57x57.png",
