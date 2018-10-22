@@ -1,7 +1,7 @@
 /* @flow */
 
 import EventEmitter from 'eventemitter3'
-import { EventFrame } from 'universe/events';
+import { EventFrame } from 'universe/events'
 import type { ListenerFn as SuperListenerFn } from 'eventemitter3'
 import type { ListenerFn } from 'universe/events'
 
@@ -27,7 +27,7 @@ const checkEventFrame = (eventName: string, eventFrame: EventFrame) => {
     }
 }
 
-export default class DnschkEventEmitter extends EventEmitter {
+export default class FrameworkEventEmitter extends EventEmitter {
     _frameworkEvents = [];
 
     constructor(frameworkEvents: ?Array<string>, ...args: Array<any>) {
@@ -51,7 +51,7 @@ export default class DnschkEventEmitter extends EventEmitter {
     }
 
     // ? Modify addListener to interrupt event loop when EventFrames are stop()ed
-    addListener(eventName: string | Symbol, eventHandler: ListenerFn): this {
+    addListener(eventName: string | Symbol, eventHandler: ListenerFn, context: ?{}, prepend: ?boolean) {
         if(this._frameworkEvents.includes(eventName)) {
             const handlerActual = eventHandler;
 
@@ -61,7 +61,18 @@ export default class DnschkEventEmitter extends EventEmitter {
             }
         }
 
-        super.addListener(eventName, ((eventHandler: any): SuperListenerFn));
+        super.addListener(eventName, ((eventHandler: any): SuperListenerFn), context);
+
+        if(prepend && !this._events[eventName].fn)
+            this._events[eventName] = [this._events[eventName].pop(), ...this._events[eventName]];
+
         return this;
     }
+
+    prependListener(eventName: string | Symbol, eventHandler: ListenerFn, context: ?{}) {
+        return this.addListener(eventName, eventHandler, context, true);
+    }
 }
+
+FrameworkEventEmitter.prototype.on = FrameworkEventEmitter.prototype.addListener;
+FrameworkEventEmitter.prototype.appendListener = FrameworkEventEmitter.prototype.addListener;

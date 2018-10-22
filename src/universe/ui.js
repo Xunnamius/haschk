@@ -1,6 +1,6 @@
 /* @flow */
 
-// TODO: document me
+// TODO: document me or remove me
 export const icons = {
     neutral: 'neutral',
     safe: 'safe',

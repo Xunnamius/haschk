@@ -2,7 +2,6 @@
 + ui
 + events
     - EventFrame
-    - DownloadNewEventFrame
-    - DownloadCrossOriginEventFrame
-    - DnschkEventEmitter
-+ OriginDomain
+    - InterruptibleEventFrame
+    - DownloadEventFrame
+    - FrameworkEventEmitter

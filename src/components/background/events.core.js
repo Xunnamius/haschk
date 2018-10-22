@@ -7,47 +7,33 @@ import createHash from 'create-hash'
 import ParsedUrl from 'url-parse'
 
 import {
-    OriginDomain,
-    DNS_TARGET_FQDN_URI,
     GOOGLE_DNS_HTTPS_RI_FN,
 ////GOOGLE_DNS_HTTPS_RR_FN,
     HASHING_ALGORITHM,
-    HASHING_OUTPUT_LENGTH
+    HASHING_OUTPUT_LENGTH,
+    DANGER_THRESHOLD
 } from 'universe'
 
-// TODO: add new core events
-
-import { DownloadCrossOriginEventFrame } from 'universe/events'
+import { DownloadEventFrame } from 'universe/events'
 
 export default (oracle: any, chrome: any, context: any) => {
-    oracle.addListener('download.incoming', async (dnschk, downloadItem) => {
-        // TODO: can't call finish twice! is dnschk.continue supposed to be passed in here?
-        const eventFrame = new DownloadCrossOriginEventFrame(oracle, context);
+    oracle.addListener('download.incoming', async (e, downloadItem) => {
+        const eventFrame = new DownloadEventFrame(oracle, context);
+        const startTime = (new Date(downloadItem.startTime)).getTime();
+        const tabLoadTime = context.timingData[downloadItem.referrer] || startTime;
 
-        if(downloadItem.originDomain != downloadItem.urlDomain)
-            await oracle.emit('download.crossOrigin', eventFrame, downloadItem);
+        // ! This step protects against certain timing attacks (see issue #3)
+        if(startTime - tabLoadTime <= DANGER_THRESHOLD)
+            await oracle.emit('download.suspiciousOrigin', eventFrame, downloadItem);
 
         // ? If the event was ended prematurely, assume downloadItem was handled
         // ? elsewhere in the event flow
         if(!eventFrame.stopped)
-            eventFrame.finish();
-    });
-
-    oracle.addListener('origin.resolving', (tab, originDomainInstance) => {
-        originDomainInstance.update(OriginDomain.extractDomainFromURI(tab.url));
-    });
-
-    oracle.addListener('origin.resolved', (tab, originDomain) => {
-        chrome.storage.local.get('tabMeta', map => {
-            map = chrome.runtime.lastError ? {} : map;
-            // TODO: plug this into the content script w/ message passing
-            map[tab.id] = originDomain;
-            chrome.storage.local.set({ 'di=>od': map });
-        });
+            eventFrame.finish(); // ? Could pass in a filename string here
     });
 
     // ? This is the NAH vs AH core "judgement" logic
-    oracle.addListener('download.completed', downloadItem => {
+    oracle.addListener('download.completed', (e, downloadItem) => {
         if(context.handledDownloadItems.has(downloadItem.id))
             return;
 
@@ -75,7 +61,7 @@ export default (oracle: any, chrome: any, context: any) => {
                 ];
 
                 // ? Make https-based DNS request
-                const $authedHash = await http(GOOGLE_DNS_HTTPS_RI_FN(riLeft, riRight, DNS_TARGET_FQDN_URI)).GET;
+                const $authedHash = await http(GOOGLE_DNS_HTTPS_RI_FN(riLeft, riRight, downloadItem.originDomain)).GET;
                 authedHashRaw = $authedHash.data.Answer.slice(-1)[0].data;
                 authedHash = authedHashRaw.replace(/[^0-9a-f]/gi, '');
 
@@ -93,9 +79,9 @@ export default (oracle: any, chrome: any, context: any) => {
 
                 // ? Compare DNS result (auth) with hashed local file data (nonauthed)
                 if(authedHash.length !== authedHashRaw.length - 2)
-                    oracle.emit('judgement.unknown', downloadItem);
+                    e.judgeUnknown(downloadItem);
                 else
-                    oracle.emit(`judgement.${ authedHash !== nonauthedHash ? 'un' : '' }safe`, downloadItem);
+                    authedHash !== nonauthedHash ? e.judgeUnsafe(downloadItem) : e.judgeSafe(downloadItem);
             }
         })(downloadItem);
     });

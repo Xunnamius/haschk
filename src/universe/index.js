@@ -2,7 +2,7 @@
  * @description global utility functions and constants
  */
 
-export const DNS_TARGET_FQDN_URI = 'bernarddickens.com';
+export const DANGER_THRESHOLD = 2000;
 
 // ? Returns a string HTTPS endpoint URI that will yield the desired resource
 // ? identifier hash
@@ -16,7 +16,14 @@ export const GOOGLE_DNS_HTTPS_RR_FN = (originDomain: string) =>
 
 export const { HASHING_ALGORITHM, HASHING_OUTPUT_LENGTH } = process.env;
 
-export const FRAMEWORK_EVENTS = ['download.incoming', 'download.crossOrigin'];
+export const FRAMEWORK_EVENTS = ['download.incoming', 'download.completed', 'download.suspiciousOrigin'];
 
-import OriginDomain from './OriginDomain';
-export { OriginDomain };
+export const extractDomainFromURI = (url: string) => (RegExp(/^(.*?:\/\/+)?(.+?)(\/.*)?$/g).exec(url) ?? [])[2];
+
+export const extendDownloadItemInstance = downloadItem => {
+    downloadItem.originDomain = extractDomainFromURI(
+        downloadItem.referrer || downloadItem.url || throw new Error('cannot determine originDomain')
+    );
+
+    return downloadItem;
+};

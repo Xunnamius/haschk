@@ -36,7 +36,6 @@ options.entry = {
     background: `${paths.components}/background/index.js`,
     options: `${paths.components}/options/index.js`,
     popup: `${paths.components}/popup/index.js`,
-    content: `${paths.components}/content/index.js`
 };
 
 options.output = {

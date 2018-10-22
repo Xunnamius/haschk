@@ -2,33 +2,41 @@
  * @description All higher-level extension event logic is here
  */
 
-import { OriginDomain } from 'universe'
-import { DownloadNewEventFrame } from 'universe/events'
+import { extendDownloadItemInstance } from 'universe'
+import { DownloadEventFrame } from 'universe/events'
+
+// ? Essentially, we hook into three browser-level events here:
+// ?    - when a tab finishes navigating to a URL
+// ?    - when a download is started
+// ?    - when a download finishes
 
 export default (oracle: any, chrome: any, context: any) => {
     // ? This event fires whenever a tab completely finishes loading a page
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-        if(changeInfo.status == 'complete') {
-            const originDomain = new OriginDomain;
-
-            oracle.emit('origin.resolving', tab, originDomain);
-            oracle.emit('origin.resolved', tab, originDomain.toString());
-        }
+        if(changeInfo.status == 'complete')
+            context.timingData[tab.url] = Date.now();
     });
 
     // ? This event fires with a DownloadItem object when a new download begins
     // ? in chrome; also allows suggesting a filename via callback function
-    chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggestFilename) => {
-        const eventFrame = new DownloadNewEventFrame(suggestFilename);
-        //downloadItem.originDomain = tabMeta[].originDomain || OriginDomain.extractDomainFromURI();
-        downloadItem.urlDomain = OriginDomain.extractDomainFromURI(downloadItem.url);
+    chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggestFilename: Function) => {
+        const eventFrame = new DownloadEventFrame(oracle, context, suggestFilename);
+        extendDownloadItemInstance(downloadItem);
 
         oracle.emit('download.incoming', eventFrame, downloadItem).then(() => {
-            if(eventFrame.stopped)
-                context.handledDownloadItems.add(downloadItem.id);
+            try {
+                if(eventFrame.stopped)
+                    context.handledDownloadItems.add(downloadItem.id);
 
-            eventFrame.finish();
+                eventFrame.finish();
+            }
+
+            catch(err) {
+                oracle.emit('error', err);
+            }
         });
+
+        return true;
     });
 
     // ? This event fires with a DownloadItem object when some download-related
@@ -40,7 +48,8 @@ export default (oracle: any, chrome: any, context: any) => {
             // ? We need to ask for the full DownloadItem instance due to
             // ? security
             chrome.downloads.search({ id: targetItem.id }, ([ downloadItem ]) => {
-                oracle.emit('download.completed', downloadItem);
+                const eventFrame = new DownloadEventFrame(oracle, context);
+                oracle.emit('download.completed', eventFrame, extendDownloadItemInstance(downloadItem));
             });
         }
     });

@@ -14,11 +14,12 @@ declare var chrome:any;
 
 const oracle = new EventEmitter(FRAMEWORK_EVENTS);
 const context = {
-    handledDownloadItems: new Set()
+    handledDownloadItems: new Set(),
+    timingData: {}
 };
-
-// TODO: configure storage dictionaries
 
 registerChromeEvents(oracle, chrome, context);
 registerCoreEvents(oracle, chrome, context);
 registerUIEvents(oracle, chrome, context);
+
+oracle.emit('core.init');
