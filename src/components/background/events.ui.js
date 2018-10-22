@@ -5,20 +5,18 @@
 // TODO: need to move this type of documentation into the wiki
 
 // ? `oracle` emits the events that you should be hooking into. Feel free to add
-// ? more events as they become necessary.
-// ?
+// ? more events as they become necessary. Note that new `download.complete`
+// ? events must be added with oracle::prependListener().
+
 // ? Currently, events include:
 // ?    * core.init                 the extension is loaded by chrome (once)    () => {}
 // ?    * download.incoming         a new download has been observed            async (e, downloadItem) => {}
 // ?    * download.suspiciousOrigin a new download has been observed            async (e, downloadItem) => {}
-// ?    * download.completed        a download has completed                    async (e, downloadItem) => {}
+// ?    * download.completed        a download has completed; must be prepended async (e, downloadItem) => {}
 // ?    * judgement.safe            a resource's content is as expected         (downloadItem) => {}
 // ?    * judgement.unsafe          a resource's content is mutated/corrupted   (downloadItem) => {}
 // ?    * judgement.unknown         a resource's content cannot be judged       (downloadItem) => {}
-// ?    * error                     a new error event has occurred              (error) => {}
-// ?
-// ? See ./index.js and other events for examples of what parameters are
-// ? available for handlers of the different events.
+// ?    * error                     a new error event has occurred              (err) => {}
 
 // ? Extension event flows:
 // ?    1. Chrome enables extension (only once):    => core.init
@@ -29,20 +27,18 @@
 
 // ? Note: at any point during flows #2/3, the flow can be cancelled (i.e.
 // ? remaining event handlers not processed) after which one of the
-// ? `judgement.*` events should be triggered. In the case of flow #2, this is
-// ? immediate (i.e. the rest of the event stack is skipped).
-
-// ? All events triggered in flows #2/3 receive an EventFrame instance that
-// ? allows access to DNSCHK's internals, i.e. via ::judgeUnsafe(), ::judgeSafe(),
-// ? etc.
+// ? `judgement.*` events should be triggered. This is immediate (i.e. the rest
+// ? of the event stack is skipped). All events triggered in flows #2/3 receive
+// ? an EventFrame instance (e) that allows access to DNSCHK's internals, i.e.
+// ? via ::judgeUnsafe(), ::judgeSafe(), etc.
 
 // ? All oracle events receive a modified downloadItem object with the following
 // ? extra props:
 // ?    * downloadItem.originDomain                 the DNS lookup base domain
 
-// ? Note that a `downloadItem` parameter is not guaranteed to have any
-// ? properties of the DownloadItem extension API except ::OriginDomain. Do an
-// ? existence check before trying to use them.
+// ? Note that a `downloadItem` object is not guaranteed to have any properties
+// ? of the DownloadItem extension API except ::OriginDomain. Do an existence
+// ? check before trying to use them. See the Extensions API for more details.
 
 export default (oracle: any, chrome: any, context: any) => {
     void chrome, context;
