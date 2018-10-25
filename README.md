@@ -74,7 +74,7 @@ Hence, the branch workflow can be summarized as:
 <!-- Tables for formatting images? Jeez, welcome back to 1999! -->
 |&zwnj;|&zwnj;|
 |-|-|
-| ![a picture goes here][bd3] | Bernard [Dickens III](https://bernarddickens.com)|
+| ![a picture goes here][bd3] | [Bernard Dickens III](https://bernarddickens.com)|
 | ![a picture goes here][rawalvarez731] | [Richard Alvarez](http://richard.alvareztech.org)|
 | ![a picture goes here][hankhoffmann] | [Hank Hoffmann](http://people.cs.uchicago.edu/~hankhoffmann)|
 | ![a picture goes here][ilopilop538] | [Trevor Medina](ilopilop538@gmail.com)|
