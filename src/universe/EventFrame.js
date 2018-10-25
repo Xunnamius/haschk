@@ -5,6 +5,7 @@
 export default class EventFrame {
     stopped = false;
     finished = false;
+    _finished: any;
     _continueFn: HandlerFn;
     _finishedFn: HandlerFn;
 
@@ -26,8 +27,10 @@ export default class EventFrame {
         if(!this.finished)
         {
             this.finished = true;
-            this._finishedFn(...args);
+            this._finished = this._finishedFn(...args);
         }
+
+        return this._finished;
     }
 }
 
