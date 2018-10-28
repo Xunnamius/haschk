@@ -11,6 +11,7 @@ import { EventEmitter } from 'universe/events'
 import registerChromeEvents from './events.chrome'
 import registerCoreEvents from './events.core'
 import registerUIEvents from './events.ui'
+import registerStorageEvents from './events.storage'
 
 declare var chrome:any;
 
