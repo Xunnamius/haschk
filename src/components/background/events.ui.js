@@ -40,6 +40,17 @@
 // ? of the DownloadItem extension API except ::OriginDomain. Do an existence
 // ? check before trying to use them. See the Extensions API for more details.
 
+const setBadge = (chrome: any) => {
+    return (_text: string, _color: string = '#FFF') => {
+        chrome.browserAction.setBadgeBackgroundColor({
+            color: _color
+        });
+        chrome.browserAction.setBadgeText({
+            text: _text
+        });
+    };
+};
+
 export default (oracle: any, chrome: any, context: any) => {
     void chrome, context;
 
@@ -68,19 +79,20 @@ export default (oracle: any, chrome: any, context: any) => {
 
     // ? This event fires whenever dnschk decides it cannot judge a download
     oracle.addListener('judgement.unknown', downloadItem => {
-        // TODO: update global badge; update download's status/icon/judgement in popup UI
+        setBadge(chrome)('?', '#D0D6B5');
         console.log(`file "${downloadItem.filename}" judgement: UNKNOWN`);
     });
 
     // ? This event fires whenever dnschk decides a download is safe
     oracle.addListener('judgement.safe', downloadItem => {
-        // TODO: update global badge; update download's status/icon/judgement in popup UI
+        setBadge(chrome)('✓', '#6EEB83');
         console.log(`file "${downloadItem.filename}" judgement: SAFE`);
     });
 
     // ? This event fires whenever dnschk decides a download is NOT safe
     oracle.addListener('judgement.unsafe', downloadItem => {
-        // TODO: update global badge; update download's status/icon/judgement in popup UI
+        setBadge(chrome)('X', '#FF3C38');
         console.log(`file "${downloadItem.filename}" judgement: UNSAFE`);
     });
+
 };

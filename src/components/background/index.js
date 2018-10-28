@@ -3,7 +3,9 @@
  * @name Background
  */
 
+// flow-disable-line
 import { FRAMEWORK_EVENTS } from 'universe'
+// flow-disable-line
 import { EventEmitter } from 'universe/events'
 
 import registerChromeEvents from './events.chrome'
