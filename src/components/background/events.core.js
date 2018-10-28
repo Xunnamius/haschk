@@ -86,21 +86,4 @@ export default (oracle: any, chrome: any, context: any) => {
         })(downloadItem);
     });
 
-    // ? This event fires whenever dnschk decides it cannot judge a download
-    oracle.addListener('judgement.unknown', downloadItem => {
-        oracle.emit('storage.handledDownloadItems.add', downloadItem);
-        console.log(context.handledDownloadItems.has(downloadItem));
-    });
-
-    // ? This event fires whenever dnschk decides a download is safe
-    oracle.addListener('judgement.safe', downloadItem => {
-        oracle.emit('storage.handledDownloadItems.add', downloadItem);
-        console.log(context.handledDownloadItems.has(downloadItem));
-    });
-
-    // ? This event fires whenever dnschk decides a download is NOT safe
-    oracle.addListener('judgement.unsafe', downloadItem => {
-        oracle.emit('storage.handledDownloadItems.add', downloadItem);
-        console.log(context.handledDownloadItems.has(downloadItem));
-    });
 };

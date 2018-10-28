@@ -57,6 +57,7 @@ export default (oracle: any, chrome: any, context: any) => {
     // ? This is our generic error handler that fires whenever an error occurs
     oracle.addListener('error', err => {
         // TODO: indicate error condition in the UI
+        setBadge(chrome)('ERR', '#F2F4F3')
         console.error(`DNSCHK ERROR: ${err}`);
     });
 

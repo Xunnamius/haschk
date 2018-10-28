@@ -12,15 +12,16 @@ import { DownloadEventFrame } from 'universe/events'
 
 export default (oracle: any, chrome: any, context: any) => {
 
-    chrome.runtime.onConnect.addListener(function(bridge)
+    chrome.runtime.onConnect.addListener((bridge) =>
     {
-        bridge.onMessage.addListener((message)=>{
+        bridge.onMessage.addListener((message) => 
+        {
             if(message.event.charAt(0) !== '.')
-                // ? This if statement exists purely if we want bridge specific events...
+                // ? Two way messages here
                 oracle.emit(`bridge.${message.event}`, ...message.data);
             else
                 oracle.emit(message.event.substring(1), ...message.data);
-        })
+        });
     });
 
     // ? This event fires whenever a tab completely finishes loading a page
