@@ -14,7 +14,11 @@ export default class DnschkPort
             event: eventName,
             data: data
         });
+
     }
 
-    // TODO: Implement onMessage/on functionality
+    onMessage(callback)
+    {
+        this.#port.onMessage.addListener(callback);
+    }
 }

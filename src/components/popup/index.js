@@ -11,6 +11,13 @@ declare var chrome:any;
 
 const bridge = new DnschkPort(chrome);
 
+document.getElementById('fetchHandledDownloadItems').addEventListener('click', (e) => {
+    e.preventDefault();
+    bridge.emit('fetch', 'judgedDownloadItems');
+});
+
+bridge.onMessage(console.log);
+
 document.getElementById('unsafe_test').addEventListener('click', () => {
     bridge.emit('.judgement.unsafe', {
         filename: "fake_unsafe.pdf"

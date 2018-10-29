@@ -4,6 +4,7 @@
 
 import { extendDownloadItemInstance } from 'universe'
 import { DownloadEventFrame } from 'universe/events'
+import { DnschkPort } from 'universe/DnschkPort'
 
 // ? Essentially, we hook into three browser-level events here:
 // ?    - when a tab finishes navigating to a URL
@@ -14,11 +15,10 @@ export default (oracle: any, chrome: any, context: any) => {
 
     chrome.runtime.onConnect.addListener((bridge) =>
     {
-        bridge.onMessage.addListener((message) => 
+        bridge.onMessage.addListener((message) =>
         {
             if(message.event.charAt(0) !== '.')
-                // ? Two way messages here
-                oracle.emit(`bridge.${message.event}`, ...message.data);
+                oracle.emit(`bridge.${message.event}`, bridge,...message.data);
             else
                 oracle.emit(message.event.substring(1), ...message.data);
         });
@@ -26,7 +26,7 @@ export default (oracle: any, chrome: any, context: any) => {
 
     // ? This event fires whenever a tab completely finishes loading a page
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-        if(changeInfo.status == 'complete')
+        if(changeInfo.status ==  'complete')
             context.timingData[tab.url] = Date.now();
     });
 

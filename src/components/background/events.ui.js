@@ -96,9 +96,8 @@ export default (oracle: any, chrome: any, context: any) => {
         console.log(`file "${downloadItem.filename}" judgement: UNSAFE`);
     });
 
-    // ? This event fires whenever we want to clear badges (possibly other UI components too)
     oracle.addListener('ui.clear', () => {
-        setBadge(chrome)('', '#FFF');
+        setBadge(chrome)('');
         console.clear();
     });
 
