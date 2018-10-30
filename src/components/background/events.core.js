@@ -17,11 +17,6 @@ import {
 import { DownloadEventFrame } from 'universe/events'
 
 export default (oracle: any, chrome: any, context: any) => {
-
-    oracle.addListener('demo.message', (bridge)=>{
-        bridge.postMessage('you wanted to talk?');
-    });
-
     oracle.addListener('download.incoming', async (e, downloadItem) => {
         const eventFrame = new DownloadEventFrame(oracle, context);
         const startTime = (new Date(downloadItem.startTime)).getTime();

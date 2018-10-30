@@ -1,5 +1,7 @@
 /** @flow */
 
+// TODO: Document me
+
 export default class DnschkPort
 {
     #port;
@@ -8,17 +10,17 @@ export default class DnschkPort
         this.#port = chrome.runtime.connect();
     }
 
-    emit(eventName, ...data)
+    async emit(_event: string,..._data: any)
     {
-        this.#port.postMessage({
-            event: eventName,
-            data: data
+        return await new Promise((resolve)=>{
+            this.#port.postMessage({
+                event: _event,
+                data: _data
+            });
+            this.#port.onMessage.addListener((event_response)=>{
+                this.#port.onMessage.removeListener();
+                resolve(event_response);
+            });
         });
-
-    }
-
-    onMessage(callback)
-    {
-        this.#port.onMessage.addListener(callback);
     }
 }
