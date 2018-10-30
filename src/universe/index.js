@@ -18,7 +18,7 @@ export const { HASHING_ALGORITHM, HASHING_OUTPUT_LENGTH } = process.env;
 
 export const FRAMEWORK_EVENTS = ['download.incoming', 'download.completed', 'download.suspiciousOrigin'];
 
-export const extractDomainFromURI = (url: string) => (RegExp(/^(.*?:\/\/+)?(.+?)(\/.*)?$/g).exec(url) ?? [])[2];
+export const extractDomainFromURI = (url: string) => (new URL(url)).hostname;
 
 export const extendDownloadItemInstance = (downloadItem: any) => {
     const uri: string = downloadItem.referrer || downloadItem.url;
