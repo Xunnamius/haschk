@@ -17,8 +17,7 @@
     "permissions": [
         "<all_urls>",
         "downloads",
-        "tabs",
-        "runtime"
+        "tabs"
     ],
     "icons": {
         "16": "assets/icon/16x16.png",
