@@ -35,7 +35,7 @@ options.mode = DEV_ENV ? 'development' : 'production';
 options.entry = {
     background: `${paths.components}/background/index.js`,
     options: `${paths.components}/options/index.js`,
-    popup: `${paths.components}/popup/index.js`
+    popup: `${paths.components}/popup/index.js`,
 };
 
 options.output = {
@@ -121,6 +121,15 @@ options.plugins = [
     new WriteFileWebpackPlugin()
 ];
 
+options.resolve = {};
+
+// ? These are aliases that can be used during JS import calls
+// ! Note that you must also change these same aliases in .flowconfig
+// ! Note that you must also change these same aliases in package.json (jest)
+options.resolve.alias = {
+    'universe': `${__dirname}/src/universe/`
+};
+
 // ? See: https://webpack.js.org/configuration/devtool
 if(DEV_ENV)
     options.devtool = 'cheap-module-eval-source-map';
@@ -128,9 +137,7 @@ if(DEV_ENV)
 if(NODE_ENV !== 'generator')
 {
     // ? See: https://github.com/ipfs/js-ipfs-api/pull/777
-    options.resolve = {
-        mainFields: ['browser', 'main']
-    };
+    options.resolve.mainFields = ['browser', 'main'];
 }
 
 const exclude = parseGitIgnore(readFileSync(paths.buildGitIgnore))

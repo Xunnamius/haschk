@@ -3,12 +3,20 @@
         "flow-typed": true
     },
     "cSpell.words": [
+        "authed",
         "cleanbuild",
         "cleantypes",
+        "cntinue",
         "davidcash",
         "devseed",
+        "dnschk's",
+        "event",
+        "frame",
         "hash",
+        "interruptible",
+        "newstring",
         "nonauthed",
+        "origindomain",
         "pluginville",
         "ravenben",
         "wpdevserv"

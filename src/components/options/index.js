@@ -1,5 +1,5 @@
 /** @flow
- *  Options and configuration for DNSCHK plugin
+ *  @description Options and configuration for DNSCHK plugin
  *  @name Options
  */
 
