@@ -5,7 +5,7 @@
 
 import './index.css'
 
-import DnschkPort from 'universe/DnschkPort';
+import DnschkPort from 'universe/DnschkEventPort';
 
 declare var chrome:any;
 
@@ -17,7 +17,40 @@ const bridge = new DnschkPort(chrome);
 // TODO: and the problem will be solved gracefully!
 
 // TODO: on page (popup) load, you should trigger the fetchJudgedDownloadItems->click event handler
-document.getElementById('fetchJudgedDownloadItems').addEventListener('click', (e: Event) => {
+const appendDownloadToDownloadList = (downloadItem, judgement) => {
+    let downloadList = document.getElementById("downloadItems");
+    let elem = document.createElement('li', {
+        id: downloadItem.id
+    });
+    elem.innerHTML = `#${downloadItem.id}: ${downloadItem.filename} [${
+        judgement == 'unknown' ? '?' : (judgement == 'unsafe' ? 'X' : '✓')
+        }]`;
+    downloadList.appendChild(elem);
+};
+
+window.onload = async () => {
+    await bridge.emit('fetch', 'judgedDownloadItems').then((res) => {
+        res.judgedDownloadItems.forEach((download) => {
+            appendDownloadToDownloadList(download.downloadItem, download.judgement);
+        });
+    });
+};
+
+bridge.on('judgement.unsafe', (downloadItem) => {
+    appendDownloadToDownloadList(downloadItem, 'unsafe');
+});
+
+bridge.on('judgement.safe', (downloadItem) => {
+    appendDownloadToDownloadList(downloadItem, 'safe');
+});
+
+bridge.on('judgement.unknown', (downloadItem) => {
+    appendDownloadToDownloadList(downloadItem, 'unknown');
+});
+
+// * Demoing tools
+/**
+document.getElementById('fetchJudgedDownloadItems').addEventListener('click', (e) => {
     e.preventDefault();
     let downloadList = document.getElementById("downloadItems");
     downloadList.innerHTML = '';
@@ -41,21 +74,21 @@ document.getElementById('fetchJudgedDownloadItems').addEventListener('click', (e
 
 document.getElementById('unsafe_test').addEventListener('click', () => {
     bridge.emit('.judgement.unsafe', {
-        id: Math.random() * 1000 + 1000,
+        id: Math.floor(Math.random() * 1000 + 1000),
         filename: "fake_unsafe.pdf"
     });
 });
 
 document.getElementById('safe_test').addEventListener('click', () => {
     bridge.emit('.judgement.safe', {
-        id: Math.random() * 1000 + 1000,
+        id: Math.floor(Math.random() * 1000 + 1000),
         filename: "fake_safe.pdf"
     });
 });
 
 document.getElementById('unknown_test').addEventListener('click', () => {
     bridge.emit('.judgement.unknown', {
-        id: Math.random() * 1000 + 1000,
+        id: Math.floor(Math.random() * 1000 + 1000),
         filename: "fake_unknown.pdf"
     });
 });
@@ -65,4 +98,4 @@ document.getElementById('clear').addEventListener('click', () => {
     let downloadList = document.getElementById("downloadItems");
     downloadList.innerHTML = '';
 });
-
+*/

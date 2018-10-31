@@ -90,4 +90,34 @@ export default (oracle: any, chrome: any, context: any) => {
         })(downloadItem);
     });
 
+    oracle.addListener('judgement.unknown', downloadItem => {
+        context.judgedDownloadItems.push({
+            downloadItem: downloadItem,
+            judgement: 'unknown'
+        });
+    });
+
+    oracle.addListener('judgement.safe', downloadItem => {
+        context.judgedDownloadItems.push({
+            downloadItem: downloadItem,
+            judgement: 'safe'
+        });
+    });
+
+    oracle.addListener('judgement.unsafe', downloadItem => {
+        context.judgedDownloadItems.push({
+            downloadItem: downloadItem,
+            judgement: 'unsafe'
+        });
+    });
+
+    // ? Bridge listeners (note must respond to bridge)
+    oracle.addListener('bridge.fetch', (bridge, ...keys) => {
+        let values = {};
+        keys.forEach((key) => {
+            values[key] = context[key];
+        });
+        bridge.postMessage(values);
+    });
+
 };

@@ -78,30 +78,18 @@ export default (oracle: any, chrome: any, context: any) => {
     // ? This event fires whenever dnschk decides it cannot judge a download
     oracle.addListener('judgement.unknown', downloadItem => {
         setBadge(chrome)('?', '#D0D6B5');
-        context.judgedDownloadItems[downloadItem.id] = {
-            downloadItem: downloadItem,
-            judgement: 'unknown'
-        };
         console.log(`file "${downloadItem.filename}" judgement: UNKNOWN`);
     });
 
     // ? This event fires whenever dnschk decides a download is safe
     oracle.addListener('judgement.safe', downloadItem => {
         setBadge(chrome)('✓', '#6EEB83');
-        context.judgedDownloadItems[downloadItem.id] = {
-            downloadItem: downloadItem,
-            judgement: 'safe'
-        };
         console.log(`file "${downloadItem.filename}" judgement: SAFE`);
     });
 
     // ? This event fires whenever dnschk decides a download is NOT safe
     oracle.addListener('judgement.unsafe', downloadItem => {
         setBadge(chrome)('X', '#FF3C38');
-        context.judgedDownloadItems[downloadItem.id] = {
-            downloadItem: downloadItem,
-            judgement: 'unsafe'
-        };
         console.log(`file "${downloadItem.filename}" judgement: UNSAFE`);
     });
 

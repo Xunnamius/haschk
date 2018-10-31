@@ -4,7 +4,7 @@
 
 import { extendDownloadItemInstance } from 'universe'
 import { DownloadEventFrame } from 'universe/events'
-import DnschkPort from 'universe/DnschkPort'
+import { portEvent } from 'universe/DnschkEventPort'
 
 // ? Essentially, we hook into three browser-level events here:
 // ?    - when a tab finishes navigating to a URL
@@ -12,19 +12,69 @@ import DnschkPort from 'universe/DnschkPort'
 // ?    - when a download finishes
 
 export default (oracle: any, chrome: any, context: any) => {
-    chrome.runtime.onConnect.addListener((port) =>
-    {
-        // TODO: register events here
-        void DnschkPort; // ? This nixes the unused var warning; remove this line when DnschkPort is actually used
 
-        port.onMessage.addListener(message =>
+    // ? There are better ways to do this, but until then these fire when
+    // ? judgements are made and notify the open ports about important events
+    // ?
+    // ? Three events are made available:
+    // ? * judgement.safe       a resource's content is as expected
+    // ? * judgement.unsafe     a resource's content is mutated/corrupted
+    // ? * judgement.unknown    a resource's content cannot be judged
+    // ?
+    chrome.runtime.onConnect.addListener((port) => {
+        port.onDisconnect.addListener((_port)=>{
+            delete context.activePorts[_port.sender.id];
+        });
+
+        if(!context.registeredPorts.includes(port.sender.id))
         {
-            if(message.event.charAt(0) !== '.')
-                // ! What happens here if message.data is null or non-iterable? Consider refining the message.data type
-                oracle.emit(`bridge.${message.event}`, port,...message.data);
+            context.registeredPorts.push(port.sender.id);
+            context.activePorts[port.sender.id] = port;
 
-            else
-            {
+            oracle.addListener('judgement.unsafe', (downloadItem) => {
+                if(context.activePorts[port.sender.id]) {
+                    context.activePorts[port.sender.id].postMessage(portEvent('judgement.unsafe', downloadItem));
+                }
+
+                else {
+                    console.warn('[DNSCHK] Port is no longer open.');
+                }
+            });
+
+            oracle.addListener('judgement.safe', (downloadItem) => {
+                if(context.activePorts[port.sender.id]) {
+                    context.activePorts[port.sender.id].postMessage(portEvent('judgement.safe', downloadItem));
+                }
+
+                else {
+                    console.warn('[DNSCHK] Port is no longer open.');
+                }
+            });
+
+            oracle.addListener('judgement.unknown', (downloadItem) => {
+                if(context.activePorts[port.sender.id]) {
+                    context.activePorts[port.sender.id].postMessage(portEvent('judgement.unknown', downloadItem));
+                }
+
+                else {
+                    console.warn('[DNSCHK] Port is no longer open.');
+                }
+            });
+        }
+
+        else
+        {
+            context.activePorts[port.sender.id] = port;
+        }
+
+        // * could be deprecated as well (see DnschkEventPort lines 5 - 8)
+        port.onMessage.addListener((message) => {
+            if(message.event.charAt(0) !== '.') {
+                // ! What happens here if message.data is null or non-iterable? Consider refining the message.data type
+                oracle.emit(`bridge.${message.event}`, port, ...message.data);
+            }
+
+            else {
                 oracle.emit(message.event.substring(1), ...message.data);
                 port.postMessage('✓');
             }
