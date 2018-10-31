@@ -14,13 +14,14 @@ import { portEvent } from 'universe/DnschkEventPort'
 export default (oracle: any, chrome: any, context: any) => {
 
     // ? There are better ways to do this, but until then these fire when
-    // ? judgements are made and notify the open ports about important events
+    // ? judgements are made about downloads and then notifys the open ports
     // ?
     // ? Three events are made available:
     // ? * judgement.safe       a resource's content is as expected
     // ? * judgement.unsafe     a resource's content is mutated/corrupted
     // ? * judgement.unknown    a resource's content cannot be judged
     // ?
+    // TODO: Write class + split up
     chrome.runtime.onConnect.addListener((port) => {
         port.onDisconnect.addListener((_port)=>{
             delete context.activePorts[_port.sender.id];
@@ -35,29 +36,17 @@ export default (oracle: any, chrome: any, context: any) => {
                 if(context.activePorts[port.sender.id]) {
                     context.activePorts[port.sender.id].postMessage(portEvent('judgement.unsafe', downloadItem));
                 }
-
-                else {
-                    console.warn('[DNSCHK] Port is no longer open.');
-                }
             });
 
             oracle.addListener('judgement.safe', (downloadItem) => {
                 if(context.activePorts[port.sender.id]) {
                     context.activePorts[port.sender.id].postMessage(portEvent('judgement.safe', downloadItem));
                 }
-
-                else {
-                    console.warn('[DNSCHK] Port is no longer open.');
-                }
             });
 
             oracle.addListener('judgement.unknown', (downloadItem) => {
                 if(context.activePorts[port.sender.id]) {
                     context.activePorts[port.sender.id].postMessage(portEvent('judgement.unknown', downloadItem));
-                }
-
-                else {
-                    console.warn('[DNSCHK] Port is no longer open.');
                 }
             });
         }
@@ -67,7 +56,7 @@ export default (oracle: any, chrome: any, context: any) => {
             context.activePorts[port.sender.id] = port;
         }
 
-        // * could be deprecated as well (see DnschkEventPort lines 5 - 8)
+        // * could be deprecated (see DnschkEventPort lines 5 - 8)
         port.onMessage.addListener((message) => {
             if(message.event.charAt(0) !== '.') {
                 // ! What happens here if message.data is null or non-iterable? Consider refining the message.data type

@@ -112,6 +112,7 @@ export default (oracle: any, chrome: any, context: any) => {
     });
 
     // ? Bridge listeners (note must respond to bridge)
+    // * Likely to be deprecated
     oracle.addListener('bridge.fetch', (bridge, ...keys) => {
         let values = {};
         keys.forEach((key) => {

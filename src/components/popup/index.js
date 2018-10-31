@@ -49,7 +49,7 @@ bridge.on('judgement.unknown', (downloadItem) => {
 });
 
 // * Demoing tools
-/**
+
 document.getElementById('fetchJudgedDownloadItems').addEventListener('click', (e) => {
     e.preventDefault();
     let downloadList = document.getElementById("downloadItems");
@@ -98,4 +98,3 @@ document.getElementById('clear').addEventListener('click', () => {
     let downloadList = document.getElementById("downloadItems");
     downloadList.innerHTML = '';
 });
-*/

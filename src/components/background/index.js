@@ -17,7 +17,7 @@ const context = {
     handledDownloadItems: new Set(),
     judgedDownloadItems: [],
     registeredPorts: [],
-    activePorts: [],
+    activePorts: {},
     timingData: {}
 };
 

@@ -43,7 +43,6 @@ export default class DnschkEventPort
         this.handlers[event] = callback;
     }
 
-    // * see lines 5 - 8
     async emit(_event: string,..._data: any)
     {
         return await new Promise((resolve)=>{
