@@ -12,17 +12,21 @@ import { DnschkPort } from 'universe/DnschkPort'
 // ?    - when a download finishes
 
 export default (oracle: any, chrome: any, context: any) => {
-    chrome.runtime.onConnect.addListener((bridge) =>
+    chrome.runtime.onConnect.addListener((port) =>
     {
-        bridge.onMessage.addListener((message) =>
+        // TODO: register events here
+
+        port.onMessage.addListener((message) =>
         {
-            if(message.event.charAt(0) !== '.') 
+            if(message.event.charAt(0) !== '.')
             {
-                oracle.emit(`bridge.${message.event}`, bridge,...message.data);
+                oracle.emit(`bridge.${message.event}`, port,...message.data);
             }
+
             else
             {
-                oracle.emit(message.event.substring(1), ...message.data);bridge.postMessage('✓');
+                oracle.emit(message.event.substring(1), ...message.data);
+                port.postMessage('✓');
             }
         });
     });
