@@ -52,12 +52,10 @@ const setBadge = (chrome: any) => {
 };
 
 export default (oracle: any, chrome: any, context: any) => {
-    void chrome, context;
-
     // ? This is our generic error handler that fires whenever an error occurs
     oracle.addListener('error', err => {
         // TODO: indicate error condition in the UI
-        setBadge(chrome)('ERR', '#000')
+        setBadge(chrome)('ERR', '#000');
         console.error(`DNSCHK ERROR: ${err}`);
     });
 

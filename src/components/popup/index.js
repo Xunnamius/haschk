@@ -20,6 +20,7 @@ document.getElementById('fetchJudgedDownloadItems').addEventListener('click', (e
     e.preventDefault();
     let downloadList = document.getElementById("downloadItems");
     downloadList.innerHTML = '';
+
     bridge.emit('fetch', 'judgedDownloadItems').then((res)=>{
         Object.keys(res.judgedDownloadItems).forEach((id) =>
         {

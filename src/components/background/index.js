@@ -24,3 +24,5 @@ registerChromeEvents(oracle, chrome, context);
 registerCoreEvents(oracle, chrome, context);
 registerUIEvents(oracle, chrome, context);
 registerBridgeEvents(oracle, chrome, context);
+
+oracle.emit('core.init');
