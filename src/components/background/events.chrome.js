@@ -4,7 +4,7 @@
 
 import { extendDownloadItemInstance } from 'universe'
 import { DownloadEventFrame } from 'universe/events'
-import { DnschkPort } from 'universe/DnschkPort'
+import DnschkPort from 'universe/DnschkPort'
 
 // ? Essentially, we hook into three browser-level events here:
 // ?    - when a tab finishes navigating to a URL
@@ -15,6 +15,7 @@ export default (oracle: any, chrome: any, context: any) => {
     chrome.runtime.onConnect.addListener((port) =>
     {
         // TODO: register events here
+        void DnschkPort; // ? This nixes the unused var warning; remove this line when DnschkPort is actually used
 
         port.onMessage.addListener((message) =>
         {

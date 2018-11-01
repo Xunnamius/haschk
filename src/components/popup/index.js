@@ -11,7 +11,12 @@ declare var chrome:any;
 
 const bridge = new DnschkPort(chrome);
 
-document.getElementById('fetchJudgedDownloadItems').addEventListener('click', (e) => {
+// TODO: satisfy Flow type checking here by using a null sentinel function
+// TODO: (i.e. check for null and emit error event if failed). When Flow fixes
+// TODO: optional chaining, then these can all be changed to `?.` instead of `.`
+// TODO: and the problem will be solved gracefully!
+
+document.getElementById('fetchJudgedDownloadItems').addEventListener('click', (e: Event) => {
     e.preventDefault();
     let downloadList = document.getElementById("downloadItems");
     downloadList.innerHTML = '';
@@ -19,7 +24,9 @@ document.getElementById('fetchJudgedDownloadItems').addEventListener('click', (e
         Object.keys(res.judgedDownloadItems).forEach((id) =>
         {
             let item = res.judgedDownloadItems[id];
-            let download = document.createElement("li", {
+            // TODO: unlike the other Flow errors, I'm not sure why Flow is throwing a tantrum over this one...
+            // flow-disable-line
+            let download = document.createElement('li', {
                 id: id
             });
             download.innerHTML = `#${id}: ${item.downloadItem.filename} [${

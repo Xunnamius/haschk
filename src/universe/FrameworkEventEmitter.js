@@ -85,6 +85,3 @@ export default class FrameworkEventEmitter extends EventEmitter {
         return this.addListener(...args);
     }
 }
-
-FrameworkEventEmitter.prototype.on = FrameworkEventEmitter.prototype.addListener;
-FrameworkEventEmitter.prototype.appendListener = FrameworkEventEmitter.prototype.addListener;
