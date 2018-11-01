@@ -16,6 +16,7 @@ const bridge = new DnschkPort(chrome);
 // TODO: optional chaining, then these can all be changed to `?.` instead of `.`
 // TODO: and the problem will be solved gracefully!
 
+// TODO: on page (popup) load, you should trigger the fetchJudgedDownloadItems->click event handler
 document.getElementById('fetchJudgedDownloadItems').addEventListener('click', (e: Event) => {
     e.preventDefault();
     let downloadList = document.getElementById("downloadItems");

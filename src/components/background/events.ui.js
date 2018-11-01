@@ -54,14 +54,13 @@ const setBadge = (chrome: any) => {
 export default (oracle: any, chrome: any, context: any) => {
     // ? This is our generic error handler that fires whenever an error occurs
     oracle.addListener('error', err => {
-        // TODO: indicate error condition in the UI
         setBadge(chrome)('ERR', '#000');
         console.error(`DNSCHK ERROR: ${err}`);
     });
 
     // ? This event fires whenever a new download is observed
     oracle.addListener('download.incoming', async (e, downloadItem) => {
-        // TODO: add new download to popup UI
+        // TODO: add the new download to popup UI (tell popup UI to update)
         // ! Note how this function is async, which means you can await Promises
         console.log(`file "${downloadItem.filename}" incoming`);
     });

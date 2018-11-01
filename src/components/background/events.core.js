@@ -29,7 +29,7 @@ export default (oracle: any, chrome: any, context: any) => {
         // ? If the event was ended prematurely, assume downloadItem was handled
         // ? elsewhere in the event flow
         if(!eventFrame.stopped)
-            eventFrame.finish(); // ? Could pass in a filename string here
+            eventFrame.finish();
     });
 
     // ? This is the NAH vs AH core "judgement" logic

@@ -17,12 +17,11 @@ export default (oracle: any, chrome: any, context: any) => {
         // TODO: register events here
         void DnschkPort; // ? This nixes the unused var warning; remove this line when DnschkPort is actually used
 
-        port.onMessage.addListener((message) =>
+        port.onMessage.addListener(message =>
         {
             if(message.event.charAt(0) !== '.')
-            {
+                // ! What happens here if message.data is null or non-iterable? Consider refining the message.data type
                 oracle.emit(`bridge.${message.event}`, port,...message.data);
-            }
 
             else
             {
