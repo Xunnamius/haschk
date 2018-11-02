@@ -55,6 +55,9 @@ export default (oracle: any, chrome: any, context: any) => {
                 const resourceIdentifier = createHash(HASHING_ALGORITHM).update(resourcePath).digest('hex').toString();
                 const outputLength = parseInt(HASHING_OUTPUT_LENGTH);
 
+                if(!resourceIdentifier || resourceIdentifier.length != outputLength)
+                    throw new Error('failed to hash resource identifier');
+
                 const [ riLeft, riRight ] = [
                     resourceIdentifier.slice(0, outputLength / 2),
                     resourceIdentifier.slice(outputLength / 2, outputLength)
@@ -62,7 +65,8 @@ export default (oracle: any, chrome: any, context: any) => {
 
                 // ? Make https-based DNS request
                 const $authedHash = await http(GOOGLE_DNS_HTTPS_RI_FN(riLeft, riRight, downloadItem.originDomain)).GET;
-                authedHashRaw = $authedHash.data.Answer.slice(-1)[0].data;
+
+                authedHashRaw = typeof $authedHash.data.Answer != 'string' ? '000' : $authedHash.data.Answer.slice(-1)[0].data;
                 authedHash = authedHashRaw.replace(/[^0-9a-f]/gi, '');
 
                 completed = true;
