@@ -3,7 +3,9 @@
 import { DnschkEventPort, portEvent } from 'universe/DnschkEventPort'
 import { EventEmitter } from 'eventemitter3'
 
-let chrome  = {};
+let chrome  = {
+    runtime: {}
+};
 let post;
 
 chrome.runtime.connect = () => {
@@ -13,13 +15,9 @@ chrome.runtime.connect = () => {
     }
 }
 
-beforeEach(()=>{
-    let bridge = new DnschkEventPort(chrome);
-});
-
-test('portEvent returns correctly formatted object', ()=>{
+test('portEvent returns correctly formatted Event object', ()=>{
     let event = portEvent('demo', 1, 2, 3);
-    expect(event).toBo({
+    expect(event).toBe({
         event: 'demo',
         data: [1, 2, 3]
     });
