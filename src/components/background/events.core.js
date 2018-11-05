@@ -2,11 +2,12 @@
  * @description Most of the complex core DNSCHK logic and functionality is here
  */
 
-import http from 'faxios'
-import createHash from 'create-hash'
+import http from 'axios'
 import ParsedUrl from 'url-parse'
+import sha256 from 'simple-sha256'
 
 import {
+    bufferToHex,
     GOOGLE_DNS_HTTPS_RI_FN,
 ////GOOGLE_DNS_HTTPS_RR_FN,
     HASHING_ALGORITHM,
@@ -45,14 +46,14 @@ export default (oracle: any, chrome: any, context: any) => {
 
             try {
                 // ? Since it's finished downloading, grab the file's data
-                const $file = await http(`file://${downloadItem.filename}`).GET;
+                const $file = await http.get(`file://${downloadItem.filename}`, { responseType: 'arraybuffer' });
 
                 // ? Hash file data with proper algorithm
-                nonauthedHash = createHash(HASHING_ALGORITHM).update($file.data).digest('hex').toString();
+                nonauthedHash = bufferToHex(await crypto.subtle.digest('SHA-256', $file.data));
 
                 // ? Determine resource identifier and prepare for DNS request
                 const resourcePath = (new ParsedUrl(downloadItem.url, {})).pathname;
-                const resourceIdentifier = createHash(HASHING_ALGORITHM).update(resourcePath).digest('hex').toString();
+                const resourceIdentifier = bufferToHex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(resourcePath)));
                 const outputLength = parseInt(HASHING_OUTPUT_LENGTH);
 
                 if(!resourceIdentifier || resourceIdentifier.length != outputLength)
@@ -64,7 +65,8 @@ export default (oracle: any, chrome: any, context: any) => {
                 ];
 
                 // ? Make https-based DNS request
-                const $authedHash = await http(GOOGLE_DNS_HTTPS_RI_FN(riLeft, riRight, downloadItem.originDomain)).GET;
+                const targetDomain = downloadItem.originDomain.split('.').slice(-2).join('.');
+                const $authedHash = await http.get(GOOGLE_DNS_HTTPS_RI_FN(riLeft, riRight, targetDomain));
 
                 authedHashRaw = !$authedHash.data.Answer ? '<no answer>' : $authedHash.data.Answer.slice(-1)[0].data;
                 authedHash = authedHashRaw.replace(/[^0-9a-f]/gi, '');
