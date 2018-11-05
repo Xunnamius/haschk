@@ -4,18 +4,18 @@
 
 import http from 'axios'
 import ParsedUrl from 'url-parse'
-import sha256 from 'simple-sha256'
 
 import {
     bufferToHex,
     GOOGLE_DNS_HTTPS_RI_FN,
 ////GOOGLE_DNS_HTTPS_RR_FN,
-    HASHING_ALGORITHM,
     HASHING_OUTPUT_LENGTH,
     DANGER_THRESHOLD
 } from 'universe'
 
 import { DownloadEventFrame } from 'universe/events'
+
+declare var crypto:any;
 
 export default (oracle: any, chrome: any, context: any) => {
     oracle.addListener('download.incoming', async (e, downloadItem) => {

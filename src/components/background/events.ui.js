@@ -40,16 +40,9 @@
 // ? of the DownloadItem extension API except ::OriginDomain. Do an existence
 // ? check before trying to use them. See the Extensions API for more details.
 
-const setBadge = (chrome: any) => {
-    return (_text: string, _color: string = '#FFF888') => {
-        chrome.browserAction.setBadgeBackgroundColor({
-            color: _color
-        });
-        chrome.browserAction.setBadgeText({
-            text: _text
-        });
-    };
-};
+import {
+    setBadge
+} from 'universe/ui'
 
 export default (oracle: any, chrome: any, context: any) => {
     // ? This is our generic error handler that fires whenever an error occurs

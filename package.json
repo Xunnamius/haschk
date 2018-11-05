@@ -51,11 +51,8 @@
     "@babel/preset-flow": "^7.0.0",
     "@babel/register": "^7.0.0",
     "axios": "^0.18.0",
-    "create-hash": "^1.2.0",
     "dotenv": "^6.1.0",
     "eventemitter3": "^3.1.0",
-    "faxios": "^0.5.4",
-    "simple-sha256": "^1.0.0",
     "url-parse": "^1.4.3"
   },
   "devDependencies": {

@@ -5,28 +5,26 @@
 
 import './index.css'
 
-import DnschkPort from 'universe/DnschkPort';
+import {
+    DnschkPort,
+    guaranteeElementById
+} from 'universe/ui';
 
 declare var chrome:any;
 
 const bridge = new DnschkPort(chrome);
 
-// TODO: satisfy Flow type checking here by using a null sentinel function
-// TODO: (i.e. check for null and emit error event if failed). When Flow fixes
-// TODO: optional chaining, then these can all be changed to `?.` instead of `.`
-// TODO: and the problem will be solved gracefully!
-
-// TODO: on page (popup) load, you should trigger the fetchJudgedDownloadItems->click event handler
-document.getElementById('fetchJudgedDownloadItems').addEventListener('click', (e: Event) => {
+// TODO @morty on page (popup) load, trigger the fetchJudgedDownloadItems->click event handler
+guaranteeElementById('fetchJudgedDownloadItems').addEventListener('click', (e: Event) => {
     e.preventDefault();
-    let downloadList = document.getElementById("downloadItems");
+    let downloadList = guaranteeElementById('downloadItems');
     downloadList.innerHTML = '';
 
     bridge.emit('fetch', 'judgedDownloadItems').then((res)=>{
         Object.keys(res.judgedDownloadItems).forEach((id) =>
         {
             let item = res.judgedDownloadItems[id];
-            // TODO: unlike the other Flow errors, I'm not sure why Flow is throwing a tantrum over this one...
+            // ! Unlike the other Flow errors, I'm not sure why Flow is throwing a tantrum over this one...
             // flow-disable-line
             let download = document.createElement('li', {
                 id: id
@@ -39,30 +37,30 @@ document.getElementById('fetchJudgedDownloadItems').addEventListener('click', (e
     });
 });
 
-document.getElementById('unsafe_test').addEventListener('click', () => {
+guaranteeElementById('unsafe_test').addEventListener('click', () => {
     bridge.emit('.judgement.unsafe', {
         id: Math.random() * 1000 + 1000,
         filename: "fake_unsafe.pdf"
     });
 });
 
-document.getElementById('safe_test').addEventListener('click', () => {
+guaranteeElementById('safe_test').addEventListener('click', () => {
     bridge.emit('.judgement.safe', {
         id: Math.random() * 1000 + 1000,
         filename: "fake_safe.pdf"
     });
 });
 
-document.getElementById('unknown_test').addEventListener('click', () => {
+guaranteeElementById('unknown_test').addEventListener('click', () => {
     bridge.emit('.judgement.unknown', {
         id: Math.random() * 1000 + 1000,
         filename: "fake_unknown.pdf"
     });
 });
 
-document.getElementById('clear').addEventListener('click', () => {
+guaranteeElementById('clear').addEventListener('click', () => {
     bridge.emit('.ui.clear');
-    let downloadList = document.getElementById("downloadItems");
+    let downloadList = guaranteeElementById("downloadItems");
     downloadList.innerHTML = '';
 });
 
