@@ -66,7 +66,7 @@ export default (oracle: any, chrome: any, context: any) => {
                 // ? Make https-based DNS request
                 const $authedHash = await http(GOOGLE_DNS_HTTPS_RI_FN(riLeft, riRight, downloadItem.originDomain)).GET;
 
-                authedHashRaw = typeof $authedHash.data.Answer != 'string' ? '000' : $authedHash.data.Answer.slice(-1)[0].data;
+                authedHashRaw = !$authedHash.data.Answer ? '<no answer>' : $authedHash.data.Answer.slice(-1)[0].data;
                 authedHash = authedHashRaw.replace(/[^0-9a-f]/gi, '');
 
                 completed = true;
