@@ -15,9 +15,12 @@ chrome.runtime.connect = () => {
     }
 }
 
-test('portEvent returns correctly formatted Event object', ()=>{
-    let event = portEvent('demo', 1, 2, 3);
-    expect(event).toBe({
+test('portEvent returns correctly formatted Event object', () =>{
+    expect(portEvent('demo', 1)).toEqual({
+        event: 'demo',
+        data: [1]
+    });
+    expect(portEvent('demo', 1, 2, 3)).toEqual({
         event: 'demo',
         data: [1, 2, 3]
     });
