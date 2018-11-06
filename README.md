@@ -4,6 +4,8 @@ Lordy, these aren't ya grandparents' checksums! `DNSCHK` is a low-overhead secur
 
 The research and development behind DNSCHK was a joint effort by [team members](#meet-the-team) from University of Chicago and Walter Payton College Preparatory High School.
 
+Paper can be found [here](https://git.xunn.io/research/dnschk-paper).
+
 ***
 
 ## Table of Contents
@@ -35,7 +37,7 @@ npm run build
 
 ## Literature
 
-See [the wiki](https://github.com/morty-c137-prime/DNSCHK/wiki) or [the paper](docs/).
+See [the wiki](https://github.com/morty-c137-prime/DNSCHK/wiki) or [the paper](https://git.xunn.io/research/dnschk-paper).
 
 ## Contribution Guidelines
 
@@ -84,7 +86,7 @@ Hence, the branch workflow can be summarized as:
 
 ## References
 
-See [the paper](docs/).
+See [the paper](https://git.xunn.io/research/dnschk-paper).
 
 [bd3]: docs/pics/bernard.jpg
 [rawalvarez731]: docs/pics/richard.jpg

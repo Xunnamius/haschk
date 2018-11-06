@@ -9,4 +9,4 @@ const context = { handledDownloadItems: new Set() };
 
 registerCoreEvents(oracle, chrome, context);
 
-// TODO: tests! (be sure to re-enable these tests via package.json jest testPathIgnorePatterns)
+// TODO: tests!
