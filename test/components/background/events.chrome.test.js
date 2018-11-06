@@ -5,7 +5,14 @@ import registerChromeEvents from 'components/background/events.chrome'
 
 const oracle = {};
 const chrome = {};
-const context = { handledDownloadItems: new Set() };
+
+const context = {
+    handledDownloadItems: new Set(),
+    judgedDownloadItems: [],
+    registeredPorts: [],
+    activePorts: [],
+    timingData: {}
+};
 
 registerChromeEvents(oracle, chrome, context);
 

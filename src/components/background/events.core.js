@@ -65,7 +65,7 @@ export default (oracle: any, chrome: any, context: any) => {
                 ];
 
                 // ? Make https-based DNS request
-                const targetDomain = downloadItem.originDomain.split('.').slice(-2).join('.');
+                const targetDomain = downloadItem.originDomain;
                 const $authedHash = await http.get(GOOGLE_DNS_HTTPS_RI_FN(riLeft, riRight, targetDomain));
 
                 authedHashRaw = !$authedHash.data.Answer ? '<no answer>' : $authedHash.data.Answer.slice(-1)[0].data;
