@@ -70,7 +70,8 @@ new code to add, first commit it to your sub branch. Next, switch to the
 `develop` branch and `git pull` any updates. Then `git merge` your development
 sub branch into the `develop` branch. Then push the new `develop` branch.
 
-You have now merged your code in with everyone else's. You should now go back to your dev sub branch and catchup to the `develop` branch via `git merge`.
+You have now merged your code in with everyone else's. You should now go back to
+your dev sub branch and catchup to the `develop` branch via `git merge`.
 
 Every now and then, one of us will merge `develop` with `master` via PR.
 

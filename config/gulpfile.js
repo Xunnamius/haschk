@@ -115,7 +115,7 @@ regenerate.description = 'Invokes babel on the files in config, transpiling them
 const build = (): Promise<void> => {
     process.env.NODE_ENV = 'production';
     return new Promise(resolve => {
-        webpack(config, (err, stats) => {
+        webpack(config({ NODE_ENV: process.env.NODE_ENV }), (err, stats) => {
             if(err)
             {
                 const details = err.details ? `\n\t${err.details}` : '';
