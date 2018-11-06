@@ -1,7 +1,7 @@
 /* @flow */
 
 import { FRAMEWORK_EVENTS } from 'universe'
-import registerChromeEvents from '../../../src/components/background/events.chrome'
+import registerChromeEvents from 'components/background/events.chrome'
 
 const oracle = {};
 const chrome = {};

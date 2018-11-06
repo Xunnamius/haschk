@@ -1,7 +1,7 @@
 /* @flow */
 
 import { FRAMEWORK_EVENTS } from 'universe'
-import registerUIEvents from '../../../src/components/background/events.ui'
+import registerUIEvents from 'components/background/events.ui'
 
 const oracle = {};
 const chrome = {};

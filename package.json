@@ -32,11 +32,11 @@
     },
     "moduleNameMapper": {
       "^universe$": "<rootDir>/src/universe",
-      "^universe/(.*)$": "<rootDir>/src/universe/$1"
+      "^universe/(.*)$": "<rootDir>/src/universe/$1",
+      "^components/(.*)$": "<rootDir>/src/components/$1"
     },
     "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/test/components/background/"
+      "/node_modules/"
     ]
   },
   "dependencies": {
