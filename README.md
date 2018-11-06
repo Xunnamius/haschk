@@ -25,7 +25,16 @@ Paper can be found [here](https://git.xunn.io/research/dnschk-paper).
 
 ## Installation
 
-1. Build the extension from source
+You have two options. You can load the pre-built extension directly into Chrome (easy) or build from source (harder).
+
+To load the pre-built extension, you must drag & drop the [build.crx](build.crx) file on to the `chrome://extensions` page:
+
+1. *Settings-Icon* (three vertical dots, top right) -> *More Tools* -> *Extensions*
+2. Drag and drop [build.crx](build.crx) onto the Extensions page from the previous step
+
+To build the extension from source:
+
+1. Run the following (assuming linux environment):
 
 ```
 npm install
