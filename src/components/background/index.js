@@ -9,7 +9,6 @@ import { EventEmitter } from 'universe/events'
 import registerChromeEvents from 'components/background/events.chrome'
 import registerCoreEvents from 'components/background/events.core'
 import registerUIEvents from 'components/background/events.ui'
-import registerBridgeEvents from 'components/background/events.bridge'
 
 declare var chrome:any;
 

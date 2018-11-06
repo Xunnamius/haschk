@@ -14,7 +14,7 @@ import { portEvent } from 'universe/ui'
 export default (oracle: any, chrome: any, context: any) => {
 
     // ? There are better ways to do this, but until then these fire when
-    // ? judgements are made about downloads and then notifys the open ports
+    // ? judgements are made about downloads and then notifies the open ports
     // ?
     // ? Three events are made available:
     // ? * judgement.safe       a resource's content is as expected
