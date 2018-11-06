@@ -6,13 +6,13 @@
 import './index.css'
 
 import {
-    DnschkPort,
+    DnschkEventPort,
     guaranteeElementById
 } from 'universe/ui';
 
 declare var chrome:any;
 
-const bridge = new DnschkPort(chrome);
+const bridge = new DnschkEventPort(chrome);
 
 // TODO: satisfy Flow type checking here by using a null sentinel function
 // TODO: (i.e. check for null and emit error event if failed). When Flow fixes

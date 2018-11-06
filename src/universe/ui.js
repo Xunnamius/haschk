@@ -1,9 +1,9 @@
 /* @flow */
 
 import {
-    DnschkPort,
+    DnschkEventPort,
     portEvent
-} from './DnschkPort'
+} from './DnschkEventPort'
 
 declare var chrome:any;
 
@@ -25,6 +25,6 @@ export const guaranteeElementById = (id: string): HTMLElement => {
 };
 
 export {
-    DnschkPort,
+    DnschkEventPort,
     portEvent
 };

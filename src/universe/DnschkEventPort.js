@@ -54,3 +54,7 @@ export default class DnschkEventPort
         });
     }
 }
+
+export {
+    DnschkEventPort
+}
