@@ -7,9 +7,9 @@ import { DownloadEventFrame } from 'universe/events'
 import { portEvent } from 'universe/ui'
 
 // ? Essentially, we hook into three browser-level events here:
-// ?    - when a tab finishes navigating to a URL
-// ?    - when a download is started
-// ?    - when a download finishes
+// ?    * when a tab finishes navigating to a URL
+// ?    * when a download is started
+// ?    * when a download finishes
 
 export default (oracle: any, chrome: any, context: any) => {
 

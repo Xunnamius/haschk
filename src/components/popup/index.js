@@ -14,12 +14,8 @@ declare var chrome:any;
 
 const bridge = new DnschkEventPort(chrome);
 
-// TODO: satisfy Flow type checking here by using a null sentinel function
-// TODO: (i.e. check for null and emit error event if failed). When Flow fixes
-// TODO: optional chaining, then these can all be changed to `?.` instead of `.`
-// TODO: and the problem will be solved gracefully!
-
-// TODO: on page (popup) load, you should trigger the fetchJudgedDownloadItems->click event handler
+// TODO: ensure bugs are fixed and UI meets specification outlined at
+// TODO: https://github.com/morty-c137-prime/DNSCHK/issues/31
 const appendDownloadToDownloadList = (downloadItem, judgement) => {
     let downloadList = document.getElementById("downloadItems");
     let elem = document.createElement('li', {
@@ -51,7 +47,9 @@ bridge.on('judgement.unknown', (downloadItem) => {
     appendDownloadToDownloadList(downloadItem, 'unknown');
 });
 
-// * Demoing tools
+// ??
+// ?? Demo/development UI components
+// ??
 
 document.getElementById('fetchJudgedDownloadItems').addEventListener('click', (e) => {
     e.preventDefault();
