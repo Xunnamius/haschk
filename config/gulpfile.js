@@ -7,10 +7,14 @@
 // ! all required packages listed under "dependencies" instead of
 // ! "devDependencies" in this project's package.json
 
+// TODO: on all build run commands, bump the build package version
+// TODO: add "version bump" commands for major, minor, patch, and build versions
+
 import { readFile } from 'fs'
 import { promisify } from 'util'
 import gulp from 'gulp'
 import tap from 'gulp-tap'
+import zip from 'gulp-zip'
 import del from 'del'
 import log from 'fancy-log'
 import parseGitIgnore from 'parse-gitignore'
@@ -19,6 +23,7 @@ import { relative as relPath } from 'path'
 import webpack from 'webpack'
 import webpackDevServer from 'webpack-dev-server'
 import config from './webpack.config'
+import pkg from './package'
 
 require('dotenv').config();
 
@@ -128,14 +133,15 @@ const build = (): Promise<void> => {
                 throw `WEBPACK COMPILATION ERROR: ${info.errors}`;
 
             if(stats.hasWarnings())
-                console.warn(`WEBPACK COMPILATION WARNING: ${info.warnings}`)
+                console.warn(`WEBPACK COMPILATION WARNING: ${info.warnings}`);
 
             resolve();
         });
-    });
+    // ? Afterwards, zip the build directory up
+    }).then(() => gulp.src('build/*').pipe(zip(`dnschk-${pkg.version}.zip`)).pipe(gulp.dest('.')));
 };
 
-build.description = 'Yields a production-ready extension ready to be packaged';
+build.description = 'Yields a production-ready extension archive for upload to the Chrome Web Store';
 
 // * WPDEVSERV
 
