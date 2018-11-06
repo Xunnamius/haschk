@@ -23,9 +23,7 @@ export default (oracle: any, chrome: any, context: any) => {
     // ?
     // TODO: Write class + split up
     chrome.runtime.onConnect.addListener((port) => {
-        port.onDisconnect.addListener((_port)=>{
-            delete context.activePorts[_port.sender.id];
-        });
+        port.onDisconnect.addListener(_port => delete context.activePorts[_port.sender.id]);
 
         if(!context.registeredPorts.includes(port.sender.id))
         {
@@ -33,39 +31,33 @@ export default (oracle: any, chrome: any, context: any) => {
             context.activePorts[port.sender.id] = port;
 
             oracle.addListener('judgement.unsafe', (downloadItem) => {
-                if(context.activePorts[port.sender.id]) {
+                if(context.activePorts[port.sender.id])
                     context.activePorts[port.sender.id].postMessage(portEvent('judgement.unsafe', downloadItem));
-                }
             });
 
             oracle.addListener('judgement.safe', (downloadItem) => {
-                if(context.activePorts[port.sender.id]) {
+                if(context.activePorts[port.sender.id])
                     context.activePorts[port.sender.id].postMessage(portEvent('judgement.safe', downloadItem));
-                }
             });
 
             oracle.addListener('judgement.unknown', (downloadItem) => {
-                if(context.activePorts[port.sender.id]) {
+                if(context.activePorts[port.sender.id])
                     context.activePorts[port.sender.id].postMessage(portEvent('judgement.unknown', downloadItem));
-                }
             });
         }
 
         else
-        {
             context.activePorts[port.sender.id] = port;
-        }
 
-        // * could be deprecated (see DnschkEventPort lines 5 - 8)
-        port.onMessage.addListener((message) => {
-            if(message.event.charAt(0) !== '.') {
-                // ! What happens here if message.data is null or non-iterable? Consider refining the message.data type
+        // * @morty: could be deprecated (see DnschkEventPort lines 5 - 8)
+        // * @xunnamius: is this still true? If so, consider removing it
+        port.onMessage.addListener(message => {
+            if(message.event.charAt(0) !== '.')
                 oracle.emit(`bridge.${message.event}`, port, ...message.data);
-            }
 
             else {
                 oracle.emit(message.event.substring(1), ...message.data);
-                port.postMessage('✓');
+                port.postMessage('✓'); // * Why are we emitting this again? @morty (document the reason here via comment)
             }
         });
     });

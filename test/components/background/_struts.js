@@ -1,5 +1,3 @@
-import { FRAMEWORK_EVENTS } from 'universe'
-
 export const oracle = {
     calls: [],
     _push(name, args) { this.calls.push({ name, args }); },

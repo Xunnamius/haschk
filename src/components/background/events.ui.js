@@ -44,7 +44,7 @@ import {
     setBadge
 } from 'universe/ui'
 
-export default (oracle: any, chrome: any, context: any) => {
+export default (oracle: any, chrome: any) => {
     // ? This is our generic error handler that fires whenever an error occurs
     oracle.addListener('error', err => {
         setBadge(chrome)('ERR', '#000');
