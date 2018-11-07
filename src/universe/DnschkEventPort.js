@@ -7,7 +7,7 @@
 // ? I will leave it in for now but now that this will probably get removed unless
 // ? someone finds a use for it.
 
-export function portEvent(event, ...data)
+export function portEvent(event: string, ...data: Array<mixed</mixed> )
 {
     if(data.length == 1)
     {
@@ -25,10 +25,10 @@ export function portEvent(event, ...data)
 export default class DnschkEventPort
 {
     #port;
+    handlers = {};
     constructor(chrome: any)
     {
         this.#port = chrome.runtime.connect();
-        this.handlers = {};
 
         this.#port.onMessage.addListener((message)=>{
             if(message.event != undefined)
@@ -38,12 +38,12 @@ export default class DnschkEventPort
         });
     }
 
-    on(event: string, callback: (...data) => any)
+    on(event: string, callback: (...data: Array<mixed> ) => any)
     {
         this.handlers[event] = callback;
     }
 
-    async emit(_event: string,..._data: any)
+    async emit(_event: string,..._data: Array<mixed>)
     {
         return await new Promise((resolve)=>{
             this.#port.postMessage(portEvent(_event, ..._data));

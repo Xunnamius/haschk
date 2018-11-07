@@ -21,8 +21,9 @@ const bridge = new DnschkEventPort(chrome);
 
 // TODO: on page (popup) load, you should trigger the fetchJudgedDownloadItems->click event handler
 const appendDownloadToDownloadList = (downloadItem, judgement) => {
-    let downloadList = document.getElementById("downloadItems");
-    let elem = document.createElement('li', {
+    let downloadList = guaranteeElementById("downloadItems");
+    // flow-disable-line
+    let elem: HTMLElement = document.createElement('li', {
         id: downloadItem.id
     });
     elem.innerHTML = `#${downloadItem.id}: ${downloadItem.filename} [${
@@ -53,7 +54,7 @@ bridge.on('judgement.unknown', (downloadItem) => {
 
 // * Demoing tools
 
-document.getElementById('fetchJudgedDownloadItems').addEventListener('click', (e) => {
+guaranteeElementById('fetchJudgedDownloadItems').addEventListener('click', (e: SyntheitcEvent<HTMLButtonElement>) => {
     e.preventDefault();
     let downloadList = guaranteeElementById('downloadItems');
     downloadList.innerHTML = '';
