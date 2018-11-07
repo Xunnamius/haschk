@@ -95,27 +95,27 @@ export default (oracle: any, chrome: any, context: any) => {
     oracle.addListener('judgement.unknown', downloadItem => {
         context.judgedDownloadItems.push({
             downloadItem: downloadItem,
-            judgement: 'unknown'
+            judgement: JUDGMENT_UNKNOWN
         });
     });
 
     oracle.addListener('judgement.safe', downloadItem => {
         context.judgedDownloadItems.push({
             downloadItem: downloadItem,
-            judgement: 'safe'
+            judgement: JUDGMENT_SAFE
         });
     });
 
     oracle.addListener('judgement.unsafe', downloadItem => {
         context.judgedDownloadItems.push({
             downloadItem: downloadItem,
-            judgement: 'unsafe'
+            judgement: JUDGMENT_UNSAFE
         });
     });
 
     // ? Bridge listeners (note must respond to bridge)
     // * Likely to be deprecated
-    oracle.addListener('bridge.fetch', (bridge, ...keys) => {
+    oracle.addListener('bridge.contextFetch', (bridge, ...keys) => {
         let values = {};
         keys.forEach((key) => {
             values[key] = context[key];

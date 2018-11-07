@@ -7,7 +7,7 @@
 // ? I will leave it in for now but now that this will probably get removed unless
 // ? someone finds a use for it.
 
-export function portEvent(event: string, ...data: Array<mixed</mixed> )
+export function portEvent(event: string, ...data: Array<mixed>)
 {
     if(data.length == 1)
     {

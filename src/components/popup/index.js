@@ -19,8 +19,7 @@ const bridge = new DnschkEventPort(chrome);
 // TODO: optional chaining, then these can all be changed to `?.` instead of `.`
 // TODO: and the problem will be solved gracefully!
 
-// TODO: on page (popup) load, you should trigger the fetchJudgedDownloadItems->click event handler
-const appendDownloadToDownloadList = (downloadItem, judgement) => {
+const appendDownloadToDownloadList = (downloadItem: any, judgement: string) => {
     let downloadList = guaranteeElementById("downloadItems");
     // flow-disable-line
     let elem: HTMLElement = document.createElement('li', {
@@ -33,7 +32,7 @@ const appendDownloadToDownloadList = (downloadItem, judgement) => {
 };
 
 window.onload = async () => {
-    await bridge.emit('fetch', 'judgedDownloadItems').then((res) => {
+    await bridge.emit('contextFetch', 'judgedDownloadItems').then((res) => {
         res.judgedDownloadItems.forEach((download) => {
             appendDownloadToDownloadList(download.downloadItem, download.judgement);
         });
@@ -54,7 +53,7 @@ bridge.on('judgement.unknown', (downloadItem) => {
 
 // * Demoing tools
 
-guaranteeElementById('fetchJudgedDownloadItems').addEventListener('click', (e: SyntheitcEvent<HTMLButtonElement>) => {
+guaranteeElementById('fetchJudgedDownloadItems').addEventListener('click', (e: MouseEvent) => {
     e.preventDefault();
     let downloadList = guaranteeElementById('downloadItems');
     downloadList.innerHTML = '';
@@ -63,7 +62,6 @@ guaranteeElementById('fetchJudgedDownloadItems').addEventListener('click', (e: S
         Object.keys(res.judgedDownloadItems).forEach((id) =>
         {
             let item = res.judgedDownloadItems[id];
-            // ! Unlike the other Flow errors, I'm not sure why Flow is throwing a tantrum over this one...
             // flow-disable-line
             let download = document.createElement('li', {
                 id: id
