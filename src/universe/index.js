@@ -29,6 +29,10 @@ export const extendDownloadItemInstance = (downloadItem: any) => {
     return downloadItem;
 };
 
+export const JUDGEMENT_SAFE = 'safe';
+export const JUDGEMENT_UNSAFE = 'unsafe';
+export const JUDGEMENT_UNKNOWN = 'unknown';
+
 export const bufferToHex = (buffer: ArrayBuffer) => {
     let hexCodes = [];
     let view = new DataView(buffer);

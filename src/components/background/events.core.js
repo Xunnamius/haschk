@@ -10,7 +10,10 @@ import {
     GOOGLE_DNS_HTTPS_RI_FN,
 ////GOOGLE_DNS_HTTPS_RR_FN,
     HASHING_OUTPUT_LENGTH,
-    DANGER_THRESHOLD
+    DANGER_THRESHOLD,
+    JUDGEMENT_UNKNOWN,
+    JUDGEMENT_UNSAFE,
+    JUDGEMENT_SAFE
 } from 'universe'
 
 import { DownloadEventFrame } from 'universe/events'
@@ -95,21 +98,21 @@ export default (oracle: any, chrome: any, context: any) => {
     oracle.addListener('judgement.unknown', downloadItem => {
         context.judgedDownloadItems.push({
             downloadItem: downloadItem,
-            judgement: JUDGMENT_UNKNOWN
+            judgement: JUDGEMENT_UNKNOWN
         });
     });
 
     oracle.addListener('judgement.safe', downloadItem => {
         context.judgedDownloadItems.push({
             downloadItem: downloadItem,
-            judgement: JUDGMENT_SAFE
+            judgement: JUDGEMENT_SAFE
         });
     });
 
     oracle.addListener('judgement.unsafe', downloadItem => {
         context.judgedDownloadItems.push({
             downloadItem: downloadItem,
-            judgement: JUDGMENT_UNSAFE
+            judgement: JUDGEMENT_UNSAFE
         });
     });
 

@@ -1,1 +1,14 @@
 /* CSS goes here! */
+
+#clear
+{
+    color: lightslategray;
+    font-size: 13vmax;
+    font-style: italic;
+}
+
+#clear:hover
+{
+    cursor: pointer;
+    text-decoration: underline;
+}

@@ -7,6 +7,7 @@ import { DownloadEventFrame } from 'universe/events'
 import { portEvent } from 'universe/ui'
 
 // ? Essentially, we hook into three browser-level events here:
+// ?    - when any context/popup wants to interact with background events/context.
 // ?    - when a tab finishes navigating to a URL
 // ?    - when a download is started
 // ?    - when a download finishes
@@ -20,7 +21,6 @@ export default (oracle: any, chrome: any, context: any) => {
     // ? * judgement.safe       a resource's content is as expected
     // ? * judgement.unsafe     a resource's content is mutated/corrupted
     // ? * judgement.unknown    a resource's content cannot be judged
-    // ?
     // TODO: Write class + split up
     chrome.runtime.onConnect.addListener((port) => {
         port.onDisconnect.addListener((_port)=>{
@@ -57,7 +57,7 @@ export default (oracle: any, chrome: any, context: any) => {
         }
 
         // * could be deprecated (see DnschkEventPort lines 5 - 8)
-        port.onMessage.addListener((message) => {
+        port.onMessage.addListener((message: Array<mixed>) => {
             if(message.event.charAt(0) !== '.') {
                 // ! What happens here if message.data is null or non-iterable? Consider refining the message.data type
                 oracle.emit(`bridge.${message.event}`, port, ...message.data);
