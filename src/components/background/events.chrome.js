@@ -48,15 +48,23 @@ export default (oracle: any, chrome: any, context: any) => {
         else
             context.activePorts[port.sender.id] = port;
 
-        // * @morty: could be deprecated (see DnschkEventPort lines 5 - 8)
-        // * @xunnamius: is this still true? If so, consider removing it
         port.onMessage.addListener(message => {
-            if(message.event.charAt(0) !== '.')
-                oracle.emit(`bridge.${message.event}`, port, ...message.data);
-
-            else {
+            if(message.event.charAt(0) !== '.' && message.event == 'fetch')
+            {
+                let values = {};
+                message.keys.forEach((key) => {
+                    values[key] = context[key];
+                });
+                port.postMessage(values);
+            }
+            else
+            {
                 oracle.emit(message.event.substring(1), ...message.data);
-                port.postMessage('✓'); // * Why are we emitting this again? @morty (document the reason here via comment)
+                // ? Remember all DnschkEventPort emits are promises waiting for
+                // ? a response, but when we interact with internal events
+                // ? (e.g. .judgement.unsafe) there is no response! so this
+                // ? is just an empty response so the promise resolves.
+                port.postMessage('✓');
             }
         });
     });
