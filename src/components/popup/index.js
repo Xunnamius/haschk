@@ -35,7 +35,7 @@ const appendDownloadToDownloadList = (downloadItem: any, judgement: string) => {
 };
 
 window.onload = async () => {
-    await bridge.emit('contextFetch', 'judgedDownloadItems').then((res) => {
+    await bridge.emit('fetch', 'judgedDownloadItems').then((res) => {
         res.judgedDownloadItems.forEach((download) => {
             appendDownloadToDownloadList(download.downloadItem, download.judgement);
         });
