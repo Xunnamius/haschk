@@ -33,6 +33,8 @@ const {
     HASHING_OUTPUT_LENGTH
 } = process.env;
 
+const configured = config({ NODE_ENV: process.env.NODE_ENV });
+
 if(typeof WEBPACK_PORT !== 'string')
     throw new TypeError('WEBPACK_PORT is improperly defined. Did you copy dist.env -> .env ?');
 
@@ -120,7 +122,7 @@ regenerate.description = 'Invokes babel on the files in config, transpiling them
 const build = (): Promise<void> => {
     process.env.NODE_ENV = 'production';
     return new Promise(resolve => {
-        webpack(config({ NODE_ENV: process.env.NODE_ENV }), (err, stats) => {
+        webpack(configured, (err, stats) => {
             if(err)
             {
                 const details = err.details ? `\n\t${err.details}` : '';
@@ -146,18 +148,18 @@ build.description = 'Yields a production-ready extension archive for upload to t
 // * WPDEVSERV
 
 const wpdevserv = () => {
-    Object.keys(config.entry).forEach(entryKey => config.entry[entryKey] = [
+    Object.keys(configured.entry).forEach(entryKey => configured.entry[entryKey] = [
         `webpack-dev-server/client?http://${DEV_ENDPOINT}:${DEV_PORT}`,
         'webpack/hot/dev-server',
-        config.entry[entryKey]
+        configured.entry[entryKey]
     ]);
 
-    config.plugins = [
+    configured.plugins = [
         new webpack.HotModuleReplacementPlugin(),
-        ...(config.plugins ?? []),
+        ...(configured.plugins ?? []),
     ];
 
-    const packer = webpack(config);
+    const packer = webpack(configured);
     const server = new webpackDevServer(packer, {
         hot: true,
         contentBase: paths.build,
