@@ -31,7 +31,7 @@ const appendDownloadToDownloadList = (downloadItem: any, judgement: string) => {
     // flow-disable-line
     let elem: HTMLElement = document.createElement('li');
     elem.setAttribute('id', downloadItem.id);
-    elem.innerHTML = `#${downloadItem.id}: ${downloadItem.filename} <span class=${judgement}>[${
+    elem.innerHTML = `${downloadItem.filename} <span class=${judgement}>[${
         judgement == JUDGEMENT_UNKNOWN ? '?' : (judgement == JUDGEMENT_UNSAFE ? 'X' : '✓')
     }]</span>`;
     downloadList.insertBefore(elem, downloadList.childNodes[0]);

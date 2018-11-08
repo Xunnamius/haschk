@@ -1,16 +1,51 @@
 /* CSS goes here! */
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+#headerArea
+{
+    background-color: #444;
+}
+
+#headerText
+{
+    margin: 0;
+    padding: 12px 25px;
+    color: #FFF;
+    text-align: center;
+}
+
+#footerArea
+{
+    text-align: center;
+    height: 50px;
+}
+
+#downloadItems
+{
+    font-size: 15px;
+}
 
 #clear
 {
-    color: lightslategray;
-    font-size: 9vmin;
+    padding: 12px 18px;
+    background-color: #ED474A;
+    border: 0;
+    color: #fff;
+    font-size: vmin;
     font-style: italic;
 }
 
 #clear:hover
 {
     cursor: pointer;
-    text-decoration: underline;
+    text-decoration: none;
+}
+
+.divide
+{
+    margin: 15px auto;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    width: calc(100% - 65px);
 }
 
 .safe
@@ -35,5 +70,12 @@ ul
 
 body
 {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
     width: 440px;
+}
+
+hr
+{
+    margin: 0;
 }
