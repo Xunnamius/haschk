@@ -1,14 +1,10 @@
 /* @flow */
 
 // ? To regenerate this file (i.e. if you changed it and want your changes to
-// ? be permanent), call `npm run regenerate` afterwards
+// ? be visible), call `npm run regenerate` afterwards
 
-// ! Be sure that tasks expected to run on npm install (marked @dependent) have
-// ! all required packages listed under "dependencies" instead of
-// ! "devDependencies" in this project's package.json
-
-// TODO: on all build run commands, bump the build package version
-// TODO: add "version bump" commands for major, minor, patch, and build versions
+// TODO: make a fork of npm-bump that doesn't suck and then use it in lieu of
+// TODO: its predecessor below.
 
 import { readFile } from 'fs'
 import { promisify } from 'util'
