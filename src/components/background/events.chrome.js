@@ -57,6 +57,7 @@ export default (oracle: any, chrome: any, context: any) => {
                 });
                 port.postMessage(values);
             }
+
             else
             {
                 oracle.emit(message.event.substring(1), ...message.data);
