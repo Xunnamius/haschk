@@ -52,7 +52,7 @@ export default (oracle: any, chrome: any, context: any) => {
             if(message.event.charAt(0) !== '.' && message.event == 'fetch')
             {
                 let values = {};
-                message.keys.forEach((key) => {
+                message?.data.forEach((key) => {
                     values[key] = context[key];
                 });
                 port.postMessage(values);
