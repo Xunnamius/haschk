@@ -115,15 +115,4 @@ export default (oracle: any, chrome: any, context: any) => {
             judgement: JUDGEMENT_UNSAFE
         });
     });
-
-    // ? Bridge listeners (note must respond to bridge)
-    // * Likely to be deprecated
-    oracle.addListener('bridge.contextFetch', (bridge, ...keys) => {
-        let values = {};
-        keys.forEach((key) => {
-            values[key] = context[key];
-        });
-        bridge.postMessage(values);
-    });
-
 };

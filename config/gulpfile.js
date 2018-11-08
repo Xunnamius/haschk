@@ -1,14 +1,10 @@
 /* @flow */
 
 // ? To regenerate this file (i.e. if you changed it and want your changes to
-// ? be permanent), call `npm run regenerate` afterwards
+// ? be visible), call `npm run regenerate` afterwards
 
-// ! Be sure that tasks expected to run on npm install (marked @dependent) have
-// ! all required packages listed under "dependencies" instead of
-// ! "devDependencies" in this project's package.json
-
-// TODO: on all build run commands, bump the build package version
-// TODO: add "version bump" commands for major, minor, patch, and build versions
+// TODO: make a fork of npm-bump that doesn't suck and then use it in lieu of
+// TODO: its predecessor below.
 
 import { readFile } from 'fs'
 import { promisify } from 'util'
@@ -61,7 +57,6 @@ paths.envDist = 'dist.env';
 paths.gitProjectDir = '.git';
 paths.gitIgnore = '.gitignore';
 paths.packageLockJson = 'package-lock.json';
-paths.build = `${__dirname}/build`;
 
 paths.regenTargets = [
     `${paths.configs}/*.js`
@@ -77,25 +72,25 @@ const readFileAsync = promisify(readFile);
 
 // * CLEANTYPES
 
-const cleanTypes = async () => {
+export const cleanTypes = async () => {
     const targets = parseGitIgnore(await readFileAsync(paths.flowTypedGitIgnore));
 
     log(`Deletion targets @ ${paths.flowTyped}/: "${targets.join('" "')}"`);
-    del(targets, {cwd: paths.flowTyped});
+    await del(targets, { cwd: paths.flowTyped });
 };
 
 cleanTypes.description = `Resets the ${paths.flowTyped} directory to a pristine state`;
 
 // * CLEANBUILD
 
-const cleanBuild = async () => {
+export const cleanBuild = async () => {
     const targets = parseGitIgnore(await readFileAsync(paths.buildGitIgnore));
 
     log(`Deletion targets @ ${paths.build}/: "${targets.join('" "')}"`);
-    del(targets, {cwd: paths.build});
+    await del(targets, { cwd: paths.build });
 };
 
-cleanTypes.description = `Resets the ${paths.flowTyped} directory to a pristine state`;
+cleanBuild.description = `Resets the ${paths.build} directory to a pristine state`;
 
 // * REGENERATE
 
@@ -103,7 +98,7 @@ cleanTypes.description = `Resets the ${paths.flowTyped} directory to a pristine 
 // ? compile this new function and once again to compile itself with the newly
 // ? compiled logic. If there is an error that prevents regeneration, you can
 // ? run `npm run generate` then `npm run regenerate` instead.
-const regenerate = () => {
+export const regenerate = () => {
     log(`Regenerating targets: "${paths.regenTargets.join('" "')}"`);
 
     process.env.BABEL_ENV = 'generator';
@@ -119,7 +114,7 @@ regenerate.description = 'Invokes babel on the files in config, transpiling them
 
 // * BUILD (production)
 
-const build = (): Promise<void> => {
+export const build = (): Promise<void> => {
     process.env.NODE_ENV = 'production';
     return new Promise(resolve => {
         webpack(configured, (err, stats) => {
@@ -139,15 +134,24 @@ const build = (): Promise<void> => {
 
             resolve();
         });
-    // ? Afterwards, zip the build directory up
-    }).then(() => gulp.src('build/*').pipe(zip(`dnschk-${pkg.version}.zip`)).pipe(gulp.dest('.')));
+    });
 };
 
-build.description = 'Yields a production-ready extension archive for upload to the Chrome Web Store';
+build.description = 'Yields a production-ready unpacked extension via the build directory';
+
+// * BUNDLE-ZIP
+
+export const bundleZip = async () => {
+    await del([`${pkg.name}-*.zip`]).then(() => {
+        gulp.src('build/*').pipe(zip(`${pkg.name}-${pkg.version}.zip`)).pipe(gulp.dest('.'));
+    });
+};
+
+bundleZip.description = 'Bundles the build directory into a zip archive for upload to the Chrome Web Store and elsewhere';
 
 // * WPDEVSERV
 
-const wpdevserv = () => {
+export const wpdevserv = () => {
     Object.keys(configured.entry).forEach(entryKey => configured.entry[entryKey] = [
         `webpack-dev-server/client?http://${DEV_ENDPOINT}:${DEV_PORT}`,
         'webpack/hot/dev-server',
@@ -170,5 +174,3 @@ const wpdevserv = () => {
 };
 
 wpdevserv.description = 'Launches the Webpack Development Server for testing purposes';
-
-export { regenerate, cleanTypes, cleanBuild, wpdevserv, build };
