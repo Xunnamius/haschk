@@ -7,16 +7,10 @@ import { DownloadEventFrame } from 'universe/events'
 import { portEvent } from 'universe/ui'
 
 // ? Essentially, we hook into three browser-level events here:
-<<<<<<< HEAD
 // ?    - when any context/popup wants to interact with background events/context.
 // ?    - when a tab finishes navigating to a URL
 // ?    - when a download is started
 // ?    - when a download finishes
-=======
-// ?    * when a tab finishes navigating to a URL
-// ?    * when a download is started
-// ?    * when a download finishes
->>>>>>> develop
 
 export default (oracle: any, chrome: any, context: any) => {
 
@@ -55,17 +49,10 @@ export default (oracle: any, chrome: any, context: any) => {
         else
             context.activePorts[port.sender.id] = port;
 
-<<<<<<< HEAD
-        // * could be deprecated (see DnschkEventPort lines 5 - 8)
-        port.onMessage.addListener((message: Array<mixed>) => {
-            if(message.event.charAt(0) !== '.') {
-                // ! What happens here if message.data is null or non-iterable? Consider refining the message.data type
-=======
         // * @morty: could be deprecated (see DnschkEventPort lines 5 - 8)
         // * @xunnamius: is this still true? If so, consider removing it
         port.onMessage.addListener(message => {
             if(message.event.charAt(0) !== '.')
->>>>>>> develop
                 oracle.emit(`bridge.${message.event}`, port, ...message.data);
 
             else {
