@@ -80,7 +80,7 @@ export const cleanTypes = async () => {
     const targets = parseGitIgnore(await readFileAsync(paths.flowTypedGitIgnore));
 
     log(`Deletion targets @ ${paths.flowTyped}/: "${targets.join('" "')}"`);
-    del(targets, { cwd: paths.flowTyped });
+    await del(targets, { cwd: paths.flowTyped });
 };
 
 cleanTypes.description = `Resets the ${paths.flowTyped} directory to a pristine state`;
@@ -91,7 +91,7 @@ export const cleanBuild = async () => {
     const targets = parseGitIgnore(await readFileAsync(paths.buildGitIgnore));
 
     log(`Deletion targets @ ${paths.build}/: "${targets.join('" "')}"`);
-    del(targets, { cwd: paths.build });
+    await del(targets, { cwd: paths.build });
 };
 
 cleanBuild.description = `Resets the ${paths.build} directory to a pristine state`;
@@ -145,8 +145,10 @@ build.description = 'Yields a production-ready unpacked extension via the build 
 
 // * BUNDLE-ZIP
 
-export const bundleZip = () => {
-    return gulp.src('build/*').pipe(zip(`dnschk-${pkg.version}.zip`)).pipe(gulp.dest('.'));
+export const bundleZip = async () => {
+    await del(['dnschk-*.zip']).then(() => {
+        gulp.src('build/*').pipe(zip(`dnschk-${pkg.version}.zip`)).pipe(gulp.dest('.'));
+    });
 };
 
 bundleZip.description = 'Bundles the build directory into a zip archive for upload to the Chrome Web Store and elsewhere';
