@@ -20,16 +20,6 @@ declare var chrome:any;
 
 const bridge = new DnschkEventPort(chrome);
 
-<<<<<<< HEAD
-// TODO: ensure bugs are fixed and UI meets specification outlined at
-// TODO: https://github.com/morty-c137-prime/DNSCHK/issues/31
-const appendDownloadToDownloadList = (downloadItem, judgement) => {
-    let downloadList = document.getElementById("downloadItems");
-    let elem = document.createElement('li', {
-        id: downloadItem.id
-    });
-    elem.innerHTML = `#${downloadItem.id}: ${downloadItem.filename} [${
-=======
 let downloadList = guaranteeElementById("downloadItems");
 
 // TODO: satisfy Flow type checking here by using a null sentinel function
@@ -42,7 +32,6 @@ const appendDownloadToDownloadList = (downloadItem: any, judgement: string) => {
     let elem: HTMLElement = document.createElement('li');
     elem.setAttribute('id', downloadItem.id);
     elem.innerHTML = `#${downloadItem.id}: ${downloadItem.filename} <span class=${judgement}>[${
->>>>>>> incremental
         judgement == JUDGEMENT_UNKNOWN ? '?' : (judgement == JUDGEMENT_UNSAFE ? 'X' : '✓')
     }]</span>`;
     downloadList.insertBefore(elem, downloadList.childNodes[0]);
@@ -68,14 +57,10 @@ bridge.on('judgement.unknown', (downloadItem) => {
     appendDownloadToDownloadList(downloadItem, JUDGEMENT_UNKNOWN);
 });
 
-<<<<<<< HEAD
 // ??
 // ?? Demo/development UI components
 // ??
 
-=======
-// * Demoing tools
->>>>>>> incremental
 // guaranteeElementById('fetchJudgedDownloadItems').addEventListener('click', (e: MouseEvent) => {
 //     e.preventDefault();
 //     downloadList.innerHTML = '';
