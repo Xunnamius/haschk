@@ -1,12 +1,10 @@
 /* @flow */
 
-import { FRAMEWORK_EVENTS } from 'universe'
-import registerChromeEvents from '../../../src/components/background/events.chrome'
-
-const oracle = {};
-const chrome = {};
-const context = { handledDownloadItems: new Set() };
+import { oracle, chrome, context } from './_struts'
+import registerChromeEvents from 'components/background/events.chrome'
 
 registerChromeEvents(oracle, chrome, context);
 
-// TODO: tests! (be sure to re-enable these tests via package.json jest testPathIgnorePatterns)
+test('(placeholder)', () => {
+
+});

@@ -4,6 +4,8 @@ Lordy, these aren't ya grandparents' checksums! `DNSCHK` is a low-overhead secur
 
 The research and development behind DNSCHK was a joint effort by [team members](#meet-the-team) from University of Chicago and Walter Payton College Preparatory High School.
 
+Paper can be found [here](https://git.xunn.io/research/dnschk-paper).
+
 ***
 
 ## Table of Contents
@@ -23,7 +25,16 @@ The research and development behind DNSCHK was a joint effort by [team members](
 
 ## Installation
 
-1. Build the extension from source
+You have two options. You can load the pre-built extension directly into Chrome (easy) or build from source (harder).
+
+To load the pre-built extension, you must drag & drop the [build.crx](build.crx) file on to the `chrome://extensions` page:
+
+1. *Settings-Icon* (three vertical dots, top right) -> *More Tools* -> *Extensions*
+2. Drag and drop [build.crx](build.crx) onto the Extensions page from the previous step
+
+To build the extension from source:
+
+1. Run the following (assuming linux environment):
 
 ```
 npm install
@@ -35,7 +46,7 @@ npm run build
 
 ## Literature
 
-See [the wiki](https://github.com/morty-c137-prime/DNSCHK/wiki) or [the paper](docs/).
+See [the wiki](https://github.com/morty-c137-prime/DNSCHK/wiki) or [the paper](https://git.xunn.io/research/dnschk-paper).
 
 ## Contribution Guidelines
 
@@ -59,7 +70,8 @@ new code to add, first commit it to your sub branch. Next, switch to the
 `develop` branch and `git pull` any updates. Then `git merge` your development
 sub branch into the `develop` branch. Then push the new `develop` branch.
 
-You have now merged your code in with everyone else's. You should now go back to your dev sub branch and catchup to the `develop` branch via `git merge`.
+You have now merged your code in with everyone else's. You should now go back to
+your dev sub branch and catchup to the `develop` branch via `git merge`.
 
 Every now and then, one of us will merge `develop` with `master` via PR.
 
@@ -84,7 +96,7 @@ Hence, the branch workflow can be summarized as:
 
 ## References
 
-See [the paper](docs/).
+See [the paper](https://git.xunn.io/research/dnschk-paper).
 
 [bd3]: docs/pics/bernard.jpg
 [rawalvarez731]: docs/pics/richard.jpg

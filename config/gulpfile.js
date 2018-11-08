@@ -7,10 +7,14 @@
 // ! all required packages listed under "dependencies" instead of
 // ! "devDependencies" in this project's package.json
 
+// TODO: on all build run commands, bump the build package version
+// TODO: add "version bump" commands for major, minor, patch, and build versions
+
 import { readFile } from 'fs'
 import { promisify } from 'util'
 import gulp from 'gulp'
 import tap from 'gulp-tap'
+import zip from 'gulp-zip'
 import del from 'del'
 import log from 'fancy-log'
 import parseGitIgnore from 'parse-gitignore'
@@ -19,6 +23,7 @@ import { relative as relPath } from 'path'
 import webpack from 'webpack'
 import webpackDevServer from 'webpack-dev-server'
 import config from './webpack.config'
+import pkg from './package'
 
 require('dotenv').config();
 
@@ -27,6 +32,8 @@ const {
     DEV_ENDPOINT,
     HASHING_OUTPUT_LENGTH
 } = process.env;
+
+const configured = config({ NODE_ENV: process.env.NODE_ENV });
 
 if(typeof WEBPACK_PORT !== 'string')
     throw new TypeError('WEBPACK_PORT is improperly defined. Did you copy dist.env -> .env ?');
@@ -115,7 +122,7 @@ regenerate.description = 'Invokes babel on the files in config, transpiling them
 const build = (): Promise<void> => {
     process.env.NODE_ENV = 'production';
     return new Promise(resolve => {
-        webpack(config, (err, stats) => {
+        webpack(configured, (err, stats) => {
             if(err)
             {
                 const details = err.details ? `\n\t${err.details}` : '';
@@ -128,30 +135,31 @@ const build = (): Promise<void> => {
                 throw `WEBPACK COMPILATION ERROR: ${info.errors}`;
 
             if(stats.hasWarnings())
-                console.warn(`WEBPACK COMPILATION WARNING: ${info.warnings}`)
+                console.warn(`WEBPACK COMPILATION WARNING: ${info.warnings}`);
 
             resolve();
         });
-    });
+    // ? Afterwards, zip the build directory up
+    }).then(() => gulp.src('build/*').pipe(zip(`dnschk-${pkg.version}.zip`)).pipe(gulp.dest('.')));
 };
 
-build.description = 'Yields a production-ready extension ready to be packaged';
+build.description = 'Yields a production-ready extension archive for upload to the Chrome Web Store';
 
 // * WPDEVSERV
 
 const wpdevserv = () => {
-    Object.keys(config.entry).forEach(entryKey => config.entry[entryKey] = [
+    Object.keys(configured.entry).forEach(entryKey => configured.entry[entryKey] = [
         `webpack-dev-server/client?http://${DEV_ENDPOINT}:${DEV_PORT}`,
         'webpack/hot/dev-server',
-        config.entry[entryKey]
+        configured.entry[entryKey]
     ]);
 
-    config.plugins = [
+    configured.plugins = [
         new webpack.HotModuleReplacementPlugin(),
-        ...(config.plugins ?? []),
+        ...(configured.plugins ?? []),
     ];
 
-    const packer = webpack(config);
+    const packer = webpack(configured);
     const server = new webpackDevServer(packer, {
         hot: true,
         contentBase: paths.build,

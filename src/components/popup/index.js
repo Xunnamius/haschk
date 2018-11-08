@@ -20,16 +20,11 @@ declare var chrome:any;
 
 const bridge = new DnschkEventPort(chrome);
 
-let downloadList = guaranteeElementById("downloadItems");
-
-// TODO: satisfy Flow type checking here by using a null sentinel function
-// TODO: (i.e. check for null and emit error event if failed). When Flow fixes
-// TODO: optional chaining, then these can all be changed to `?.` instead of `.`
-// TODO: and the problem will be solved gracefully!
-
-const appendDownloadToDownloadList = (downloadItem: any, judgement: string) => {
-    // flow-disable-line
-    let elem: HTMLElement = document.createElement('li', {
+// TODO: ensure bugs are fixed and UI meets specification outlined at
+// TODO: https://github.com/morty-c137-prime/DNSCHK/issues/31
+const appendDownloadToDownloadList = (downloadItem, judgement) => {
+    let downloadList = document.getElementById("downloadItems");
+    let elem = document.createElement('li', {
         id: downloadItem.id
     });
     elem.innerHTML = `#${downloadItem.id}: ${downloadItem.filename} [${
@@ -58,7 +53,9 @@ bridge.on('judgement.unknown', (downloadItem) => {
     appendDownloadToDownloadList(downloadItem, JUDGEMENT_UNKNOWN);
 });
 
-// * Demoing tools
+// ??
+// ?? Demo/development UI components
+// ??
 
 // guaranteeElementById('fetchJudgedDownloadItems').addEventListener('click', (e: MouseEvent) => {
 //     e.preventDefault();

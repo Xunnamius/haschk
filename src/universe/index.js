@@ -18,7 +18,7 @@ export const { HASHING_OUTPUT_LENGTH } = process.env;
 
 export const FRAMEWORK_EVENTS = ['download.incoming', 'download.completed', 'download.suspiciousOrigin'];
 
-export const extractDomainFromURI = (url: string) => (new URL(url)).hostname;
+export const extractDomainFromURI = (url: string) => (new URL(url)).hostname.split('.').slice(-2).join('.');
 
 export const extendDownloadItemInstance = (downloadItem: any) => {
     const uri: string = downloadItem.referrer || downloadItem.url;
@@ -36,6 +36,9 @@ export const JUDGEMENT_UNKNOWN = 'unknown';
 export const bufferToHex = (buffer: ArrayBuffer) => {
     let hexCodes = [];
     let view = new DataView(buffer);
+
+    if(buffer.byteLength % 4 !== 0)
+        throw new Error('Buffer byte length must be a multiple of 4');
 
     for(let i = 0; i < view.byteLength; i += 4) {
         // ? Using getUint32 reduces the number of iterations needed (we process 4 bytes each time)

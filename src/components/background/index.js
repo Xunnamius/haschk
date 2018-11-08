@@ -6,9 +6,9 @@
 import { FRAMEWORK_EVENTS } from 'universe'
 import { EventEmitter } from 'universe/events'
 
-import registerChromeEvents from './events.chrome'
-import registerCoreEvents from './events.core'
-import registerUIEvents from './events.ui'
+import registerChromeEvents from 'components/background/events.chrome'
+import registerCoreEvents from 'components/background/events.core'
+import registerUIEvents from 'components/background/events.ui'
 
 declare var chrome:any;
 
