@@ -5,7 +5,7 @@
     "type": "git",
     "url": "https://github.com/morty-c137-prime/DNSCHK"
   },
-  "version": "0.9.2",
+  "version": "0.9.3",
   "scripts": {
     "test": "npx jest",
     "dev": "npx gulp wpdevserv",
