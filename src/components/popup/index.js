@@ -20,6 +20,7 @@ declare var chrome:any;
 
 const bridge = new DnschkEventPort(chrome);
 
+<<<<<<< HEAD
 // TODO: ensure bugs are fixed and UI meets specification outlined at
 // TODO: https://github.com/morty-c137-prime/DNSCHK/issues/31
 const appendDownloadToDownloadList = (downloadItem, judgement) => {
@@ -28,8 +29,22 @@ const appendDownloadToDownloadList = (downloadItem, judgement) => {
         id: downloadItem.id
     });
     elem.innerHTML = `#${downloadItem.id}: ${downloadItem.filename} [${
+=======
+let downloadList = guaranteeElementById("downloadItems");
+
+// TODO: satisfy Flow type checking here by using a null sentinel function
+// TODO: (i.e. check for null and emit error event if failed). When Flow fixes
+// TODO: optional chaining, then these can all be changed to `?.` instead of `.`
+// TODO: and the problem will be solved gracefully!
+
+const appendDownloadToDownloadList = (downloadItem: any, judgement: string) => {
+    // flow-disable-line
+    let elem: HTMLElement = document.createElement('li');
+    elem.setAttribute('id', downloadItem.id);
+    elem.innerHTML = `#${downloadItem.id}: ${downloadItem.filename} <span class=${judgement}>[${
+>>>>>>> incremental
         judgement == JUDGEMENT_UNKNOWN ? '?' : (judgement == JUDGEMENT_UNSAFE ? 'X' : '✓')
-        }]`;
+    }]</span>`;
     downloadList.insertBefore(elem, downloadList.childNodes[0]);
 };
 
@@ -53,10 +68,14 @@ bridge.on('judgement.unknown', (downloadItem) => {
     appendDownloadToDownloadList(downloadItem, JUDGEMENT_UNKNOWN);
 });
 
+<<<<<<< HEAD
 // ??
 // ?? Demo/development UI components
 // ??
 
+=======
+// * Demoing tools
+>>>>>>> incremental
 // guaranteeElementById('fetchJudgedDownloadItems').addEventListener('click', (e: MouseEvent) => {
 //     e.preventDefault();
 //     downloadList.innerHTML = '';
@@ -66,10 +85,9 @@ bridge.on('judgement.unknown', (downloadItem) => {
 //         {
 //             let item = res.judgedDownloadItems[id];
 //             // flow-disable-line
-//             let download = document.createElement('li', {
-//                 id: id
-//             });
-//             download.innerHTML = `#${id}: ${item.downloadItem.filename} [${
+//             let download = document.createElement('li');
+//             download.setAttribute('id', item.downloadItem.id);
+//             download.innerHTML = `#${item.downloadItem.id}: ${item.downloadItem.filename} [${
 //                 item.judgement == 'unknown' ? '?' : (item.judgement == 'unsafe' ? 'X' : '✓')
 //             }]`;
 //             downloadList.appendChild(download);

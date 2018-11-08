@@ -3,7 +3,7 @@
 #clear
 {
     color: lightslategray;
-    font-size: 13vmax;
+    font-size: 9vmin;
     font-style: italic;
 }
 
@@ -11,4 +11,29 @@
 {
     cursor: pointer;
     text-decoration: underline;
+}
+
+.safe
+{
+    color: #6EEB83;
+}
+
+.unsafe
+{
+    color: #FF3C38;
+}
+
+.unknown
+{
+    color: #D0D6B5;
+}
+
+ul
+{
+    list-style-type: none;
+}
+
+body
+{
+    width: 440px;
 }

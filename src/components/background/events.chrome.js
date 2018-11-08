@@ -7,7 +7,6 @@ import { DownloadEventFrame } from 'universe/events'
 import { portEvent } from 'universe/ui'
 
 // ? Essentially, we hook into three browser-level events here:
-// ?    - when any context/popup wants to interact with background events/context.
 // ?    - when a tab finishes navigating to a URL
 // ?    - when a download is started
 // ?    - when a download finishes
