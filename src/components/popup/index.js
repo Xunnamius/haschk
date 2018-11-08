@@ -14,7 +14,7 @@ import {
     JUDGEMENT_UNKNOWN,
     JUDGEMENT_UNSAFE,
     JUDGEMENT_SAFE
-} from '../../universe';
+} from 'universe';
 
 declare var chrome:any;
 
