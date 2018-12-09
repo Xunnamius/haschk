@@ -38,11 +38,11 @@ export default class DnschkEventPort
         });
     }
 
-    on(event: string, callback: (...data) => any) {
+    on(event: string, callback: (...data: Array<mixed>) => any) {
         this.handlers[event] = callback;
     }
 
-    async emit(_event: string,..._data: any) {
+    async emit(_event: string,..._data: Array<mixed>) {
         return await new Promise(resolve => {
             this.#port.postMessage(portEvent(_event, ..._data));
             this.#port.onMessage.addListener(event_response => {

@@ -16,11 +16,14 @@ import {
     JUDGEMENT_SAFE
 } from 'universe'
 
-import { DownloadEventFrame } from 'universe/events'
+import {
+    DownloadEventFrame,
+    FrameworkEventEmitter
+} from 'universe/events'
 
-declare var crypto:any;
+import type { Chrome } from 'components/background'
 
-export default (oracle: any, chrome: any, context: any) => {
+export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: {}) => {
     oracle.addListener('download.incoming', async (e, downloadItem) => {
         const eventFrame = new DownloadEventFrame(oracle, context);
         const startTime = (new Date(downloadItem.startTime)).getTime();

@@ -3,15 +3,21 @@
  */
 
 import { extendDownloadItemInstance } from 'universe'
-import { DownloadEventFrame } from 'universe/events'
 import { portEvent } from 'universe/ui'
+
+import {
+    DownloadEventFrame,
+    FrameworkEventEmitter
+} from 'universe/events'
+
+import type { Chrome } from 'components/background'
 
 // ? Essentially, we hook into three browser-level events here:
 // ?    - when a tab finishes navigating to a URL
 // ?    - when a download is started
 // ?    - when a download finishes
 
-export default (oracle: any, chrome: any, context: any) => {
+export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: {}) => {
 
     // ? There are better ways to do this, but until then these fire when
     // ? judgements are made about downloads and then notifies the open ports

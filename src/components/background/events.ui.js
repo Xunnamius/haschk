@@ -40,11 +40,11 @@
 // ? of the DownloadItem extension API except ::OriginDomain. Do an existence
 // ? check before trying to use them. See the Extensions API for more details.
 
-import {
-    setBadge
-} from 'universe/ui'
+import { setBadge } from 'universe/ui'
+import { FrameworkEventEmitter } from 'universe/events'
+import type { Chrome } from 'components/background'
 
-export default (oracle: any, chrome: any, context: any) => {
+export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: {}) => {
     // ? This is our generic error handler that fires whenever an error occurs
     oracle.addListener('error', err => {
         setBadge(chrome)('ERR', '#000');

@@ -15,6 +15,7 @@
     "debug-remote": "node --inspect-brk='0.0.0.0:7777'",
     "debug-remote-gulp": "node --inspect-brk='0.0.0.0:7777' ./node_modules/.bin/gulp",
     "debug-remote-jest": "node --inspect-brk='0.0.0.0:7777' ./node_modules/.bin/jest --runInBand",
+    "test-ib": "npx jest --runInBand",
     "test-nc": "npx jest --no-cache",
     "clean-build": "npx gulp cleanBuild",
     "clean-types": "npx gulp cleanTypes",

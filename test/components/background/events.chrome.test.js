@@ -6,5 +6,5 @@ import registerChromeEvents from 'components/background/events.chrome'
 registerChromeEvents(oracle, chrome, context);
 
 test('(placeholder)', () => {
-
+    
 });
