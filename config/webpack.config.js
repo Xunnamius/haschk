@@ -25,7 +25,7 @@ paths.components = `${paths.src}/components`;
 paths.assets = `${paths.src}/assets`;
 const assetExtensions = ['jpg', 'jpeg', 'png', `gif`, "eot", 'otf', 'svg', 'ttf', 'woff', 'woff2'];
 
-const configure = NODE_ENV => {
+const configure = (NODE_ENV: ?string) => {
     const DEV_ENV = NODE_ENV === 'development';
     const options = {};
 
@@ -152,4 +152,4 @@ const configure = NODE_ENV => {
     return options;
 };
 
-module.exports = env => configure(env.NODE_ENV);
+module.exports = (env: { NODE_ENV: ?string }) => configure(env.NODE_ENV);

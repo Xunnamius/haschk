@@ -143,7 +143,7 @@ build.description = 'Yields a production-ready unpacked extension via the build 
 
 export const bundleZip = async () => {
     await del([`${pkg.name}-*.zip`]).then(() => {
-        gulp.src('build/*').pipe(zip(`${pkg.name}-${pkg.version}.zip`)).pipe(gulp.dest('.'));
+        gulp.src('build/**/*').pipe(zip(`${pkg.name}-${pkg.version}.zip`)).pipe(gulp.dest('.'));
     });
 };
 
