@@ -18,7 +18,9 @@ import { transformSync as babel } from '@babel/core'
 import { relative as relPath } from 'path'
 import webpack from 'webpack'
 import webpackDevServer from 'webpack-dev-server'
+// flow-disable-line
 import config from './webpack.config'
+// flow-disable-line
 import pkg from './package'
 
 require('dotenv').config();
@@ -158,10 +160,10 @@ export const wpdevserv = () => {
         configured.entry[entryKey]
     ]);
 
-    configured.plugins = [
+    configured.plugins = ([
         new webpack.HotModuleReplacementPlugin(),
         ...(configured.plugins ?? []),
-    ];
+    ]: Array<any>);
 
     const packer = webpack(configured);
     const server = new webpackDevServer(packer, {
