@@ -22,9 +22,9 @@
     "doc": "npx jsdoc -c config/.jsdoc.json -d docs/documentation/ -r",
     "generate": "BABEL_ENV=generator npx babel config --out-dir .",
     "regenerate": "npx gulp regenerate",
-    "bump-major": "npx npm-bump major -b develop",
-    "bump-minor": "npx npm-bump minor -b develop",
-    "bump-patch": "npx npm-bump patch -b develop",
+    "bump-major": "bump --major --tag --commit --lock",
+    "bump-minor": "bump --minor --tag --commit --lock",
+    "bump-patch": "bump --patch --tag --commit --lock",
     "list-tasks": "npx gulp --tasks"
   },
   "author": "Richard Alvarez",
@@ -59,7 +59,6 @@
     "axios": "^0.18.0",
     "dotenv": "^6.2.0",
     "eventemitter3": "^3.1.0",
-    "npm-bump": "0.0.25",
     "url-parse": "^1.4.4"
   },
   "devDependencies": {
@@ -96,6 +95,7 @@
     "style-loader": "^0.23.1",
     "stylelint": "^9.9.0",
     "stylelint-config-standard": "^18.2.0",
+    "version-bump-prompt": "^4.2.2",
     "vinyl-fs": "^3.0.3",
     "webpack": "^4.28.2",
     "webpack-bundle-analyzer": "^3.0.3",
