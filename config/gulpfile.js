@@ -156,9 +156,8 @@ bundleZip.description = 'Bundles the build directory into a zip archive for uplo
 export const wpdevserv = () => {
     Object.keys(configured.entry).forEach(entryKey => configured.entry[entryKey] = [
         `webpack-dev-server/client?http://${DEV_ENDPOINT}:${DEV_PORT}`,
-        'webpack/hot/dev-server',
-        configured.entry[entryKey]
-    ]);
+        'webpack/hot/dev-server'
+    ].concat(configured.entry[entryKey]));
 
     configured.plugins = ([
         new webpack.HotModuleReplacementPlugin(),

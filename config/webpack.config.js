@@ -32,9 +32,9 @@ const configure = (NODE_ENV: ?string) => {
     options.mode = DEV_ENV ? 'development' : 'production';
 
     options.entry = {
-        background: `${paths.components}/background/index.js`,
-        options: `${paths.components}/options/index.js`,
-        popup: `${paths.components}/popup/index.js`,
+        background: [`${paths.components}/background/index.js`],
+        options: [`${paths.components}/options/index.js`],
+        popup: [`${paths.components}/popup/index.js`],
     };
 
     options.output = {

@@ -44,7 +44,7 @@ import { setBadge } from 'universe/ui'
 import { FrameworkEventEmitter } from 'universe/events'
 import type { Chrome } from 'components/background'
 
-export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: {}) => {
+export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) => {
     // ? This is our generic error handler that fires whenever an error occurs
     oracle.addListener('error', err => {
         setBadge(chrome)('ERR', '#000');

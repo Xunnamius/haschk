@@ -23,7 +23,7 @@ import {
 
 import type { Chrome } from 'components/background'
 
-export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: {}) => {
+export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) => {
     oracle.addListener('download.incoming', async (e, downloadItem) => {
         const eventFrame = new DownloadEventFrame(oracle, context);
         const startTime = (new Date(downloadItem.startTime)).getTime();

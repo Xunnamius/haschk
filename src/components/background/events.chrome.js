@@ -17,7 +17,7 @@ import type { Chrome } from 'components/background'
 // ?    - when a download is started
 // ?    - when a download finishes
 
-export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: {}) => {
+export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) => {
 
     // ? There are better ways to do this, but until then these fire when
     // ? judgements are made about downloads and then notifies the open ports
