@@ -22,9 +22,9 @@
     "doc": "npx jsdoc -c config/.jsdoc.json -d docs/documentation/ -r",
     "generate": "BABEL_ENV=generator npx babel config --out-dir .",
     "regenerate": "npx gulp regenerate",
-    "bump-major": "bump --major --tag --commit --lock",
-    "bump-minor": "bump --minor --tag --commit --lock",
-    "bump-patch": "bump --patch --tag --commit --lock",
+    "bump-major": "bump --major --tag --commit --lock --all",
+    "bump-minor": "bump --minor --tag --commit --lock --all",
+    "bump-patch": "bump --patch --tag --commit --lock --all",
     "list-tasks": "npx gulp --tasks",
     "preversion": "npm run test-ib",
     "version": "npm run clean-build && npm run build && npm run bundle"
