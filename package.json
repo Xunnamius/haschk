@@ -27,7 +27,7 @@
     "bump-patch": "bump --patch --tag --commit --lock --all",
     "list-tasks": "npx gulp --tasks",
     "preversion": "npm run test-ib",
-    "version": "npm run clean-build && npm run build && npm run bundle"
+    "version": "npm run clean-build && npm run build && npm run bundle && git add --all"
   },
   "author": "Richard Alvarez",
   "license": "MIT",
