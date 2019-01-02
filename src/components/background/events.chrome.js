@@ -3,29 +3,74 @@
  */
 
 import { extendDownloadItemInstance } from 'universe'
-import { DownloadEventFrame } from 'universe/events'
-import { DnschkPort } from 'universe/DnschkPort'
+import { portEvent } from 'universe/ui'
+
+import {
+    DownloadEventFrame,
+    FrameworkEventEmitter
+} from 'universe/events'
+
+import type { Chrome } from 'components/background'
 
 // ? Essentially, we hook into three browser-level events here:
 // ?    - when a tab finishes navigating to a URL
 // ?    - when a download is started
 // ?    - when a download finishes
 
-export default (oracle: any, chrome: any, context: any) => {
-    chrome.runtime.onConnect.addListener((port) =>
-    {
-        // TODO: register events here
+export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) => {
 
-        port.onMessage.addListener((message) =>
+    // ? There are better ways to do this, but until then these fire when
+    // ? judgements are made about downloads and then notifies the open ports
+    // ?
+    // ? Three events are made available:
+    // ? * judgement.safe       a resource's content is as expected
+    // ? * judgement.unsafe     a resource's content is mutated/corrupted
+    // ? * judgement.unknown    a resource's content cannot be judged
+    // TODO: Write class + split up
+    chrome.runtime.onConnect.addListener((port) => {
+        port.onDisconnect.addListener(_port => delete context.activePorts[_port.sender.id]);
+
+        if(!context.registeredPorts.includes(port.sender.id))
         {
-            if(message.event.charAt(0) !== '.')
+            context.registeredPorts.push(port.sender.id);
+            context.activePorts[port.sender.id] = port;
+
+            oracle.addListener('judgement.unsafe', (downloadItem) => {
+                if(context.activePorts[port.sender.id])
+                    context.activePorts[port.sender.id].postMessage(portEvent('judgement.unsafe', downloadItem));
+            });
+
+            oracle.addListener('judgement.safe', (downloadItem) => {
+                if(context.activePorts[port.sender.id])
+                    context.activePorts[port.sender.id].postMessage(portEvent('judgement.safe', downloadItem));
+            });
+
+            oracle.addListener('judgement.unknown', (downloadItem) => {
+                if(context.activePorts[port.sender.id])
+                    context.activePorts[port.sender.id].postMessage(portEvent('judgement.unknown', downloadItem));
+            });
+        }
+
+        else
+            context.activePorts[port.sender.id] = port;
+
+        port.onMessage.addListener(message => {
+            if(message.event.charAt(0) !== '.' && message.event == 'fetch')
             {
-                oracle.emit(`bridge.${message.event}`, port,...message.data);
+                let values = {};
+                message?.data.forEach((key) => {
+                    values[key] = context[key];
+                });
+                port.postMessage(values);
             }
 
             else
             {
                 oracle.emit(message.event.substring(1), ...message.data);
+                // ? Remember all DnschkEventPort emits are promises waiting for
+                // ? a response, but when we interact with internal events
+                // ? (e.g. .judgement.unsafe) there is no response! so this
+                // ? is just an empty response so the promise resolves.
                 port.postMessage('✓');
             }
         });

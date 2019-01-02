@@ -2,21 +2,28 @@
  * @description Most of the complex core DNSCHK logic and functionality is here
  */
 
-import http from 'faxios'
-import createHash from 'create-hash'
+import http from 'axios'
 import ParsedUrl from 'url-parse'
 
 import {
+    bufferToHex,
     GOOGLE_DNS_HTTPS_RI_FN,
 ////GOOGLE_DNS_HTTPS_RR_FN,
-    HASHING_ALGORITHM,
     HASHING_OUTPUT_LENGTH,
-    DANGER_THRESHOLD
+    DANGER_THRESHOLD,
+    JUDGEMENT_UNKNOWN,
+    JUDGEMENT_UNSAFE,
+    JUDGEMENT_SAFE
 } from 'universe'
 
-import { DownloadEventFrame } from 'universe/events'
+import {
+    DownloadEventFrame,
+    FrameworkEventEmitter
+} from 'universe/events'
 
-export default (oracle: any, chrome: any, context: any) => {
+import type { Chrome } from 'components/background'
+
+export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) => {
     oracle.addListener('download.incoming', async (e, downloadItem) => {
         const eventFrame = new DownloadEventFrame(oracle, context);
         const startTime = (new Date(downloadItem.startTime)).getTime();
@@ -29,7 +36,7 @@ export default (oracle: any, chrome: any, context: any) => {
         // ? If the event was ended prematurely, assume downloadItem was handled
         // ? elsewhere in the event flow
         if(!eventFrame.stopped)
-            eventFrame.finish(); // ? Could pass in a filename string here
+            eventFrame.finish();
     });
 
     // ? This is the NAH vs AH core "judgement" logic
@@ -45,15 +52,18 @@ export default (oracle: any, chrome: any, context: any) => {
 
             try {
                 // ? Since it's finished downloading, grab the file's data
-                const $file = await http(`file://${downloadItem.filename}`).GET;
+                const $file = await http.get(`file://${downloadItem.filename}`, { responseType: 'arraybuffer' });
 
                 // ? Hash file data with proper algorithm
-                nonauthedHash = createHash(HASHING_ALGORITHM).update($file.data).digest('hex').toString();
+                nonauthedHash = bufferToHex(await crypto.subtle.digest('SHA-256', $file.data));
 
                 // ? Determine resource identifier and prepare for DNS request
                 const resourcePath = (new ParsedUrl(downloadItem.url, {})).pathname;
-                const resourceIdentifier = createHash(HASHING_ALGORITHM).update(resourcePath).digest('hex').toString();
+                const resourceIdentifier = bufferToHex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(resourcePath)));
                 const outputLength = parseInt(HASHING_OUTPUT_LENGTH);
+
+                if(!resourceIdentifier || resourceIdentifier.length != outputLength)
+                    throw new Error('failed to hash resource identifier');
 
                 const [ riLeft, riRight ] = [
                     resourceIdentifier.slice(0, outputLength / 2),
@@ -61,8 +71,10 @@ export default (oracle: any, chrome: any, context: any) => {
                 ];
 
                 // ? Make https-based DNS request
-                const $authedHash = await http(GOOGLE_DNS_HTTPS_RI_FN(riLeft, riRight, downloadItem.originDomain)).GET;
-                authedHashRaw = $authedHash.data.Answer.slice(-1)[0].data;
+                const targetDomain = downloadItem.originDomain;
+                const $authedHash = await http.get(GOOGLE_DNS_HTTPS_RI_FN(riLeft, riRight, targetDomain));
+
+                authedHashRaw = !$authedHash.data.Answer ? '<no answer>' : $authedHash.data.Answer.slice(-1)[0].data;
                 authedHash = authedHashRaw.replace(/[^0-9a-f]/gi, '');
 
                 completed = true;
@@ -86,4 +98,24 @@ export default (oracle: any, chrome: any, context: any) => {
         })(downloadItem);
     });
 
+    oracle.addListener('judgement.unknown', downloadItem => {
+        context.judgedDownloadItems.push({
+            downloadItem: downloadItem,
+            judgement: JUDGEMENT_UNKNOWN
+        });
+    });
+
+    oracle.addListener('judgement.safe', downloadItem => {
+        context.judgedDownloadItems.push({
+            downloadItem: downloadItem,
+            judgement: JUDGEMENT_SAFE
+        });
+    });
+
+    oracle.addListener('judgement.unsafe', downloadItem => {
+        context.judgedDownloadItems.push({
+            downloadItem: downloadItem,
+            judgement: JUDGEMENT_UNSAFE
+        });
+    });
 };

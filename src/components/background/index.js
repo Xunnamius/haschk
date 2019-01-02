@@ -3,26 +3,25 @@
  * @name Background
  */
 
-// flow-disable-line
 import { FRAMEWORK_EVENTS } from 'universe'
-// flow-disable-line
 import { EventEmitter } from 'universe/events'
 
-import registerChromeEvents from './events.chrome'
-import registerCoreEvents from './events.core'
-import registerUIEvents from './events.ui'
-import registerBridgeEvents from './events.bridge'
+import registerChromeEvents from 'components/background/events.chrome'
+import registerCoreEvents from 'components/background/events.core'
+import registerUIEvents from 'components/background/events.ui'
 
-declare var chrome:any;
+declare var chrome: any;
+export type Chrome = chrome;
 
 const oracle = new EventEmitter(FRAMEWORK_EVENTS);
 const context = {
     handledDownloadItems: new Set(),
-    judgedDownloadItems: {},
+    judgedDownloadItems: [],
+    registeredPorts: [],
+    activePorts: [],
     timingData: {}
 };
 
 registerChromeEvents(oracle, chrome, context);
 registerCoreEvents(oracle, chrome, context);
 registerUIEvents(oracle, chrome, context);
-registerBridgeEvents(oracle, chrome, context);

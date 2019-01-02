@@ -1,16 +1,16 @@
 /* @flow */
 
 // ? To regenerate this file (i.e. if you changed it and want your changes to
-// ? be permanent), call `npm run regenerate` afterwards
+// ? be visible), call `npm run regenerate` afterwards
 
-// ! Be sure that tasks expected to run on npm install (marked @dependent) have
-// ! all required packages listed under "dependencies" instead of
-// ! "devDependencies" in this project's package.json
+// TODO: make a fork of npm-bump that doesn't suck and then use it in lieu of
+// TODO: its predecessor below.
 
 import { readFile } from 'fs'
 import { promisify } from 'util'
 import gulp from 'gulp'
 import tap from 'gulp-tap'
+import zip from 'gulp-zip'
 import del from 'del'
 import log from 'fancy-log'
 import parseGitIgnore from 'parse-gitignore'
@@ -18,25 +18,26 @@ import { transformSync as babel } from '@babel/core'
 import { relative as relPath } from 'path'
 import webpack from 'webpack'
 import webpackDevServer from 'webpack-dev-server'
+// flow-disable-line
 import config from './webpack.config'
+// flow-disable-line
+import pkg from './package'
 
 require('dotenv').config();
 
 const {
     WEBPACK_PORT,
     DEV_ENDPOINT,
-    HASHING_ALGORITHM,
     HASHING_OUTPUT_LENGTH
 } = process.env;
+
+const configured = config({ NODE_ENV: process.env.NODE_ENV });
 
 if(typeof WEBPACK_PORT !== 'string')
     throw new TypeError('WEBPACK_PORT is improperly defined. Did you copy dist.env -> .env ?');
 
 if(typeof DEV_ENDPOINT !== 'string')
     throw new TypeError('DEV_ENDPOINT is improperly defined. Did you copy dist.env -> .env ?');
-
-if(typeof HASHING_ALGORITHM !== 'string')
-    throw new TypeError('HASHING_ALGORITHM is improperly defined. Did you copy dist.env -> .env ?');
 
 if(typeof HASHING_OUTPUT_LENGTH !== 'string')
     throw new TypeError('HASHING_OUTPUT_LENGTH is improperly defined. Did you copy dist.env -> .env ?');
@@ -58,7 +59,6 @@ paths.envDist = 'dist.env';
 paths.gitProjectDir = '.git';
 paths.gitIgnore = '.gitignore';
 paths.packageLockJson = 'package-lock.json';
-paths.build = `${__dirname}/build`;
 
 paths.regenTargets = [
     `${paths.configs}/*.js`
@@ -74,25 +74,25 @@ const readFileAsync = promisify(readFile);
 
 // * CLEANTYPES
 
-const cleanTypes = async () => {
+export const cleanTypes = async () => {
     const targets = parseGitIgnore(await readFileAsync(paths.flowTypedGitIgnore));
 
     log(`Deletion targets @ ${paths.flowTyped}/: "${targets.join('" "')}"`);
-    del(targets, {cwd: paths.flowTyped});
+    await del(targets, { cwd: paths.flowTyped });
 };
 
 cleanTypes.description = `Resets the ${paths.flowTyped} directory to a pristine state`;
 
 // * CLEANBUILD
 
-const cleanBuild = async () => {
+export const cleanBuild = async () => {
     const targets = parseGitIgnore(await readFileAsync(paths.buildGitIgnore));
 
     log(`Deletion targets @ ${paths.build}/: "${targets.join('" "')}"`);
-    del(targets, {cwd: paths.build});
+    await del(targets, { cwd: paths.build });
 };
 
-cleanTypes.description = `Resets the ${paths.flowTyped} directory to a pristine state`;
+cleanBuild.description = `Resets the ${paths.build} directory to a pristine state`;
 
 // * REGENERATE
 
@@ -100,7 +100,7 @@ cleanTypes.description = `Resets the ${paths.flowTyped} directory to a pristine 
 // ? compile this new function and once again to compile itself with the newly
 // ? compiled logic. If there is an error that prevents regeneration, you can
 // ? run `npm run generate` then `npm run regenerate` instead.
-const regenerate = () => {
+export const regenerate = () => {
     log(`Regenerating targets: "${paths.regenTargets.join('" "')}"`);
 
     process.env.BABEL_ENV = 'generator';
@@ -116,10 +116,10 @@ regenerate.description = 'Invokes babel on the files in config, transpiling them
 
 // * BUILD (production)
 
-const build = (): Promise<void> => {
+export const build = (): Promise<void> => {
     process.env.NODE_ENV = 'production';
     return new Promise(resolve => {
-        webpack(config, (err, stats) => {
+        webpack(configured, (err, stats) => {
             if(err)
             {
                 const details = err.details ? `\n\t${err.details}` : '';
@@ -132,30 +132,39 @@ const build = (): Promise<void> => {
                 throw `WEBPACK COMPILATION ERROR: ${info.errors}`;
 
             if(stats.hasWarnings())
-                console.warn(`WEBPACK COMPILATION WARNING: ${info.warnings}`)
+                console.warn(`WEBPACK COMPILATION WARNING: ${info.warnings}`);
 
             resolve();
         });
     });
 };
 
-build.description = 'Yields a production-ready extension ready to be packaged';
+build.description = 'Yields a production-ready unpacked extension via the build directory';
+
+// * BUNDLE-ZIP
+
+export const bundleZip = async () => {
+    await del([`${pkg.name}-*.zip`]).then(() => {
+        gulp.src('build/**/*').pipe(zip(`${pkg.name}-${pkg.version}.zip`)).pipe(gulp.dest('.'));
+    });
+};
+
+bundleZip.description = 'Bundles the build directory into a zip archive for upload to the Chrome Web Store and elsewhere';
 
 // * WPDEVSERV
 
-const wpdevserv = () => {
-    Object.keys(config.entry).forEach(entryKey => config.entry[entryKey] = [
+export const wpdevserv = () => {
+    Object.keys(configured.entry).forEach(entryKey => configured.entry[entryKey] = [
         `webpack-dev-server/client?http://${DEV_ENDPOINT}:${DEV_PORT}`,
-        'webpack/hot/dev-server',
-        config.entry[entryKey]
-    ]);
+        'webpack/hot/dev-server'
+    ].concat(configured.entry[entryKey]));
 
-    config.plugins = [
+    configured.plugins = ([
         new webpack.HotModuleReplacementPlugin(),
-        ...(config.plugins ?? []),
-    ];
+        ...(configured.plugins ?? []),
+    ]: Array<any>);
 
-    const packer = webpack(config);
+    const packer = webpack(configured);
     const server = new webpackDevServer(packer, {
         hot: true,
         contentBase: paths.build,
@@ -166,5 +175,3 @@ const wpdevserv = () => {
 };
 
 wpdevserv.description = 'Launches the Webpack Development Server for testing purposes';
-
-export { regenerate, cleanTypes, cleanBuild, wpdevserv, build };

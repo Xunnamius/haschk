@@ -13,5 +13,6 @@ suppress_comment= \\(.\\|\n\\)*\\flow-disable-line
 esproposal.optional_chaining=enable
 module.name_mapper='^universe$' -> '<PROJECT_ROOT>/src/universe'
 module.name_mapper='^universe\/\(.*\)$' -> '<PROJECT_ROOT>/src/universe/\1'
+module.name_mapper='^components\/\(.*\)$' -> '<PROJECT_ROOT>/src/components/\1'
 
 [strict]

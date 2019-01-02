@@ -40,30 +40,20 @@
 // ? of the DownloadItem extension API except ::OriginDomain. Do an existence
 // ? check before trying to use them. See the Extensions API for more details.
 
-const setBadge = (chrome: any) => {
-    return (_text: string, _color: string = '#FFF888') => {
-        chrome.browserAction.setBadgeBackgroundColor({
-            color: _color
-        });
-        chrome.browserAction.setBadgeText({
-            text: _text
-        });
-    };
-};
+import { setBadge } from 'universe/ui'
+import { FrameworkEventEmitter } from 'universe/events'
+import type { Chrome } from 'components/background'
 
-export default (oracle: any, chrome: any, context: any) => {
-    void chrome, context;
-
+export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) => {
     // ? This is our generic error handler that fires whenever an error occurs
     oracle.addListener('error', err => {
-        // TODO: indicate error condition in the UI
-        setBadge(chrome)('ERR', '#000')
+        setBadge(chrome)('ERR', '#000');
         console.error(`DNSCHK ERROR: ${err}`);
     });
 
     // ? This event fires whenever a new download is observed
     oracle.addListener('download.incoming', async (e, downloadItem) => {
-        // TODO: add new download to popup UI
+        // TODO: add the new download to popup UI (tell popup UI to update)
         // ! Note how this function is async, which means you can await Promises
         console.log(`file "${downloadItem.filename}" incoming`);
     });
@@ -80,36 +70,25 @@ export default (oracle: any, chrome: any, context: any) => {
 
     // ? This event fires whenever dnschk decides it cannot judge a download
     oracle.addListener('judgement.unknown', downloadItem => {
-        setBadge(chrome)('?', '#D0D6B5');
-        context.judgedDownloadItems[downloadItem.id] = {
-            downloadItem: downloadItem,
-            judgement: 'unknown'
-        };
+        setBadge(chrome)(' ', '#D0D6B5');
         console.log(`file "${downloadItem.filename}" judgement: UNKNOWN`);
     });
 
     // ? This event fires whenever dnschk decides a download is safe
     oracle.addListener('judgement.safe', downloadItem => {
-        setBadge(chrome)('✓', '#6EEB83');
-        context.judgedDownloadItems[downloadItem.id] = {
-            downloadItem: downloadItem,
-            judgement: 'safe'
-        };
+        setBadge(chrome)(' ', '#6EEB83');
         console.log(`file "${downloadItem.filename}" judgement: SAFE`);
     });
 
     // ? This event fires whenever dnschk decides a download is NOT safe
     oracle.addListener('judgement.unsafe', downloadItem => {
-        setBadge(chrome)('X', '#FF3C38');
-        context.judgedDownloadItems[downloadItem.id] = {
-            downloadItem: downloadItem,
-            judgement: 'unsafe'
-        };
+        setBadge(chrome)(' ', '#FF3C38');
         console.log(`file "${downloadItem.filename}" judgement: UNSAFE`);
     });
 
     oracle.addListener('ui.clear', () => {
         setBadge(chrome)('');
+        context.judgedDownloadItems = [];
         console.clear();
     });
 
