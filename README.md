@@ -4,7 +4,7 @@ Lordy, these aren't ya grandparents' checksums! `DNSCHK` is a low-overhead secur
 
 The research and development behind DNSCHK was a joint effort by [team members](#meet-the-team) from University of Chicago and Walter Payton College Preparatory High School.
 
-Paper can be found [here](https://git.xunn.io/research/dnschk-paper).
+Paper can be found [here](https://git.xunn.io/research/dnschk-paper). The extension can be downloaded from the Chrome store [here](https://tinyurl.com/dnschk-actual). The HotCRP demo can be played with [here](https://tinyurl.com/dnschk-hotcrp).
 
 ***
 
