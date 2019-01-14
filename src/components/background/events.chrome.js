@@ -12,12 +12,20 @@ import {
 
 import type { Chrome } from 'components/background'
 
-// ? Essentially, we hook into three browser-level events here:
+// ? Essentially, we hook into four browser-level events here:
+// ?    - when the extension is first installed
 // ?    - when a tab finishes navigating to a URL
 // ?    - when a download is started
 // ?    - when a download finishes
 
 export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) => {
+    // ? This event fires when the extension is first installed
+
+    chrome.runtime.onInstalled.addListener(details => {
+        if(details.reason == 'install') {
+            chrome.tabs.create({ url: chrome.runtime.getURL('assets/welcome.html') });
+        }
+    });
 
     // ? There are better ways to do this, but until then these fire when
     // ? judgements are made about downloads and then notifies the open ports
@@ -27,6 +35,7 @@ export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) 
     // ? * judgement.unsafe     a resource's content is mutated/corrupted
     // ? * judgement.unknown    a resource's content cannot be judged
     // TODO: Write class + split up
+
     chrome.runtime.onConnect.addListener((port) => {
         port.onDisconnect.addListener(_port => delete context.activePorts[_port.sender.id]);
 

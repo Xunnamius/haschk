@@ -116,6 +116,11 @@ const configure = (NODE_ENV: ?string) => {
             chunks: ['background']
         }),
 
+        new HtmlWebpackPlugin({
+            template: `${paths.src}/welcome.html`,
+            filename: 'welcome.html'
+        }),
+
         new WriteFileWebpackPlugin()
     ];
 

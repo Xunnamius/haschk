@@ -25,5 +25,8 @@
         "57": "assets/icon/57x57.png",
         "120": "assets/icon/120x120.png",
         "310": "assets/icon/310x310.png"
-    }
+    },
+    "web_accessible_resources": [
+        "welcome.html"
+    ]
 }
