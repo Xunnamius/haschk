@@ -1,10 +1,10 @@
-# DNSCHK (pronounced "dns check")
+# HASCHK (pronounced "has check")
 
-Lordy, these aren't ya grandparents' checksums! `DNSCHK` is a low-overhead security layer built on top of DNS that uses checksums to ensure the integrity of files downloaded over the web in an automated and non-interactive fashion.
+Lordy, these aren't ya grandparents' checksums! `HASCHK` is a low-overhead security layer built on top of any highly available system (e.g. DNS) that uses checksums to ensure the integrity of files downloaded over the web in an automated and non-interactive fashion.
 
-The research and development behind DNSCHK was a joint effort by [team members](#meet-the-team) from University of Chicago and Walter Payton College Preparatory High School.
+The research and development behind HASCHK was a joint effort by [team members](#meet-the-team) from University of Chicago and Walter Payton College Preparatory High School.
 
-Paper can be found [here](https://git.xunn.io/research/dnschk-paper). The extension can be downloaded from the Chrome store [here](https://tinyurl.com/dnschk-actual). The HotCRP demo can be played with [here](https://tinyurl.com/dnschk-hotcrp).
+Paper can be found [here](https://git.xunn.io/closed-source/research/psd-mirrored/haschk-paper). The DNS-enabled extension, i.e. DNSCHK, can be downloaded from the Chrome store [here](https://tinyurl.com/dnschk-actual). The DNS-enabled HotCRP demo can be played with [here](https://tinyurl.com/dnschk-hotcrp).
 
 ***
 
@@ -12,7 +12,7 @@ Paper can be found [here](https://git.xunn.io/research/dnschk-paper). The extens
 
 <!-- TOC -->
 
-- [DNSCHK (pronounced "dns check")](#dnschk-pronounced-dns-check)
+- [HASCHK (pronounced "has check")](#haschk-pronounced-has-check)
     - [Table of Contents](#table-of-contents)
     - [Installation](#installation)
     - [Literature](#literature)
@@ -46,7 +46,7 @@ npm run build
 
 ## Literature
 
-See [the wiki](https://github.com/morty-c137-prime/DNSCHK/wiki) or [the paper](https://git.xunn.io/research/dnschk-paper).
+See [the paper](https://git.xunn.io/closed-source/research/psd-mirrored/haschk-paper).
 
 ## Contribution Guidelines
 
@@ -90,17 +90,15 @@ Hence, the branch workflow can be summarized as:
 | ![a picture goes here][rawalvarez731] | [Richard Alvarez](http://richard.alvareztech.org)|
 | ![a picture goes here][hankhoffmann] | [Hank Hoffmann](http://people.cs.uchicago.edu/~hankhoffmann)|
 | ![a picture goes here][ilopilop538] | [Trevor Medina](ilopilop538@gmail.com)|
-| ![a picture goes here][davidcash] | [David Cash](https://people.cs.uchicago.edu/~davidcash)|
 | ![a picture goes here][ravenben] | [Ben Zhou](http://people.cs.uchicago.edu/~ravenben)|
 |&zwnj;|&zwnj;|
 
 ## References
 
-See [the paper](https://git.xunn.io/research/dnschk-paper).
+See [the paper](https://git.xunn.io/closed-source/research/psd-mirrored/haschk-paper).
 
 [bd3]: docs/pics/bernard.jpg
 [rawalvarez731]: docs/pics/richard.jpg
 [hankhoffmann]: docs/pics/hank.jpg
 [ilopilop538]: docs/pics/trevor.jpg
-[davidcash]: docs/pics/david.jpg
 [ravenben]: docs/pics/ben.jpg
