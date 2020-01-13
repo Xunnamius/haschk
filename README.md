@@ -12,14 +12,14 @@ Paper can be found [here](https://git.xunn.io/closed-source/research/psd-mirrore
 
 <!-- TOC -->
 
-- [HASCHK (pronounced "has check")](#haschk-pronounced-has-check)
-    - [Table of Contents](#table-of-contents)
-    - [Installation](#installation)
-    - [Literature](#literature)
-    - [Contribution Guidelines](#contribution-guidelines)
-        - [Branch Workflow](#branch-workflow)
-    - [Meet the Team](#meet-the-team)
-    - [References](#references)
+- [HASCHK (pronounced &quot;has check&quot;)](#haschk-pronounced-quothas-checkquot)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Literature](#literature)
+  - [Contribution Guidelines](#contribution-guidelines)
+    - [Branch Workflow](#branch-workflow)
+  - [Meet the Team](#meet-the-team)
+  - [References](#references)
 
 <!-- /TOC -->
 
@@ -90,7 +90,6 @@ Hence, the branch workflow can be summarized as:
 | ![a picture goes here][rawalvarez731] | [Richard Alvarez](http://richard.alvareztech.org)|
 | ![a picture goes here][hankhoffmann] | [Hank Hoffmann](http://people.cs.uchicago.edu/~hankhoffmann)|
 | ![a picture goes here][ilopilop538] | [Trevor Medina](ilopilop538@gmail.com)|
-| ![a picture goes here][ravenben] | [Ben Zhou](http://people.cs.uchicago.edu/~ravenben)|
 |&zwnj;|&zwnj;|
 
 ## References
@@ -101,4 +100,3 @@ See [the paper](https://git.xunn.io/closed-source/research/psd-mirrored/haschk-p
 [rawalvarez731]: docs/pics/richard.jpg
 [hankhoffmann]: docs/pics/hank.jpg
 [ilopilop538]: docs/pics/trevor.jpg
-[ravenben]: docs/pics/ben.jpg
