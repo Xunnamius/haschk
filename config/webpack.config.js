@@ -145,7 +145,6 @@ const configure = (NODE_ENV: ?string) => {
     }
 
     const exclude = parseGitIgnore(readFileSync(paths.buildGitIgnore)).filter(path => path.startsWith('!'));
-    console.log(exclude);
 
     // ? The following is necessary so CleanWebpackPlugin doesn't kill build/.gitignore
     options.plugins = [
