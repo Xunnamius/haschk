@@ -3,7 +3,7 @@
 // flow-disable-line
 import pkg from './package'
 import webpack from 'webpack'
-import CleanWebpackPlugin from 'clean-webpack-plugin'
+import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import WriteFileWebpackPlugin from 'write-file-webpack-plugin'
@@ -144,13 +144,12 @@ const configure = (NODE_ENV: ?string) => {
         options.resolve.mainFields = ['browser', 'main'];
     }
 
-    const exclude = parseGitIgnore(readFileSync(paths.buildGitIgnore))
-        .filter(path => path.startsWith('!'))
-        .map(path => path.substr(1));
+    const exclude = parseGitIgnore(readFileSync(paths.buildGitIgnore)).filter(path => path.startsWith('!'));
+    console.log(exclude);
 
     // ? The following is necessary so CleanWebpackPlugin doesn't kill build/.gitignore
     options.plugins = [
-        new CleanWebpackPlugin([paths.build], { exclude }),
+        new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: [ paths.build, ...exclude ]}),
         ...options.plugins
     ];
 
