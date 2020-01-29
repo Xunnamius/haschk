@@ -3,10 +3,12 @@
 // flow-disable-line
 import pkg from './package'
 import webpack from 'webpack'
+import { join as joinPath } from 'path'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import WriteFileWebpackPlugin from 'write-file-webpack-plugin'
+import ExtensionReloader from 'webpack-extension-reloader'
 import parseGitIgnore from 'parse-gitignore'
 import { readFileSync } from 'fs'
 
@@ -70,6 +72,8 @@ const configure = (NODE_ENV: ?string) => {
     options.plugins = [
         // ? Clean paths.build (added below instead)
         // new CleanWebpackPlugin(['build']),
+
+        new ExtensionReloader(),
 
         // ? Expose desired environment variables in the packed bundle
         new webpack.DefinePlugin({
@@ -144,7 +148,9 @@ const configure = (NODE_ENV: ?string) => {
         options.resolve.mainFields = ['browser', 'main'];
     }
 
-    const exclude = parseGitIgnore(readFileSync(paths.buildGitIgnore)).filter(path => path.startsWith('!'));
+    const exclude = parseGitIgnore(readFileSync(paths.buildGitIgnore))
+        .filter(path => path.startsWith('!'))
+        .map(path => '!' + joinPath(paths.build, path.substr(1)));
 
     // ? The following is necessary so CleanWebpackPlugin doesn't kill build/.gitignore
     options.plugins = [

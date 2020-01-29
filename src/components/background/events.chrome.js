@@ -76,7 +76,7 @@ export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) 
             else
             {
                 oracle.emit(message.event.substring(1), ...message.data);
-                // ? Remember all DnschkEventPort emits are promises waiting for
+                // ? Remember all HaschkEventPort emits are promises waiting for
                 // ? a response, but when we interact with internal events
                 // ? (e.g. .judgement.unsafe) there is no response! so this
                 // ? is just an empty response so the promise resolves.

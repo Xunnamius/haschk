@@ -1,11 +1,11 @@
 {
-  "name": "dnschk",
-  "description": "A proof-of-concept WebExtension tailored to Google Chrome that implements the DNSCHK protocol",
+  "name": "haschk",
+  "description": "A proof-of-concept web extension tailored to Google Chrome that implements the HASCHK protocol",
   "repository": {
     "type": "git",
-    "url": "https://github.com/morty-c137-prime/DNSCHK"
+    "url": "https://git.xunn.io/closed-source/research/psd-mirrored/haschk"
   },
-  "version": "0.9.9",
+  "version": "0.10.0",
   "scripts": {
     "dev": "npx gulp wpdevserv",
     "build": "npx gulp build",
@@ -17,6 +17,7 @@
     "debug-remote-jest": "node --inspect-brk='0.0.0.0:7777' ./node_modules/.bin/jest --runInBand",
     "test-ib": "npx jest --runInBand",
     "test-nc": "npx jest --no-cache",
+    "clean-build": "npx gulp cleanBuild",
     "clean-types": "npx gulp cleanTypes",
     "generate": "BABEL_ENV=generator npx babel config --out-dir .",
     "regenerate": "npx gulp regenerate",
@@ -27,7 +28,7 @@
     "preversion": "npm run test-ib",
     "version": "git add --all"
   },
-  "author": "Richard Alvarez",
+  "author": "Xunnamius",
   "license": "MIT",
   "main": "./src/index.js",
   "jest": {
@@ -97,6 +98,7 @@
     "webpack": "^4.41.5",
     "webpack-bundle-analyzer": "^3.6.0",
     "webpack-dev-server": "^3.10.1",
+    "webpack-extension-reloader": "^1.1.4",
     "write-file-webpack-plugin": "^4.5.1"
   }
 }

@@ -1,5 +1,5 @@
 /** @flow
- * @description Most of the complex core DNSCHK logic and functionality is here
+ * @description Most of the complex core HASCHK logic and functionality is here
  */
 
 import http from 'axios'

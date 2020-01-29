@@ -24,7 +24,7 @@ export function portEvent(event: string, ...data: Array<mixed>)
     }
 }
 
-export default class DnschkEventPort
+export default class HaschkEventPort
 {
     #port;
     handlers = {};
@@ -54,5 +54,5 @@ export default class DnschkEventPort
 }
 
 export {
-    DnschkEventPort
+    HaschkEventPort
 }

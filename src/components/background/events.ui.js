@@ -1,5 +1,5 @@
 /** @flow
- * @description All DNSCHK UI event hooks go here, including for popup/options
+ * @description All HASCHK UI event hooks go here, including for popup/options
  */
 
 // TODO: need to move this type of documentation into the wiki
@@ -29,7 +29,7 @@
 // ? remaining event handlers not processed) after which one of the
 // ? `judgement.*` events should be triggered. This is immediate (i.e. the rest
 // ? of the event stack is skipped). All events triggered in flows #2/3 receive
-// ? an EventFrame instance (e) that allows access to DNSCHK's internals, i.e.
+// ? an EventFrame instance (e) that allows access to HASCHK's internals, i.e.
 // ? via ::judgeUnsafe(), ::judgeSafe(), etc.
 
 // ? All oracle events receive a modified downloadItem object with the following
@@ -48,7 +48,7 @@ export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) 
     // ? This is our generic error handler that fires whenever an error occurs
     oracle.addListener('error', err => {
         setBadge(chrome)('ERR', '#000');
-        console.error(`DNSCHK ERROR: ${err}`);
+        console.error(`HASCHK ERROR: ${err}`);
     });
 
     // ? This event fires whenever a new download is observed
@@ -68,19 +68,19 @@ export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) 
         console.log(`file "${downloadItem.filename}" flagged for suspicious origin`);
     });
 
-    // ? This event fires whenever dnschk decides it cannot judge a download
+    // ? This event fires whenever haschk decides it cannot judge a download
     oracle.addListener('judgement.unknown', downloadItem => {
         setBadge(chrome)(' ', '#D0D6B5');
         console.log(`file "${downloadItem.filename}" judgement: UNKNOWN`);
     });
 
-    // ? This event fires whenever dnschk decides a download is safe
+    // ? This event fires whenever haschk decides a download is safe
     oracle.addListener('judgement.safe', downloadItem => {
         setBadge(chrome)(' ', '#6EEB83');
         console.log(`file "${downloadItem.filename}" judgement: SAFE`);
     });
 
-    // ? This event fires whenever dnschk decides a download is NOT safe
+    // ? This event fires whenever haschk decides a download is NOT safe
     oracle.addListener('judgement.unsafe', downloadItem => {
         setBadge(chrome)(' ', '#FF3C38');
         console.log(`file "${downloadItem.filename}" judgement: UNSAFE`);

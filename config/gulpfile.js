@@ -15,9 +15,9 @@ import del from 'del'
 import log from 'fancy-log'
 import parseGitIgnore from 'parse-gitignore'
 import { transformSync as babel } from '@babel/core'
-import { relative as relPath } from 'path'
+import { relative as relPath, join as joinPath } from 'path'
 import webpack from 'webpack'
-import webpackDevServer from 'webpack-dev-server'
+import extensionReloader from 'webpack-extension-reloader'
 // flow-disable-line
 import config from './webpack.config'
 // flow-disable-line
@@ -167,7 +167,7 @@ export const wpdevserv = () => {
     const packer = webpack(configured);
     const server = new webpackDevServer(packer, {
         hot: true,
-        contentBase: paths.build,
+        contentBase: joinPath(__dirname, paths.build),
         headers: { 'Access-Control-Allow-Origin': '*' }
     });
 

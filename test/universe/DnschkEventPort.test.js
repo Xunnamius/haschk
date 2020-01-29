@@ -3,7 +3,7 @@
 // TODO: Finish writing this test.
 
 import {
-    DnschkEventPort,
+    HaschkEventPort,
     portEvent
 } from 'universe/ui'
 import { EventEmitter } from 'eventemitter3'

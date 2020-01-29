@@ -1,12 +1,12 @@
 /** @flow
- * @description DNSCHK popup functionality
+ * @description HASCHK popup functionality
  * @name Popup
  */
 
 import './index.css'
 
 import {
-    DnschkEventPort,
+    HaschkEventPort,
     guaranteeElementById
 } from 'universe/ui';
 
@@ -18,11 +18,11 @@ import {
 
 declare var chrome:any;
 
-const bridge = new DnschkEventPort(chrome);
+const bridge = new HaschkEventPort(chrome);
 const downloadList = guaranteeElementById('downloadItems');
 
 // TODO: ensure bugs are fixed and UI meets specification outlined at
-// TODO: https://github.com/morty-c137-prime/DNSCHK/issues/31
+// TODO: https://github.com/morty-c137-prime/HASCHK/issues/31
 
 const appendDownloadToDownloadList = (downloadItem: any, judgement: string) => {
     // flow-disable-line

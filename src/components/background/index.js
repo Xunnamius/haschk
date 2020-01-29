@@ -1,5 +1,5 @@
 /** @flow
- * @description DNSCHK background functionality
+ * @description HASCHK background functionality
  * @name Background
  */
 
