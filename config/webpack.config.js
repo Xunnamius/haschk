@@ -8,7 +8,6 @@ import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import WriteFileWebpackPlugin from 'write-file-webpack-plugin'
-import ExtensionReloader from 'webpack-extension-reloader'
 import parseGitIgnore from 'parse-gitignore'
 import { readFileSync } from 'fs'
 
@@ -19,11 +18,12 @@ const { HASHING_OUTPUT_LENGTH } = process.env;
 const paths = {};
 
 paths.src = `${__dirname}/src`;
+paths.gitIgnore = `${__dirname}/.gitignore`;
 paths.build = `${__dirname}/build`;
 paths.buildAssets = `${paths.build}/assets`;
-paths.buildGitIgnore = `${paths.build}/.gitignore`;
-paths.srcManifest = `${paths.src}/manifest.json`;
+paths.manifest = `${paths.src}/manifest.json`;
 paths.components = `${paths.src}/components`;
+paths.universe = `${paths.src}/universe`;
 paths.assets = `${paths.src}/assets`;
 const assetExtensions = ['jpg', 'jpeg', 'png', `gif`, "eot", 'otf', 'svg', 'ttf', 'woff', 'woff2'];
 
@@ -71,9 +71,7 @@ const configure = (NODE_ENV: ?string) => {
 
     options.plugins = [
         // ? Clean paths.build (added below instead)
-        // new CleanWebpackPlugin(['build']),
-
-        new ExtensionReloader(),
+        new CleanWebpackPlugin(),
 
         // ? Expose desired environment variables in the packed bundle
         new webpack.DefinePlugin({
@@ -84,7 +82,7 @@ const configure = (NODE_ENV: ?string) => {
         }),
 
         new CopyWebpackPlugin([{
-            from: paths.srcManifest,
+            from: paths.manifest,
 
             // ? Generates our manifest file using info from package.json
             transform: content => Buffer.from(JSON.stringify({
@@ -134,8 +132,8 @@ const configure = (NODE_ENV: ?string) => {
     // ! Note that you must also change these same aliases in .flowconfig
     // ! Note that you must also change these same aliases in package.json (jest)
     options.resolve.alias = {
-        'universe': `${__dirname}/src/universe/`,
-        'components': `${__dirname}/src/components/`,
+        'components': paths.components,
+        'universe': paths.universe
     };
 
     // ? See: https://webpack.js.org/configuration/devtool
@@ -147,16 +145,6 @@ const configure = (NODE_ENV: ?string) => {
         // ? See: https://github.com/ipfs/js-ipfs-api/pull/777
         options.resolve.mainFields = ['browser', 'main'];
     }
-
-    const exclude = parseGitIgnore(readFileSync(paths.buildGitIgnore))
-        .filter(path => path.startsWith('!'))
-        .map(path => '!' + joinPath(paths.build, path.substr(1)));
-
-    // ? The following is necessary so CleanWebpackPlugin doesn't kill build/.gitignore
-    options.plugins = [
-        new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: [ paths.build, ...exclude ]}),
-        ...options.plugins
-    ];
 
     return options;
 };

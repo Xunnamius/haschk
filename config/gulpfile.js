@@ -49,7 +49,6 @@ const paths = {};
 paths.flowTyped = 'flow-typed';
 paths.flowTypedGitIgnore = `${paths.flowTyped}/.gitignore`;
 paths.build = `build`;
-paths.buildGitIgnore = `${paths.build}/.gitignore`;
 paths.configs = 'config';
 paths.packageJson = 'package.json';
 paths.launchJson = '.vscode/launch.json';
@@ -86,10 +85,8 @@ cleanTypes.description = `Resets the ${paths.flowTyped} directory to a pristine 
 // * CLEANBUILD
 
 export const cleanBuild = async () => {
-    const targets = parseGitIgnore(await readFileAsync(paths.buildGitIgnore));
-
-    log(`Deletion targets @ ${paths.build}/: "${targets.join('" "')}"`);
-    await del(targets, { cwd: paths.build });
+    log(`Deletion targets @ ${paths.build}/*`);
+    await del('*', { cwd: paths.build });
 };
 
 cleanBuild.description = `Resets the ${paths.build} directory to a pristine state`;
