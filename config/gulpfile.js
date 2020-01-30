@@ -17,7 +17,7 @@ import parseGitIgnore from 'parse-gitignore'
 import { transformSync as babel } from '@babel/core'
 import { relative as relPath, join as joinPath } from 'path'
 import webpack from 'webpack'
-import extensionReloader from 'webpack-extension-reloader'
+import WebpackDevServer from 'webpack-dev-server'
 // flow-disable-line
 import config from './webpack.config'
 // flow-disable-line
@@ -162,13 +162,13 @@ export const wpdevserv = () => {
     ]: Array<any>);
 
     const packer = webpack(configured);
-    const server = new webpackDevServer(packer, {
+    const server = new WebpackDevServer(packer, {
         hot: true,
         contentBase: joinPath(__dirname, paths.build),
         headers: { 'Access-Control-Allow-Origin': '*' }
     });
 
-    server.listen(DEV_PORT, err => { if(err) throw `WEBPACK DEV SERVER ERROR: ${err}` });
+    server.listen(DEV_PORT, '0.0.0.0', err => { if(err) throw `WEBPACK DEV SERVER ERROR: ${err}` });
 };
 
 wpdevserv.description = 'Launches the Webpack Development Server for testing purposes';

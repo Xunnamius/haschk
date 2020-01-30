@@ -75,7 +75,7 @@ const configure = (NODE_ENV: ?string) => {
 
         // ? Expose desired environment variables in the packed bundle
         new webpack.DefinePlugin({
-            'process.env': {
+            'process': {
                 NODE_ENV: JSON.stringify(NODE_ENV),
                 HASHING_OUTPUT_LENGTH: JSON.stringify(HASHING_OUTPUT_LENGTH),
             },

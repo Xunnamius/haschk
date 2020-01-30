@@ -1,40 +1,25 @@
-export const oracle = {
+const eePlaceholder = () => ({
     calls: [],
     _push(name, args) { this.calls.push({ name, args }); },
     addListener(...args) { this._push('addListener', args); },
-    emit(...args) { this._push('emit', args); },
-};
+    emit(...args) { this._push('emit', args); }
+});
 
-// TODO: DRY this out
+export const oracle = eePlaceholder();
+
 export const chrome = {
     runtime: {
-        onConnect: {
-            calls: [],
-            _push(name, args) { this.calls.push({ name, args }); },
-            addListener(...args) { this._push('addListener', args); }
-        }
+        onConnect: eePlaceholder(),
+        onInstalled: eePlaceholder()
     },
 
     tabs: {
-        onUpdated: {
-            calls: [],
-            _push(name, args) { this.calls.push({ name, args }); },
-            addListener(...args) { this._push('addListener', args); }
-        }
+        onUpdated: eePlaceholder()
     },
 
     downloads: {
-        onDeterminingFilename: {
-            calls: [],
-            _push(name, args) { this.calls.push({ name, args }); },
-            addListener(...args) { this._push('addListener', args); }
-        },
-
-        onChanged: {
-            calls: [],
-            _push(name, args) { this.calls.push({ name, args }); },
-            addListener(...args) { this._push('addListener', args); }
-        }
+        onDeterminingFilename: eePlaceholder(),
+        onChanged: eePlaceholder()
     }
 };
 
