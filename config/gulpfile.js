@@ -163,6 +163,7 @@ export const wpdevserv = () => {
 
     const packer = webpack(configured);
     const server = new WebpackDevServer(packer, {
+        disableHostCheck: true,
         hot: true,
         contentBase: joinPath(__dirname, paths.build),
         headers: { 'Access-Control-Allow-Origin': '*' }
