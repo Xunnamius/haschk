@@ -166,7 +166,10 @@ export const wpdevserv = () => {
         disableHostCheck: true,
         hot: true,
         contentBase: joinPath(__dirname, paths.build),
-        headers: { 'Access-Control-Allow-Origin': '*' }
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        publicPath: `http://${DEV_ENDPOINT}:${DEV_PORT}/`,
+        sockHost: DEV_ENDPOINT,
+        sockPort: DEV_PORT
     });
 
     server.listen(DEV_PORT, '0.0.0.0', err => { if(err) throw `WEBPACK DEV SERVER ERROR: ${err}` });
