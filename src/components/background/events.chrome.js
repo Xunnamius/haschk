@@ -6,7 +6,7 @@ import { extendDownloadItemInstance } from 'universe'
 import { portEvent } from 'universe/ui'
 
 import {
-    DownloadEventFrame,
+    EventFrame,
     FrameworkEventEmitter
 } from 'universe/events'
 
@@ -22,9 +22,8 @@ export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) 
     // ? This event fires when the extension is first installed
 
     chrome.runtime.onInstalled.addListener(details => {
-        if(details.reason == 'install') {
+        if(['install', 'update'].includes(details.reason))
             chrome.tabs.create({ url: chrome.runtime.getURL('assets/welcome.html') });
-        }
     });
 
     // ? There are better ways to do this, but until then these fire when
@@ -91,10 +90,9 @@ export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) 
             context.timingData[tab.url] = Date.now();
     });
 
-    // ? This event fires with a DownloadItem object when a new download begins
-    // ? in chrome; also allows suggesting a filename via callback function
-    chrome.downloads.onDeterminingFilename.addListener((downloadItem, suggestFilename: Function) => {
-        const eventFrame = new DownloadEventFrame(oracle, context, suggestFilename);
+    // ? This event fires when a new download begins in chrome
+    chrome.downloads.onCreated.addListener(downloadItem => {
+        const eventFrame = new EventFrame(oracle, context);
         extendDownloadItemInstance(downloadItem);
 
         oracle.emit('download.incoming', eventFrame, downloadItem).then(() => {
@@ -113,8 +111,7 @@ export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) 
         return true;
     });
 
-    // ? This event fires with a DownloadItem object when some download-related
-    // ? event changes
+    // ? This event fires when some download-related event changes
     chrome.downloads.onChanged.addListener(targetItem => {
         // ? Only trigger the moment a download completes and only if this event
         // ? has not already been cancelled
@@ -122,7 +119,7 @@ export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) 
             // ? We need to ask for the full DownloadItem instance due to
             // ? security
             chrome.downloads.search({ id: targetItem.id }, ([ downloadItem ]) => {
-                const eventFrame = new DownloadEventFrame(oracle, context);
+                const eventFrame = new EventFrame(oracle, context);
                 oracle.emit('download.completed', eventFrame, extendDownloadItemInstance(downloadItem));
             });
         }
