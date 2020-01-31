@@ -28,7 +28,7 @@ require('dotenv').config();
 const {
     WEBPACK_PORT,
     DEV_ENDPOINT,
-    HASHING_OUTPUT_LENGTH
+    HASHING_ALGORITHM
 } = process.env;
 
 const configured = config({ NODE_ENV: process.env.NODE_ENV });
@@ -39,8 +39,8 @@ if(typeof WEBPACK_PORT !== 'string')
 if(typeof DEV_ENDPOINT !== 'string')
     throw new TypeError('DEV_ENDPOINT is improperly defined. Did you copy dist.env -> .env ?');
 
-if(typeof HASHING_OUTPUT_LENGTH !== 'string')
-    throw new TypeError('HASHING_OUTPUT_LENGTH is improperly defined. Did you copy dist.env -> .env ?');
+if(typeof HASHING_ALGORITHM !== 'string')
+    throw new TypeError('HASHING_ALGORITHM is improperly defined. Did you copy dist.env -> .env ?');
 
 const DEV_PORT = parseInt(WEBPACK_PORT, 10);
 

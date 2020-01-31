@@ -8,9 +8,6 @@ import ParsedUrl from 'url-parse'
 import {
     bufferToHex,
     GOOGLE_DNS_HTTPS_RI_FN,
-////GOOGLE_DNS_HTTPS_RR_FN,
-    HASHING_OUTPUT_LENGTH,
-    DANGER_THRESHOLD,
     JUDGEMENT_UNKNOWN,
     JUDGEMENT_UNSAFE,
     JUDGEMENT_SAFE
@@ -60,7 +57,7 @@ export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) 
                 // ? Determine resource identifier and prepare for DNS request
                 const resourcePath = (new ParsedUrl(downloadItem.url, {})).pathname;
                 const resourceIdentifier = bufferToHex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(resourcePath)));
-                const outputLength = parseInt(HASHING_OUTPUT_LENGTH);
+                const outputLength = parseInt(HASHING_ALGORITHM);
 
                 if(!resourceIdentifier || resourceIdentifier.length != outputLength)
                     throw new Error('failed to hash resource identifier');

@@ -13,7 +13,7 @@ import { readFileSync } from 'fs'
 
 require('dotenv').config();
 
-const { HASHING_OUTPUT_LENGTH } = process.env;
+const { HASHING_ALGORITHM } = process.env;
 
 const paths = {};
 
@@ -75,10 +75,8 @@ const configure = (NODE_ENV: ?string) => {
 
         // ? Expose desired environment variables in the packed bundle
         new webpack.DefinePlugin({
-            'process': {
-                NODE_ENV: JSON.stringify(NODE_ENV),
-                HASHING_OUTPUT_LENGTH: JSON.stringify(HASHING_OUTPUT_LENGTH),
-            },
+            'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
+            'process.env.HASHING_ALGORITHM': JSON.stringify(HASHING_ALGORITHM)
         }),
 
         new CopyWebpackPlugin([{

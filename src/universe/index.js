@@ -2,19 +2,15 @@
  * @description global utility functions and constants
  */
 
-export const DANGER_THRESHOLD = 2000;
-
 // ? Returns a string HTTPS endpoint URI that will yield the desired resource
 // ? identifier hash
 export const GOOGLE_DNS_HTTPS_RI_FN = (riHashLeft: string, riHashRight: string, originDomain: string) =>
-    `https://dns.google.com/resolve?name=${riHashLeft}.${riHashRight}._ri._haschk.${originDomain}&type=TXT`;
+    `https://dns.google.com/resolve?name=${riHashLeft}.${riHashRight}.${haschk}.${originDomain}&type=TXT`;
 
 // ? Returns a string HTTPS endpoint URI that will yield the desired resource
 // ? range string
 export const GOOGLE_DNS_HTTPS_RR_FN = (originDomain: string) =>
     `https://dns.google.com/resolve?name=_rr._haschk.${originDomain}&type=TXT`;
-
-export const { HASHING_OUTPUT_LENGTH } = process.env;
 
 export const FRAMEWORK_EVENTS = ['download.incoming', 'download.completed', 'download.suspiciousOrigin'];
 

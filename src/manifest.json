@@ -18,7 +18,7 @@
         "<all_urls>",
         "file://*/",
         "downloads",
-        "tabs"
+        "webRequest"
     ],
     "icons": {
         "16": "assets/icon/16x16.png",
