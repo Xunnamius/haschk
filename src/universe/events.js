@@ -7,7 +7,7 @@ import InterruptibleEventFrame from './InterruptibleEventFrame'
 import DownloadEventFrame from './DownloadEventFrame'
 import FrameworkEventEmitter from './FrameworkEventEmitter'
 
-export type ListenerFn = (...args: Array<any>) => (Promise<void> | void);
+export type { ListenerFn } from 'eventemitter3';
 
 export {
     EventFrame,

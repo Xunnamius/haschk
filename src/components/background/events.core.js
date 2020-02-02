@@ -24,7 +24,7 @@ export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) 
     oracle.addListener('download.incoming', async (e, downloadItem) => {
         const eventFrame = new DownloadEventFrame(oracle, context);
         const startTime = (new Date(downloadItem.startTime)).getTime();
-        const tabLoadTime = context.timingData[downloadItem.referrer] || startTime;
+        const tabLoadTime = context.navHistory[downloadItem.referrer] || startTime;
 
         // ! This step protects against certain timing attacks (see issue #3)
         if(startTime - tabLoadTime <= DANGER_THRESHOLD)

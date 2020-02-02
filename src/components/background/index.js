@@ -17,9 +17,8 @@ const oracle = new EventEmitter(FRAMEWORK_EVENTS);
 const context = {
     handledDownloadItems: new Set(),
     judgedDownloadItems: [],
-    registeredPorts: [],
-    activePorts: [],
-    timingData: {}
+    seenPorts: {},
+    navHistory: {}
 };
 
 registerChromeEvents(oracle, chrome, context);

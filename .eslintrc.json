@@ -1,13 +1,11 @@
 {
     "parser": "babel-eslint",
     "plugins": [
-        "flowtype",
-        "react"
+        "flowtype"
     ],
     "extends": [
         "eslint:recommended",
-        "plugin:flowtype/recommended",
-        "plugin:react/recommended"
+        "plugin:flowtype/recommended"
     ],
     "parserOptions": {
         "ecmaVersion": 8,
@@ -28,6 +26,7 @@
     "rules": {
         "flowtype/space-after-type-colon": "off",
         "no-console": "off",
-        "no-unused-vars": "warn"
+        "no-unused-vars": "warn",
+        "no-prototype-builtins": "off"
     }
 }

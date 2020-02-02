@@ -26,7 +26,7 @@ export const chrome = {
 export const context = {
     handledDownloadItems: new Set(),
     judgedDownloadItems: [],
-    registeredPorts: [],
-    activePorts: [],
-    timingData: {}
+    seenPortNames: [],
+    seenPorts: [],
+    navHistory: {}
 };

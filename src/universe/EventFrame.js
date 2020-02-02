@@ -6,10 +6,10 @@ export default class EventFrame {
     stopped = false;
     finished = false;
     _finished: any;
-    _continueFn: HandlerFn;
-    _finishedFn: HandlerFn;
+    _continueFn: Function;
+    _finishedFn: Function;
 
-    constructor(continueFn: HandlerFn, finishedFn: HandlerFn) {
+    constructor(continueFn: Function, finishedFn: Function) {
         this._continueFn = continueFn;
         this._finishedFn = finishedFn;
     }
@@ -33,5 +33,3 @@ export default class EventFrame {
         return this._finished;
     }
 }
-
-export type HandlerFn = (...args: Array<any>) => any;

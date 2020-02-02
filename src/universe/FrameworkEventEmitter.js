@@ -2,7 +2,6 @@
 
 import EventEmitter from 'eventemitter3'
 import { EventFrame } from 'universe/events'
-import type { ListenerFn as SuperListenerFn } from 'eventemitter3'
 import type { ListenerFn } from 'universe/events'
 
 // TODO: document me!
@@ -36,10 +35,9 @@ export default class FrameworkEventEmitter extends EventEmitter {
     }
 
     // ? Modify emit to handle async handlers and errors in handlers
-    // flow-disable-line
     async emit(event: string, ...args: Array<any>) {
         try {
-            await asyncEmit(0, ((this.listeners(event): any): Array<ListenerFn>), args);
+            await asyncEmit(0, this.listeners(event), args);
         }
 
         catch(error) {
@@ -61,12 +59,10 @@ export default class FrameworkEventEmitter extends EventEmitter {
             }
         }
 
-        super.addListener(eventName, ((eventHandler: any): SuperListenerFn), context);
+        super.addListener(eventName, eventHandler, context);
 
-        // flow-disable-line
         if(prepend && !this._events[eventName].fn)
         {
-            // flow-disable-line
             this._events[eventName] = [this._events[eventName].pop(), ...this._events[eventName]];
         }
 
@@ -78,10 +74,6 @@ export default class FrameworkEventEmitter extends EventEmitter {
     }
 
     appendListener(...args: Array<any>) {
-        return this.addListener(...args);
-    }
-
-    on(...args: Array<any>) {
         return this.addListener(...args);
     }
 }
