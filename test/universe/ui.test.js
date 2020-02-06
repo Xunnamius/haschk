@@ -4,11 +4,13 @@ import { guaranteeElementById } from 'universe/ui'
 
 test('guaranteeElementById returns HTMLElement', () => {
     const el = {};
-    document.getElementById = id => el;
+    // flow-disable-line
+    document.getElementById = () => el;
     expect(guaranteeElementById('id')).toBe(el);
 });
 
 test("guaranteeElementById throws if it can't return HTMLElement", () => {
-    document.getElementById = id => null;
+    // flow-disable-line
+    document.getElementById = () => null;
     expect(() => guaranteeElementById('id')).toThrow();
 });

@@ -3,17 +3,14 @@
 // flow-disable-line
 import pkg from './package'
 import webpack from 'webpack'
-import { join as joinPath } from 'path'
 import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import WriteFileWebpackPlugin from 'write-file-webpack-plugin'
-import parseGitIgnore from 'parse-gitignore'
-import { readFileSync } from 'fs'
 
 require('dotenv').config();
 
-const { HASHING_ALGORITHM } = process.env;
+const { HASHING_ALGORITHM, APPLICATION_LABEL } = process.env;
 
 const paths = {};
 
@@ -25,9 +22,12 @@ paths.manifest = `${paths.src}/manifest.json`;
 paths.components = `${paths.src}/components`;
 paths.universe = `${paths.src}/universe`;
 paths.assets = `${paths.src}/assets`;
+
 const assetExtensions = ['jpg', 'jpeg', 'png', `gif`, "eot", 'otf', 'svg', 'ttf', 'woff', 'woff2'];
 
 const configure = (NODE_ENV: ?string) => {
+    NODE_ENV = NODE_ENV || 'production';
+
     const DEV_ENV = NODE_ENV === 'development';
     const options = {};
 
@@ -75,8 +75,9 @@ const configure = (NODE_ENV: ?string) => {
 
         // ? Expose desired environment variables in the packed bundle
         new webpack.DefinePlugin({
-            'process.env.NODE_ENV': JSON.stringify(NODE_ENV),
-            'process.env.HASHING_ALGORITHM': JSON.stringify(HASHING_ALGORITHM)
+            _NODE_ENV: JSON.stringify(NODE_ENV),
+            _HASHING_ALGORITHM: JSON.stringify(HASHING_ALGORITHM || 'SHA-256'),
+            _APPLICATION_LABEL: JSON.stringify(APPLICATION_LABEL || '_haschk')
         }),
 
         new CopyWebpackPlugin([{

@@ -2,19 +2,44 @@
  * @description global utility functions and constants
  */
 
+export const JUDGEMENT_SAFE = 'safe';
+export const JUDGEMENT_UNSAFE = 'unsafe';
+export const JUDGEMENT_UNKNOWN = 'unknown';
+
+declare var chrome: any;
+export type Chrome = chrome;
+
+declare var _NODE_ENV: string;
+declare var _HASHING_ALGORITHM: string;
+declare var _APPLICATION_LABEL: string;
+
+export const NODE_ENV = _NODE_ENV;
+export const HASHING_ALGORITHM = _HASHING_ALGORITHM;
+export const APPLICATION_LABEL = _APPLICATION_LABEL;
+
 // ? Returns a string HTTPS endpoint URI that will yield the desired resource
 // ? identifier hash
 export const GOOGLE_DNS_HTTPS_RI_FN = (riHashLeft: string, riHashRight: string, originDomain: string) =>
-    `https://dns.google.com/resolve?name=${riHashLeft}.${riHashRight}.${haschk}.${originDomain}&type=TXT`;
+    `https://dns.google.com/resolve?name=${riHashLeft}.${riHashRight}.${APPLICATION_LABEL}.${originDomain}&type=TXT`;
 
 // ? Returns a string HTTPS endpoint URI that will yield the desired resource
 // ? range string
 export const GOOGLE_DNS_HTTPS_RR_FN = (originDomain: string) =>
     `https://dns.google.com/resolve?name=_rr._haschk.${originDomain}&type=TXT`;
 
-export const FRAMEWORK_EVENTS = ['download.incoming', 'download.completed', 'download.suspiciousOrigin'];
+export const FRAMEWORK_EVENTS = ['download.incoming', 'download.completed', ];
 
 export const extractDomainFromURI = (url: string) => (new URL(url)).hostname.split('.').slice(-2).join('.');
+
+export const Debug = {
+    log(...args: Array<any>) {
+        NODE_ENV === 'development' && console.log(...args);
+    },
+
+    if(fn: Function) {
+        NODE_ENV === 'development' && fn();
+    }
+};
 
 export const extendDownloadItemInstance = (downloadItem: any) => {
     const uri: string = downloadItem.referrer || downloadItem.url;
@@ -22,12 +47,10 @@ export const extendDownloadItemInstance = (downloadItem: any) => {
     if(!uri) throw new Error('cannot determine originDomain');
 
     downloadItem.originDomain = extractDomainFromURI(uri);
+    downloadItem.judgement = JUDGEMENT_UNKNOWN;
+
     return downloadItem;
 };
-
-export const JUDGEMENT_SAFE = 'safe';
-export const JUDGEMENT_UNSAFE = 'unsafe';
-export const JUDGEMENT_UNKNOWN = 'unknown';
 
 export const bufferToHex = (buffer: ArrayBuffer) => {
     let hexCodes = [];

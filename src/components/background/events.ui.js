@@ -42,7 +42,8 @@
 
 import { setBadge } from 'universe/ui'
 import { FrameworkEventEmitter } from 'universe/events'
-import type { Chrome } from 'components/background'
+import { Debug } from 'universe'
+import type { Chrome } from 'universe'
 
 export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) => {
     // ? This is our generic error handler that fires whenever an error occurs
@@ -55,41 +56,30 @@ export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) 
     oracle.addListener('download.incoming', async (e, downloadItem) => {
         // TODO: add the new download to popup UI (tell popup UI to update)
         // ! Note how this function is async, which means you can await Promises
-        console.log(`file "${downloadItem.filename}" incoming`);
-    });
-
-    // ? This event fires whenever a suspicious originDomain needs to be
-    // ? verified manually by the user
-    oracle.addListener('download.suspiciousOrigin', async (e, downloadItem) => {
-        // TODO: must ask user to approve downloadItem.urlDomain via the UI
-        // ! Note how this function is async, i.e. means you can await Promises!
-        // ! You should use async/await syntax to ensure the extension waits for
-        // ! the UI to finish before continuing
-        console.log(`file "${downloadItem.filename}" flagged for suspicious origin`);
+        Debug.log(`file "${downloadItem.filename}" incoming`);
     });
 
     // ? This event fires whenever haschk decides it cannot judge a download
     oracle.addListener('judgement.unknown', downloadItem => {
         setBadge(chrome)(' ', '#D0D6B5');
-        console.log(`file "${downloadItem.filename}" judgement: UNKNOWN`);
+        Debug.log(`file "${downloadItem.filename}" judgement: UNKNOWN`);
     });
 
     // ? This event fires whenever haschk decides a download is safe
     oracle.addListener('judgement.safe', downloadItem => {
         setBadge(chrome)(' ', '#6EEB83');
-        console.log(`file "${downloadItem.filename}" judgement: SAFE`);
+        Debug.log(`file "${downloadItem.filename}" judgement: SAFE`);
     });
 
     // ? This event fires whenever haschk decides a download is NOT safe
     oracle.addListener('judgement.unsafe', downloadItem => {
         setBadge(chrome)(' ', '#FF3C38');
-        console.log(`file "${downloadItem.filename}" judgement: UNSAFE`);
+        Debug.log(`file "${downloadItem.filename}" judgement: UNSAFE`);
     });
 
     oracle.addListener('ui.clear', () => {
         setBadge(chrome)('');
         context.judgedDownloadItems = [];
-        console.clear();
     });
 
 };

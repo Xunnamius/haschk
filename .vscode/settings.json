@@ -3,15 +3,17 @@
         "flow-typed": true
     },
     "cSpell.words": [
+        "asyncify",
         "authed",
         "cleanbuild",
         "cleantypes",
         "cntinue",
         "davidcash",
         "devseed",
-        "haschk's",
         "event",
         "frame",
+        "handler",
+        "haschk's",
         "hash",
         "interruptible",
         "newstring",

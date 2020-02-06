@@ -7,10 +7,11 @@ import ParsedUrl from 'url-parse'
 
 import {
     bufferToHex,
+    HASHING_ALGORITHM,
     GOOGLE_DNS_HTTPS_RI_FN,
     JUDGEMENT_UNKNOWN,
     JUDGEMENT_UNSAFE,
-    JUDGEMENT_SAFE
+    JUDGEMENT_SAFE,
 } from 'universe'
 
 import {
@@ -18,17 +19,11 @@ import {
     FrameworkEventEmitter
 } from 'universe/events'
 
-import type { Chrome } from 'components/background'
+import type { Chrome } from 'universe'
 
 export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) => {
-    oracle.addListener('download.incoming', async (e, downloadItem) => {
+    oracle.addListener('download.incoming', async () => {
         const eventFrame = new DownloadEventFrame(oracle, context);
-        const startTime = (new Date(downloadItem.startTime)).getTime();
-        const tabLoadTime = context.navHistory[downloadItem.referrer] || startTime;
-
-        // ! This step protects against certain timing attacks (see issue #3)
-        if(startTime - tabLoadTime <= DANGER_THRESHOLD)
-            await oracle.emit('download.suspiciousOrigin', eventFrame, downloadItem);
 
         // ? If the event was ended prematurely, assume downloadItem was handled
         // ? elsewhere in the event flow
@@ -52,6 +47,7 @@ export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) 
                 const $file = await http.get(`file://${downloadItem.filename}`, { responseType: 'arraybuffer' });
 
                 // ? Hash file data with proper algorithm
+                // flow-disable-line
                 nonauthedHash = bufferToHex(await crypto.subtle.digest('SHA-256', $file.data));
 
                 // ? Determine resource identifier and prepare for DNS request

@@ -6,74 +6,63 @@ import type { ListenerFn } from 'universe/events'
 
 // TODO: document me!
 
-const asyncEmit = async (index: number, listeners: Array<ListenerFn>, args: Array<any>) => {
+const asyncEmit = async (index: number, listeners: Array<ListenerFn>, eventFrame: EventFrame, args: Array<any>) => {
     const handler: ?ListenerFn = listeners[index];
 
     if(!handler)
         return Promise.resolve();
 
-    await Promise.resolve(handler(...args));
-    await asyncEmit(index + 1, listeners, args); // ? I've unwound the loop here and made each iteration async!
+    await Promise.resolve(handler(eventFrame, ...args));
+    await asyncEmit(index + 1, listeners, eventFrame, args); // ? I've unwound the loop here and made each iteration async!
 };
 
-const checkEventFrame = (eventName: string, eventFrame: EventFrame) => {
-    if(typeof eventFrame.stopped !== 'boolean')
-    {
-        throw new TypeError(
-            `first argument (arg1) passed to handlers via emit('${eventName}', arg1, ...) `
-           +`must be an EventFrame instance or expose compatible interface, got ${eventFrame.toString()} instead`
-        );
-    }
-}
+/**
+ * Modify a listener to interrupt event loop when EventFrames are stop()ed
+ *
+ * @param {ListenerFn} listener
+ */
+const asyncifyListener = (listener: ListenerFn) => {
+    const handlerActual = listener;
+
+    return async (eventFrame: EventFrame, ...args: Array<any>) => {
+        await Promise.resolve(eventFrame.stopped || handlerActual(eventFrame, ...args));
+        await Promise.resolve(eventFrame.continue());
+    };
+};
 
 export default class FrameworkEventEmitter extends EventEmitter {
-    _frameworkEvents = [];
-
-    constructor(frameworkEvents: ?Array<string>, ...args: Array<any>) {
+    constructor(...args: Array<any>) {
         super(...args);
-        this._frameworkEvents = frameworkEvents || [];
     }
 
     // ? Modify emit to handle async handlers and errors in handlers
-    async emit(event: string, ...args: Array<any>) {
+    async emit(event: string, eventFrame: EventFrame, ...args: Array<any>) {
         try {
-            await asyncEmit(0, this.listeners(event), args);
+            await asyncEmit(0, this.listeners(event), eventFrame, args);
+            await Promise.resolve(eventFrame.finish());
         }
 
         catch(error) {
             error.eventName = event;
             error.eventArgs = args;
 
-            super.emit('error', error);
+            return super.emit('error', error);
         }
     }
 
-    // ? Modify addListener to interrupt event loop when EventFrames are stop()ed
-    addListener(eventName: string | Symbol, eventHandler: ListenerFn, context: ?{}, prepend: ?boolean) {
-        if(this._frameworkEvents.includes(eventName)) {
-            const handlerActual = eventHandler;
-
-            eventHandler = async (eventFrame: EventFrame, ...args: Array<any>) => {
-                checkEventFrame(eventName.toString(), eventFrame);
-                await Promise.resolve(eventFrame.stopped || handlerActual(eventFrame, ...args));
-            }
-        }
-
-        super.addListener(eventName, eventHandler, context);
-
-        if(prepend && !this._events[eventName].fn)
-        {
-            this._events[eventName] = [this._events[eventName].pop(), ...this._events[eventName]];
-        }
-
-        return this;
-    }
-
-    prependListener(eventName: string | Symbol, eventHandler: ListenerFn, context: ?{}) {
-        return this.addListener(eventName, eventHandler, context, true);
-    }
-
-    appendListener(...args: Array<any>) {
-        return this.addListener(...args);
+    /**
+     * See https://nodejs.org/api/events.html#events_emitter_addlistener_eventname_listener
+     *
+     * Modifies a listener to interrupt event loop when EventFrames are
+     * stop()ed.
+     *
+     * The listener should have the following function signature:
+     * (eventFrame: EventFrame, ...args: Array<any>) => { ... }
+     *
+     * @param {string} eventName
+     * @param {ListenerFn} listener
+     */
+    addListener(eventName: string | Symbol, listener: ListenerFn) {
+        return super.addListener(eventName, asyncifyListener(listener));
     }
 }

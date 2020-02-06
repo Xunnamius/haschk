@@ -18,20 +18,19 @@ import { transformSync as babel } from '@babel/core'
 import { relative as relPath, join as joinPath } from 'path'
 import webpack from 'webpack'
 import WebpackDevServer from 'webpack-dev-server'
-// flow-disable-line
 import config from './webpack.config'
 // flow-disable-line
 import pkg from './package'
 
 require('dotenv').config();
 
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+
 const {
     WEBPACK_PORT,
     DEV_ENDPOINT,
     HASHING_ALGORITHM
 } = process.env;
-
-const configured = config({ NODE_ENV: process.env.NODE_ENV });
 
 if(typeof WEBPACK_PORT !== 'string')
     throw new TypeError('WEBPACK_PORT is improperly defined. Did you copy dist.env -> .env ?');
@@ -70,6 +69,7 @@ const CLI_BANNER = `/**
 */\n\n`;
 
 const readFileAsync = promisify(readFile);
+const generateWebpackConfig = () => config({ NODE_ENV: process.env.NODE_ENV });
 
 // * CLEANTYPES
 
@@ -115,12 +115,14 @@ regenerate.description = 'Invokes babel on the files in config, transpiling them
 
 export const build = (): Promise<void> => {
     process.env.NODE_ENV = 'production';
+    const configured = generateWebpackConfig();
+
     return new Promise(resolve => {
         webpack(configured, (err, stats) => {
             if(err)
             {
                 const details = err.details ? `\n\t${err.details}` : '';
-                throw `WEBPACK FATAL BUILD ERROR: ${err}${details}`;
+                throw `WEBPACK FATAL BUILD ERROR: ${err.toString()}${details}`;
             }
 
             const info = stats.toJson();
@@ -151,6 +153,8 @@ bundleZip.description = 'Bundles the build directory into a zip archive for uplo
 // * WPDEVSERV
 
 export const wpdevserv = () => {
+    const configured = generateWebpackConfig();
+
     Object.keys(configured.entry).forEach(entryKey => configured.entry[entryKey] = [
         `webpack-dev-server/client?http://${DEV_ENDPOINT}:${DEV_PORT}`,
         'webpack/hot/dev-server'

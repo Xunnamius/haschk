@@ -10,47 +10,56 @@ import {
     FrameworkEventEmitter
 } from 'universe/events'
 
-import type { Chrome } from 'components/background'
+import { Debug } from 'universe'
+import type { Chrome } from 'universe'
 
 const resultHandlerFactory = (eventName, context, port) => (downloadItem) => {
     port.postMessage(portEvent(eventName, downloadItem));
 };
 
+const webRequestFilter = {
+    urls: [
+        'http://*/*',
+        'https://*/*',
+    ]
+};
+
 // ? Essentially, we hook into four browser-level events here:
 // ?    - when the extension is first installed
-// ?    - when a tab finishes navigating to a URL
-// ?    - when a download is started
+// ?    - when an http/s web request is started
+// ?    - when an http/s web request results in an error
+// ?    - when a download first starts
 // ?    - when a download finishes
 
 export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) => {
-    // ? These fire when judgements are made about downloads and send them out
-    // ? to other components of the extension.
-    // ?
-    // ? Three events are made available:
-    // ? * judgement.safe       a resource's content is as expected
-    // ? * judgement.unsafe     a resource's content is mutated/corrupted
-    // ? * judgement.unknown    a resource's content cannot be judged (ignored)
-
     chrome.runtime.onConnect.addListener((port) => {
-        console.log('runtime.onConnect: ', port);
+        Debug.log('runtime.onConnect: ', port);
 
         const handlerUnsafeResult = resultHandlerFactory('judgement.unsafe', context, port);
         const handlerSafeResult = resultHandlerFactory('judgement.safe', context, port);
         const handlerUnknownResult = resultHandlerFactory('judgement.unknown', context, port);
 
         port.onDisconnect.addListener(() => {
-            console.log('(port.onDisconnect)');
+            Debug.log('(port.onDisconnect)');
             oracle.removeListener('judgement.unsafe', handlerUnsafeResult);
             oracle.removeListener('judgement.safe', handlerSafeResult);
             oracle.removeListener('judgement.unknown', handlerUnknownResult);
         });
 
+        // ? These fire when judgements are made about downloads and send them out
+        // ? to other components of the extension.
+        // ?
+        // ? Three events are made available:
+        // ? * judgement.safe       a resource's content is as expected
+        // ? * judgement.unsafe     a resource's content is mutated/corrupted
+        // ? * judgement.unknown    a resource's content cannot be judged (ignored)
         oracle.addListener('judgement.unsafe', handlerUnsafeResult);
         oracle.addListener('judgement.safe', handlerSafeResult);
         oracle.addListener('judgement.unknown', handlerUnknownResult);
 
+        // TODO: describe me too
         port.onMessage.addListener(message => {
-            console.log('port.onMessage: ', message);
+            Debug.log('port.onMessage: ', message);
             if(message.event.charAt(0) !== '.' && message.event == 'fetch')
             {
                 let values = {};
@@ -76,59 +85,40 @@ export default (oracle: FrameworkEventEmitter, chrome: Chrome, context: Object) 
 
     // ? This event fires when the extension is first installed
     chrome.runtime.onInstalled.addListener(details => {
-        console.log('runtime.onInstalled: ', details);
+        Debug.log('runtime.onInstalled: ', details);
         if(['install', 'update'].includes(details.reason))
             chrome.tabs.create({ url: chrome.runtime.getURL('welcome.html') });
     });
 
     // ? This event fires whenever a navigation event first begins
     chrome.webRequest.onBeforeRequest.addListener(details => {
-        console.log('webRequest.onBeforeRequest: ', details);
-    });
+        Debug.log('webRequest.onBeforeRequest: ', details);
+    }, webRequestFilter);
 
-    // ? This event fires whenever a navigation event completes
-    chrome.webRequest.onCompleted.addListener(details => {
-        console.log('webRequest.onCompleted: ', details);
-    });
-
-    // ? This event fires whenever an error occurs during a web request
-    chrome.webRequest.onErrorOccurred.addListener(details => {
-        console.log('webRequest.onErrorOccurred: ', details);
-    });
+    // ? This event fires whenever a WebRequest error occurs
+    // * Only fires if we're debugging
+    Debug.if(() => chrome.webRequest.onErrorOccurred.addListener(details => {
+        Debug.log('webRequest.onErrorOccurred : ', details);
+    }, webRequestFilter));
 
     // ? This event fires when a new download begins in chrome
+    // * Note: the DownloadItem passed at this point is incomplete!
+    // ! Sometimes this event fires for old downloads far in the past (months,
+    // ! even years), so we cannot trust that this event
     chrome.downloads.onCreated.addListener(downloadItem => {
-        console.log('downloads.onCreated: ', downloadItem);
-        const eventFrame = new EventFrame();
-        extendDownloadItemInstance(downloadItem);
-
-        oracle.emit('download.incoming', eventFrame, downloadItem).then(() => {
-            try {
-                if(eventFrame.stopped)
-                    context.handledDownloadItems.add(downloadItem.id);
-
-                eventFrame.finish();
-            }
-
-            catch(err) {
-                oracle.emit('error', err);
-            }
-        });
-
-        return true;
+        Debug.log('downloads.onCreated: ', downloadItem);
+        oracle.emit('download.incoming', new EventFrame(), downloadItem);
     });
 
     // ? This event fires when some download-related event changes
     chrome.downloads.onChanged.addListener(targetItem => {
-        console.log('downloads.onChanged: ', targetItem);
-        // ? Only trigger the moment a download completes and only if this event
-        // ? has not already been cancelled
-        if(targetItem?.state?.current == 'complete' && !context.handledDownloadItems.has(targetItem.id)) {
-            // ? We need to ask for the full DownloadItem instance due to
-            // ? security
+        Debug.log('downloads.onChanged: ', targetItem);
+
+        // ? Only trigger the moment a download completes
+        if(targetItem?.state?.current == 'complete') {
+            // ? We need to ask for the most up-to-date DownloadItem object
             chrome.downloads.search({ id: targetItem.id }, ([ downloadItem ]) => {
-                const eventFrame = new EventFrame(oracle, context);
-                oracle.emit('download.completed', eventFrame, extendDownloadItemInstance(downloadItem));
+                oracle.emit('download.completed', new EventFrame(), extendDownloadItemInstance(downloadItem));
             });
         }
     });
