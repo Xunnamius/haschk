@@ -1,8 +1,13 @@
 /* @flow */
 
-// TODO: document me!
-
+/**
+ * This class represents a default event frame. It is similar in intent to the
+ * DOM's event interface.
+ *
+ * * See also: https://developer.mozilla.org/en-US/docs/Web/API/Event
+ */
 export default class EventFrame {
+    name: string = '<unknown>';
     stopped = false;
     finished = false;
     _finished: any;
@@ -14,26 +19,32 @@ export default class EventFrame {
         this._finishedFn = finishedFn || (() => {});
     }
 
-    continue(...args: Array<any>) {
-        this._continueFn(...args);
-    }
-
     /**
-     * Stop the event from finishing. The finish() method will become a noop.
+     * Interrupt the event loop. The `continue()` and `finish()` methods will
+     * not be called (but can be called manually).
      */
     stop() {
-        this.stopped = true;
+        return this.stopped = true;
     }
 
-    // ? Should always be called eventually; is idempotent
     /**
-     * Finish the event after it has been passed around. This should always be
-     * called eventually. This method is idempotent.
+     * This method is called after each registered listener is run so long as
+     * `stopped` remains false.
      *
-     * @param  {...any} args
+     * @param  {*} [args]
+     */
+    continue(...args: Array<any>) {
+        return this._continueFn(...args);
+    }
+
+    /**
+     * This method is called automatically after all listeners are finished if
+     * `stopped` is false. Also, this method is idempotent.
+     *
+     * @param  {*} [args]
      */
     finish(...args: Array<any>) {
-        if(!this.stopped && !this.finished)
+        if(!this.finished)
         {
             this.finished = true;
             this._finished = this._finishedFn(...args);

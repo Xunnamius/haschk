@@ -1,31 +1,27 @@
 /** @flow
- * @description HASCHK popup functionality
- * @name Popup
+ *  @description HASCHK's popup functionality is implemented here
  */
 
 import './index.css'
 
 import {
-    HaschkEventPort,
-    guaranteeElementById
+    guaranteeElementById,
 } from 'universe/ui';
 
 import {
     JUDGEMENT_UNKNOWN,
     JUDGEMENT_UNSAFE,
-    JUDGEMENT_SAFE
+    JUDGEMENT_SAFE,
+    JUDGEMENT_UNDECIDED,
 } from 'universe';
 
 declare var chrome:any;
 
-const bridge = new HaschkEventPort(chrome);
+// TODO: all of this
+
 const downloadList = guaranteeElementById('downloadItems');
 
-// TODO: ensure bugs are fixed and UI meets specification outlined at
-// TODO: https://github.com/morty-c137-prime/HASCHK/issues/31
-
 const appendDownloadToDownloadList = (downloadItem: any, judgement: string) => {
-    // flow-disable-line
     let elem: HTMLElement = document.createElement('li');
     elem.setAttribute('id', downloadItem.id);
     elem.innerHTML = `#${downloadItem.id}: ${downloadItem.filename} <span class=${judgement}>[${
@@ -34,7 +30,7 @@ const appendDownloadToDownloadList = (downloadItem: any, judgement: string) => {
     downloadList.insertBefore(elem, downloadList.childNodes[0]);
 };
 
-window.onload = async () => {
+/* window.onload = async () => {
     await bridge.emit('fetch', 'judgedDownloadItems').then((res) => {
         res.judgedDownloadItems.forEach((download) => {
             appendDownloadToDownloadList(download.downloadItem, download.judgement);
@@ -52,7 +48,7 @@ bridge.on('judgement.safe', (downloadItem) => {
 
 bridge.on('judgement.unknown', (downloadItem) => {
     appendDownloadToDownloadList(downloadItem, JUDGEMENT_UNKNOWN);
-});
+}); */
 
 // ??
 // ?? Demo/development UI components
@@ -66,7 +62,7 @@ bridge.on('judgement.unknown', (downloadItem) => {
 //         Object.keys(res.judgedDownloadItems).forEach((id) =>
 //         {
 //             let item = res.judgedDownloadItems[id];
-//             // flow-disable-line
+//
 //             let download = document.createElement('li');
 //             download.setAttribute('id', item.downloadItem.id);
 //             download.innerHTML = `#${item.downloadItem.id}: ${item.downloadItem.filename} [${
@@ -98,7 +94,7 @@ bridge.on('judgement.unknown', (downloadItem) => {
 //     });
 // });
 
-guaranteeElementById('clear').addEventListener('click', () => {
+/* guaranteeElementById('clear').addEventListener('click', () => {
     bridge.emit('.ui.clear');
     downloadList.innerHTML = '';
-});
+}); */

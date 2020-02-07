@@ -1,10 +1,11 @@
 /** @flow
- * @description global utility functions and constants
+ *  @description These are our globally useful utility functions and constants
  */
 
 export const JUDGEMENT_SAFE = 'safe';
 export const JUDGEMENT_UNSAFE = 'unsafe';
 export const JUDGEMENT_UNKNOWN = 'unknown';
+export const JUDGEMENT_UNDECIDED = 'undecided';
 
 declare var chrome: any;
 export type Chrome = chrome;
@@ -27,31 +28,45 @@ export const GOOGLE_DNS_HTTPS_RI_FN = (riHashLeft: string, riHashRight: string, 
 export const GOOGLE_DNS_HTTPS_RR_FN = (originDomain: string) =>
     `https://dns.google.com/resolve?name=_rr._haschk.${originDomain}&type=TXT`;
 
-export const FRAMEWORK_EVENTS = ['download.incoming', 'download.completed', ];
+/**
+ * Extracts an nLD (sub)domain fragment from a URL
+ *
+ * @param {String} url
+ */
+export const extractOriginDomainFromURI = (url: string) => {
+    return (new URL(url)).hostname.split('.').slice(-2).join('.');
+};
 
-export const extractDomainFromURI = (url: string) => (new URL(url)).hostname.split('.').slice(-2).join('.');
-
+/**
+ * A set of cheap debugging tools that are automatically disabled if NODE_ENV is
+ * not `development`!
+ */
 export const Debug = {
+    /**
+     * A replacement for `console.log` that will be silenced if not deving
+     *
+     * @param  {*} [args]
+     */
     log(...args: Array<any>) {
         NODE_ENV === 'development' && console.log(...args);
     },
 
+    /**
+     * Accepts a function that is only called if we're deving
+     *
+     * @param {Function} fn
+     */
     if(fn: Function) {
         NODE_ENV === 'development' && fn();
     }
 };
 
-export const extendDownloadItemInstance = (downloadItem: any) => {
-    const uri: string = downloadItem.referrer || downloadItem.url;
-
-    if(!uri) throw new Error('cannot determine originDomain');
-
-    downloadItem.originDomain = extractDomainFromURI(uri);
-    downloadItem.judgement = JUDGEMENT_UNKNOWN;
-
-    return downloadItem;
-};
-
+/**
+ * Accepts an ArrayBuffer instance from the `SubtleCrypto` interface and returns
+ * a hex string.
+ *
+ * @param {ArrayBuffer} buffer
+ */
 export const bufferToHex = (buffer: ArrayBuffer) => {
     let hexCodes = [];
     let view = new DataView(buffer);

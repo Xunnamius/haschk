@@ -1,6 +1,5 @@
 /** @flow
- *  @description Options and configuration for HASCHK plugin
- *  @name Options
+ *  @description Extension configuration options UI is implemented here
  */
 
 import './index.css'

@@ -1,21 +1,24 @@
 /* @flow */
 
-import { extractDomainFromURI, bufferToHex } from 'universe'
+import {
+    bufferToHex,
+    extractOriginDomainFromURI,
+} from 'universe'
 
-test("extractDomainFromURI doesn't work without protocol", () => {
-    expect(() => extractDomainFromURI('xunn.io')).toThrow();
+test("extractOriginDomainFromURI doesn't work without protocol", () => {
+    expect(() => extractOriginDomainFromURI('xunn.io')).toThrow();
 });
 
-test('extractDomainFromURI works with http and https', () => {
-    expect(extractDomainFromURI('http://xunn.io')).toBe(extractDomainFromURI('https://xunn.io'));
+test('extractOriginDomainFromURI works with http and https', () => {
+    expect(extractOriginDomainFromURI('http://xunn.io')).toBe(extractOriginDomainFromURI('https://xunn.io'));
 });
 
-test('extractDomainFromURI returns base domain from sub domain', () => {
-    expect(extractDomainFromURI('http://return.base.domain.xunn.io')).toBe('xunn.io');
+test('extractOriginDomainFromURI returns base domain from sub domain', () => {
+    expect(extractOriginDomainFromURI('http://return.base.domain.xunn.io')).toBe('xunn.io');
 });
 
-test('extractDomainFromURI returns base domain from deep path', () => {
-    expect(extractDomainFromURI('https://return.base.domain.xunn.io/paper/4/paper/4.faker?something=5&other&nother=fake#hash-mash.cash')).toBe('xunn.io');
+test('extractOriginDomainFromURI returns base domain from deep path', () => {
+    expect(extractOriginDomainFromURI('https://return.base.domain.xunn.io/paper/4/paper/4.faker?something=5&other&nother=fake#hash-mash.cash')).toBe('xunn.io');
 });
 
 test('bufferToHex translate buffer to hex as expected', () => {
