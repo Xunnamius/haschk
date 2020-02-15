@@ -275,7 +275,7 @@ describe('::emitIgnoreGlobalListeners', () => {
 });
 
 describe('::removeListener', () => {
-    test(`::removeListener(${EVENT_NAME}) removes all listeners added by ::addListener()`, async () => {
+    test(`::removeListener(${EVENT_NAME}) removes listener added by ::addListener()`, async () => {
         const oracle = oracleFactory();
         let worked = true;
 
@@ -286,7 +286,7 @@ describe('::removeListener', () => {
         expect(worked).toBe(true);
     });
 
-    test(`::removeListener(${EVENT_NAME}) removes all error listeners added by ::addListener()`, async () => {
+    test(`::removeListener(${EVENT_NAME}) removes error listener added by ::addListener()`, async () => {
         const oracle = oracleFactory();
         let worked = true;
 
@@ -298,7 +298,7 @@ describe('::removeListener', () => {
         expect(worked).toBe(true);
     });
 
-    test(`::removeListener(${EVENT_NAME}) removes all listeners added by ::once()`, async () => {
+    test(`::removeListener(${EVENT_NAME}) removes listener added by ::once()`, async () => {
         const oracle = oracleFactory();
         let worked = true;
 
