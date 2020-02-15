@@ -66,7 +66,7 @@ export default class EventFrameEmitter extends EventEmitter {
     }
 
     async _emit(eventName: string, args: Array<any>, ignoreGlobalListeners: boolean) {
-        const eventFrame = args[0] instanceof EventFrame ? args[0] : new EventFrame();
+        const eventFrame = args[0] instanceof EventFrame ? args.shift() : new EventFrame();
         const listeners = this.listeners(eventName);
 
         if(!listeners && (ignoreGlobalListeners || !this._globalListeners.size))
@@ -132,7 +132,8 @@ export default class EventFrameEmitter extends EventEmitter {
     /**
      * Adds a listener that will interrupt the event loop if the EventFrame is
      * `stop()`-ed. Note that calls to `removeListener()` should pass in the
-     * return value of this function as the listener to be removed.
+     * return value of this function as the listener to be removed unless
+     * `eventName == 'error'`.
      *
      * Note that the first argument passed to the listener is an EventFrame
      * instance followed by any additional arguments.
