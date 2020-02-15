@@ -159,6 +159,8 @@ export default class EventFrameEmitter extends EventEmitter {
      * Listeners should have the following function signature:
      *   (eventFrame: EventFrame, args: Array<any>) => { ... }
      *
+     * ! Note that global listeners are always called BEFORE other listeners!
+     *
      * @param {ListenerFn} listener
      */
     addGlobalListener(listener: ListenerFn) {

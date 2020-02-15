@@ -1,113 +1,143 @@
 /* @flow */
 
-import { EventFrameEmitter as EE } from 'universe/events';
-import type { EventFrame } from 'universe/events';
+import * as Promise from 'bluebird'
 
-const oracleFactory = () => new EE();
-const eventName = 'testEvent';
+import {
+    EventFrame,
+    EventFrameEmitter,
+} from 'universe/events'
 
-test(`::emit(${eventName}) calls callback ::addListener(${eventName}, callback)`, () => {
-    const oracle = oracleFactory();
-    let worked = false;
+const EVENT_NAME = 'testEvent';
+const DEFAULT_DELAY = 50;
 
-    oracle.addListener(eventName, () => void (worked = true));
-    oracle.emit(eventName);
+const oracleFactory = () => new EventFrameEmitter();
 
-    expect(worked).toBe(true);
-});
+const listenerFactory = {
+    returnsPromise: (fn: Function, d: ?number) => (...args) => Promise.delay(d || DEFAULT_DELAY).then(() => fn(args)),
+    async: (fn: Function, d: ?number) => async (...args) => { await Promise.delay(d || DEFAULT_DELAY); fn(args); },
+};
 
-test(`::emit(${eventName}) returns Promise that resolves properly`, async () => {
-    const oracle = oracleFactory();
-    let worked = false;
+describe('::addListener', () => {
+    test(`::addListener(${EVENT_NAME}, listener) works with synchronous listeners that return a Promise`, async () => {
+        const oracle = oracleFactory();
+        let worked = false;
+        let promise = null;
 
-    oracle.addListener(eventName, async () => await new Promise((resolve) => setTimeout(() => { worked = true; resolve(); }, 10)));
-    await oracle.emit(eventName);
+        oracle.addListener(EVENT_NAME, listenerFactory.returnsPromise(() => worked = true));
+        promise = oracle.emit(EVENT_NAME);
 
-    expect(worked).toBe(true);
-});
+        expect(worked).toBe(false);
 
-test(`::emit(${eventName}) callbacks emits error event on throw`, async () => {
-    const oracle = oracleFactory();
-    let worked = false;
-
-    oracle.addListener(eventName, () => { throw new Error('exception'); });
-    oracle.addListener('error', () => void (worked = true));
-    await oracle.emit(eventName);
-
-    expect(worked).toBe(true);
-});
-
-test(`::emit(${eventName}) triggers sync and async callbacks`, async () => {
-    const oracle = oracleFactory();
-    let syncWorked = false;
-    let asyncWorked = false;
-
-    oracle.addListener(eventName, () => void (syncWorked = true));
-    oracle.addListener(eventName, async () => void (asyncWorked = true));
-    await oracle.emit(eventName);
-
-    expect(syncWorked && asyncWorked).toBe(true);
-});
-
-test(`::addListener(${eventName}, callback) works with synchronous callbacks that return a Promise`, async () => {
-    const oracle = oracleFactory();
-    let worked = false;
-
-    oracle.addListener(eventName, () => new Promise((resolve) => setTimeout(() => { worked = true; resolve(); }, 500)));
-    await oracle.emit(eventName);
-
-    expect(worked).toBe(true);
-});
-
-test(`::emit(${eventName}, eventFrame, true) calls callback ::addListener(${eventName}, callback)`, () => {
-    const oracle = oracleFactory();
-    const eventFrame = { stopped: false };
-    let worked = false;
-
-    oracle.addListener(eventName, (e: EventFrame, bool: boolean) => {
-        expect(e.stopped).toBe(false);
-        expect(bool).toBe(true);
-        worked = true;
+        await promise;
+        expect(worked).toBe(true);
     });
 
-    oracle.emit(eventName, eventFrame, true);
+    test(`::addListener(${EVENT_NAME}, listener) works with synchronous listeners`, async () => {
+        const oracle = oracleFactory();
+        let worked = false;
+        let promise = null;
 
-    expect(worked).toBe(true);
+        oracle.addListener(EVENT_NAME, () => worked = true);
+        promise = oracle.emit(EVENT_NAME);
+
+        await promise;
+        expect(worked).toBe(true);
+    });
+
+    test(`::addListener(${EVENT_NAME}, listener) works with asynchronous listeners`, async () => {
+        const oracle = oracleFactory();
+        let worked = false;
+        let promise = null;
+
+        oracle.addListener(EVENT_NAME, listenerFactory.async(() => worked = true));
+        promise = oracle.emit(EVENT_NAME);
+
+        expect(worked).toBe(false);
+
+        await promise;
+        expect(worked).toBe(true);
+    });
 });
 
-test(`EventFrame::stop() interrupts event loop`, () => {
-    const oracle = oracleFactory();
-    const eventFrame = { stopped: false };
-    let worked = false;
+describe('::emit', () => {
+    test(`::emit(${EVENT_NAME}) listeners emit error event on throw`, async () => {
+        const oracle = oracleFactory();
+        let worked = false;
 
-    oracle.addListener(eventName, () => void (worked = true));
-    oracle.addListener(eventName, (e: EventFrame) => e.stop());
-    oracle.addListener(eventName, () => void (worked = false));
-    oracle.emit(eventName, eventFrame);
+        oracle.addListener(EVENT_NAME, () => { throw new Error('exception'); });
+        oracle.addListener('error', () => worked = true);
 
-    expect(worked).toBe(true);
+        await oracle.emit(EVENT_NAME);
+        expect(worked).toBe(true);
+    });
+
+    test(`::emit(${EVENT_NAME}) calls listener(EventFrame)`, () => {
+        const oracle = oracleFactory();
+        let worked = false;
+
+        oracle.addListener(EVENT_NAME, e => {
+            expect(e).toBeInstanceOf(EventFrame);
+            worked = true;
+        });
+
+        oracle.emit(EVENT_NAME);
+        expect(worked).toBe(true);
+    });
+
+    test(`::emit(${EVENT_NAME}, ...args) calls listener(EventFrame, ...args)`, () => {
+        const oracle = oracleFactory();
+        let worked = false;
+
+        oracle.addListener(EVENT_NAME, (e, f, g) => {
+            expect(e).toBeInstanceOf(EventFrame);
+            expect(f).toBe(1);
+            expect(g).toBe(2);
+            worked = true;
+        });
+
+        oracle.emit(EVENT_NAME, 1, 2);
+        expect(worked).toBe(true);
+    });
+
+    test(`::emit(${EVENT_NAME}, eventFrame, ...args) calls listener(EventFrame, ...args)`, async () => {
+        const oracle = oracleFactory();
+        const eventFrame = new EventFrame();
+        let worked = false;
+
+        oracle.addListener(EVENT_NAME, (e, f, g) => {
+            expect(e).toBe(eventFrame);
+            expect(f).toBe(1);
+            expect(g).toBe(2);
+            worked = true;
+        });
+
+        await oracle.emit(EVENT_NAME, eventFrame, 1, 2);
+        expect(worked).toBe(true);
+    });
 });
 
-test(`attempting to emit a framework event without passing an EventFrame (or compat) as first argument throws`, async () => {
-    const oracle = oracleFactory();
-    const eventFrame = {};
-    let worked = true;
+describe('EventFrame', () => {
+    test(`::stop() interrupts event loop`, () => {
+        const oracle = oracleFactory();
+        let worked = false;
 
-    oracle.addListener(eventName, () => void (worked = false));
-    oracle.addListener('error', err => expect(!!err).toBe(true));
-    await oracle.emit(eventName, eventFrame);
+        oracle.addListener(EVENT_NAME, () => worked = true);
+        oracle.addListener(EVENT_NAME, e => e.stop());
+        oracle.addListener(EVENT_NAME, () => worked = false);
 
-    expect(worked).toBe(true);
-});
+        oracle.emit(EVENT_NAME);
+        expect(worked).toBe(true);
+    });
 
-test(`attempting to emit a framework event and passing an EventFrame compat as first argument works`, async () => {
-    const oracle = oracleFactory();
-    const eventFrame = { stopped: false };
-    let worked = false;
+    test(`::stop() interrupts event loop for global listeners`, () => {
+        const oracle = oracleFactory();
+        let worked = false;
 
-    oracle.addListener(eventName, (e: EventFrame) => void (worked = e.stopped === false));
-    oracle.addListener('error', () => void (worked = false));
-    await oracle.emit(eventName, eventFrame);
+        oracle.addListener(EVENT_NAME, () => worked = true);
+        oracle.addListener(EVENT_NAME, e => e.stop());
+        oracle.addListener(EVENT_NAME, () => worked = false);
 
-    expect(worked).toBe(true);
-});
+        oracle.emit(EVENT_NAME);
+        expect(worked).toBe(true);
+    });
+})

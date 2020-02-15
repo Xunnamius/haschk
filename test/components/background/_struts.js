@@ -10,23 +10,21 @@ export const oracle = eePlaceholder();
 export const chrome = {
     runtime: {
         onConnect: eePlaceholder(),
-        onInstalled: eePlaceholder()
+        onInstalled: eePlaceholder(),
     },
 
-    tabs: {
-        onUpdated: eePlaceholder()
+    webRequest: {
+        onBeforeRequest: eePlaceholder(),
+        onErrorOccurred: eePlaceholder(),
     },
 
     downloads: {
-        onDeterminingFilename: eePlaceholder(),
-        onChanged: eePlaceholder()
+        onCreated: eePlaceholder(),
+        onChanged: eePlaceholder(),
     }
 };
 
 export const context = {
-    handledDownloadItems: new Set(),
-    judgedDownloadItems: [],
-    seenPortNames: [],
-    seenPorts: [],
-    navHistory: {}
+    downloadItems: new Map(),
+    navHistory: new Map(),
 };

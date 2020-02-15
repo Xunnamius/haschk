@@ -1,10 +1,16 @@
 /* @flow */
 
-import { EventFrame } from 'universe/events';
+import { EventFrame } from 'universe/events'
+
+test('without modifications, name is "<unknown>"', () => {
+    const e = new EventFrame();
+
+    expect(e.name).toBe('<unknown>');
+});
 
 test('multiple calls to ::continue() pass-through to ::_continueFn', () => {
     let count = 0;
-    const e = new EventFrame(() => count++, () => {});
+    const e = new EventFrame(() => count++, undefined);
 
     e.continue();
     e.continue();
@@ -15,7 +21,7 @@ test('multiple calls to ::continue() pass-through to ::_continueFn', () => {
 
 test('::finish() is idempotent; mutates ::finished property', () => {
     let count = 0;
-    const e = new EventFrame(() => {}, () => count++);
+    const e = new EventFrame(undefined, () => count++);
 
     expect(e.finished).toBe(false);
 
@@ -28,7 +34,7 @@ test('::finish() is idempotent; mutates ::finished property', () => {
 });
 
 test('stop() mutates stopped property', () => {
-    const e = new EventFrame(() => {}, () => {});
+    const e = new EventFrame();
 
     expect(e.stopped).toBe(false);
 

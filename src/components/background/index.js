@@ -42,7 +42,7 @@ const context = {
 
     // ? requestId -> request stack [req n, ..., req 1]
     // ! Limited to 1000 requests!
-    navHistory: new Map()
+    navHistory: new Map(),
 };
 
 declare var chrome: any;

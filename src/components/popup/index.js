@@ -6,14 +6,14 @@ import './index.css'
 
 import {
     guaranteeElementById,
-} from 'universe/ui';
+} from 'universe/ui'
 
 import {
     JUDGEMENT_UNKNOWN,
     JUDGEMENT_UNSAFE,
     JUDGEMENT_SAFE,
     JUDGEMENT_UNDECIDED,
-} from 'universe';
+} from 'universe'
 
 declare var chrome:any;
 
