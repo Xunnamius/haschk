@@ -59,7 +59,10 @@ const asyncifyListener = (listener: ListenerFn, once: ?boolean) => {
  * * See also: https://github.com/primus/eventemitter3
  */
 export default class EventFrameEmitter extends EventEmitter {
-    _globalListeners: Set<ListenerFn> = new Set();
+    _globalListeners: { before: Set<ListenerFn>, after: Set<ListenerFn> } = {
+        before: new Set(),
+        after: new Set(),
+    };
 
     constructor(...args: Array<any>) {
         super(...args);
@@ -69,14 +72,14 @@ export default class EventFrameEmitter extends EventEmitter {
         const eventFrame = args[0] instanceof EventFrame ? args.shift() : new EventFrame();
         const listeners = this.listeners(eventName);
 
-        if(!listeners && (ignoreGlobalListeners || !this._globalListeners.size))
+        if(!listeners.length && (ignoreGlobalListeners || !(this._globalListeners.before.size || this._globalListeners.after.size)))
             return false;
 
         try {
             eventFrame.name === '<unknown>' && (eventFrame.name = eventName);
 
-            if(!ignoreGlobalListeners) {
-                for (const listener of this._globalListeners) {
+            if(!eventFrame.stopped && !ignoreGlobalListeners) {
+                for (const listener of this._globalListeners.before) {
                     await listener(eventFrame, args);
 
                     if(eventFrame.stopped)
@@ -85,6 +88,16 @@ export default class EventFrameEmitter extends EventEmitter {
             }
 
             await asyncEmit(this, 0, listeners, eventFrame, args);
+
+            if(!eventFrame.stopped && !ignoreGlobalListeners) {
+                for (const listener of this._globalListeners.after) {
+                    await listener(eventFrame, args);
+
+                    if(eventFrame.stopped)
+                        return true;
+                }
+            }
+
             !eventFrame.stopped && await eventFrame.finish();
         }
 
@@ -106,6 +119,8 @@ export default class EventFrameEmitter extends EventEmitter {
      * Returns `true` if the event had listeners and `false` otherwise. If there
      * are global listeners present, this method will always return true.
      *
+     * It would be wise to `await` the resolution of this function.
+     *
      * * For more details, see: https://nodejs.org/api/events.html
      *
      * @param {String} eventName
@@ -121,6 +136,8 @@ export default class EventFrameEmitter extends EventEmitter {
      *
      * Returns `true` if the event had listeners and `false` otherwise. Global
      * listeners do not factor into this calculation.
+     *
+     * It would be wise to `await` the resolution of this function.
      *
      * @param {String} eventName
      * @param {*} [args]
@@ -160,13 +177,12 @@ export default class EventFrameEmitter extends EventEmitter {
      * Listeners should have the following function signature:
      *   (eventFrame: EventFrame, args: Array<any>) => { ... }
      *
-     * ! Note that global listeners are always called BEFORE other listeners!
-     *
      * @param {ListenerFn} listener
+     * @param {Boolean} [triggerEarly=false] listener will be called BEFORE non-globals if true, AFTER if false
      */
-    addGlobalListener(listener: ListenerFn) {
+    addGlobalListener(listener: ListenerFn, triggerEarly: ?boolean) {
         listener = asyncifyListener(listener);
-        this._globalListeners.add(listener);
+        this._globalListeners[triggerEarly ? 'before' : 'after'].add(listener);
 
         return listener;
     }
@@ -174,12 +190,20 @@ export default class EventFrameEmitter extends EventEmitter {
     /**
      * Removes the specified listener from the global array of listeners. This
      * method returns `true` if the listener was successfully removed and
-     * `false` otherwise.
+     * `false` otherwise. Only removes a single listener.
      *
      * @param {ListenerFn} listener
      */
     removeGlobalListener(listener: ListenerFn) {
-        return this._globalListeners.delete(listener);
+        return this._globalListeners.before.delete(listener) || this._globalListeners.after.delete(listener);
+    }
+
+    /**
+     * Removes all currently registered global listeners.
+     */
+    removeAllGlobalListeners() {
+        this._globalListeners.before.clear();
+        this._globalListeners.after.clear();
     }
 
     /**
