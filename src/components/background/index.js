@@ -20,7 +20,7 @@ import registerUIEvents from 'components/background/events.ui'
 // ?   * judgement.safe            A resource's content is as expected         async (EventFrame, DownloadItem) => {}
 // ?   * judgement.unsafe          A resource's content is mutated/corrupted   async (EventFrame, DownloadItem) => {}
 // ?   * judgement.unknown         A resource's content cannot be judged       async (EventFrame, DownloadItem) => {}
-// ?   * error                     An error event occurred (NOT `await`-ed!)  (EventFrame, Exception) => {}
+// ?   * error                     An error event occurred (NOT `await`-ed!)   (EventFrame, Exception) => {}
 // ?   * popup.ui.clear            Clear the entries in the popup ui           async (EventFrame) => {}
 
 // ? Main extension event flow (excluding UI updates, options, ports):
