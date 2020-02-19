@@ -18,23 +18,30 @@ export const NODE_ENV = _NODE_ENV;
 export const HASHING_ALGORITHM = _HASHING_ALGORITHM;
 export const APPLICATION_LABEL = _APPLICATION_LABEL;
 
-// ? Returns a string HTTPS endpoint URI that will yield the desired resource
-// ? identifier hash
-export const GOOGLE_DNS_HTTPS_RI_FN = (riHashLeft: string, riHashRight: string, originDomain: string) =>
-    `https://dns.google.com/resolve?name=${riHashLeft}.${riHashRight}.${APPLICATION_LABEL}.${originDomain}&type=TXT`;
+// ? Returns a string HTTPS endpoint URI used to query the backend for URNs. See
+// ? the paper for details on what C1, C2, and BD are.
+export const GOOGLE_DNS_HTTPS_BACKEND_QUERY = (C1: string, C2: string, BD: string) =>
+    `https://dns.google.com/resolve?name=${C1}.${C2}.${APPLICATION_LABEL}.${BD}&type=TXT`;
 
-// ? Returns a string HTTPS endpoint URI that will yield the desired resource
-// ? range string
-export const GOOGLE_DNS_HTTPS_RR_FN = (originDomain: string) =>
-    `https://dns.google.com/resolve?name=_rr._haschk.${originDomain}&type=TXT`;
+// ? Returns a string HTTPS endpoint URI used to query if the backend exists.
+// ? See the paper for details on what BD is.
+export const GOOGLE_DNS_HTTPS_BACKEND_EXISTS = (BD: string) =>
+    `https://dns.google.com/resolve?name=${APPLICATION_LABEL}.${BD}&type=TXT`;
 
 /**
- * Extracts an nLD (sub)domain fragment from a URL
+ * Extracts the 3LD and 2LD subdomain fragments (in that order) from a valid
+ * URI, returning them in an array [3LD, 2LD]. If there is no 3LD, then only the
+ * 2LD is returned in an array [2LD].
  *
- * @param {String} url
+ * @param {String} uri
+ * @returns {Array} An array of Backend Domain (BD) candidates
  */
-export const extractOriginDomainFromURI = (url: string) => {
-    return (new URL(url)).hostname.split('.').slice(-2).join('.');
+export const extractBDCandidatesFromURI = (uri: string) => {
+    const host = (new URL(uri)).hostname.split('.');
+    const candidates = [host.slice(-3).join('.')];
+    host.length > 2 && candidates.push(host.slice(-2).join('.'))
+
+    return candidates;
 };
 
 /**

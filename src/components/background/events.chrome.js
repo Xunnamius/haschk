@@ -2,10 +2,14 @@
  *  @description These are the foundational functions responsible for bridging Chrome's event system with our own
  */
 
+import http from 'axios'
+
 import {
     Debug,
-    extractOriginDomainFromURI,
+    extractBDCandidatesFromURI,
+    JUDGEMENT_UNKNOWN,
     JUDGEMENT_UNDECIDED,
+    GOOGLE_DNS_HTTPS_BACKEND_EXISTS,
 } from 'universe'
 
 import {
@@ -76,23 +80,31 @@ export default (oracle: EventFrameEmitter, chrome: Chrome, context: Object) => {
 
     // ? This event fires whenever a navigation event first begins
     chrome.webRequest.onBeforeRequest.addListener(details => {
-        Debug.log('webRequest.onBeforeRequest: ', details);
-        // TODO
+        if(context.navHistory.has(details.requestId))
+            context.navHistory.get(details.requestId).unshift(details.url);
+        else
+            context.navHistory.set(details.requestId, [details.url]);
+
+        Debug.log(`webRequest.onBeforeRequest: ${details.requestId} =>`, context.navHistory.get(details.requestId));
     }, webRequestFilter);
 
     // ? This event fires whenever a WebRequest error occurs
     // * Only fires if we're debugging
     Debug.if(() => chrome.webRequest.onErrorOccurred.addListener(details => {
-        Debug.log('webRequest.onErrorOccurred : ', details);
+        console.log('webRequest.onErrorOccurred: ', details);
     }, webRequestFilter));
 
     // ? This event fires when a new download begins in chrome
     // * Note: the DownloadItem passed at this point is incomplete!
     // ! Sometimes this event fires for old downloads far in the past (months,
-    // ! even years), so we cannot trust that this event
+    // ! even years), so we cannot trust this event without a check
     chrome.downloads.onCreated.addListener(downloadItem => {
-        Debug.log('downloads.onCreated: ', downloadItem);
-        oracle.emit('download.incoming', downloadItem);
+        if(!downloadItem.endTime) {
+            Debug.log('downloads.onCreated: ', downloadItem);
+            oracle.emit('download.incoming', downloadItem);
+        }
+
+        else Debug.log('[IGNORED] downloads.onCreated: ', downloadItem);
     });
 
     // ? This event fires when some download-related event changes
@@ -104,20 +116,46 @@ export default (oracle: EventFrameEmitter, chrome: Chrome, context: Object) => {
             /**
              * ? We ask for the most up-to-date DownloadItem instance and extend
              * ? it with the following useful information:
-             * ?   - originDomain {String}        The OD of this download
-             * ?   - requestId    {Number}        The Request ID associated with this download
-             * ?   - requestStack {Array<Object>} A FILO stack of `details` objects
-             * ?   - judgement    {Boolean}       What HASCHK thinks about this DownloadItem (this is added later)
+             * ?   - backendDomain {string|null}   The BD of this download or NULL if HASCHK was not implemented
+             * ?   - requestId     {string}        The Request ID associated with this download
+             * ?   - requestStack  {Array<Object>} A FILO stack of `details` objects
+             * ?   - judgement     {boolean}       What HASCHK thinks about this DownloadItem (undecided or unknown)
+             * ?
+             * ? If backendDomain is NULL, then judgement will be JUDGEMENT_UNKNOWN, otherwise JUDGEMENT_UNDECIDED
              */
-            chrome.downloads.search({ id: targetItem.id }, ([ downloadItem ]) => {
-                // TODO
-                const uri: string = downloadItem.referrer || downloadItem.url;
-                context;
+            chrome.downloads.search({ id: targetItem.id }, async ([ downloadItem ]) => {
+                downloadItem.judgement = JUDGEMENT_UNKNOWN;
+                downloadItem.backendDomain = null;
 
-                if(!uri) throw new Error('cannot determine originDomain');
+                // First, identify the request stack and ID that lead to this
+                // download using DownloadItem::url and querying the top of the
+                // stack
 
-                downloadItem.originDomain = extractOriginDomainFromURI(uri);
-                downloadItem.judgement = JUDGEMENT_UNDECIDED;
+                for (const [requestId, requestStack] of context.navHistory) {
+                    if(requestStack[0] == downloadItem.finalUrl) {
+                        downloadItem.requestId = requestId;
+                        downloadItem.requestStack = requestStack;
+                        break;
+                    }
+                }
+
+                // Resolve the backend domain: consider the request stack as a
+                // queue and walk from the head (bottom of the stack) to the
+                // tail (top of the stack) until we get a response back from a
+                // 3LD or 2LD.
+                loop:
+                for (const uri of downloadItem.requestStack.slice(0).reverse()) {
+                    for (const candidate of extractBDCandidatesFromURI(uri)) {
+                        const query = await http.get(GOOGLE_DNS_HTTPS_BACKEND_EXISTS(candidate));
+                        const data = !query.data.Answer ? '<no answer>' : query.data.Answer.slice(-1)[0].data;
+
+                        if(data == '"OK"') {
+                            downloadItem.backendDomain = candidate;
+                            downloadItem.judgement = JUDGEMENT_UNDECIDED;
+                            break loop;
+                        }
+                    }
+                }
 
                 oracle.emit('download.completed', downloadItem);
             });

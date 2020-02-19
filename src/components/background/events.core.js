@@ -10,13 +10,18 @@ import type { Chrome } from 'universe'
 import {
     bufferToHex,
     HASHING_ALGORITHM,
-    GOOGLE_DNS_HTTPS_RI_FN,
+    GOOGLE_DNS_HTTPS_BACKEND_QUERY,
     JUDGEMENT_UNKNOWN,
     JUDGEMENT_UNSAFE,
     JUDGEMENT_SAFE,
 } from 'universe'
+import {Debug} from '../../universe'
 
 export default (oracle: EventFrameEmitter, chrome: Chrome, context: Object) => {
+    Debug.if(() => oracle.addListener('download.completed', (e, downloadItem) => {
+        console.log('download.completed: ', e, downloadItem);
+    }));
+
     // ? This is the NAH vs AH core "judgement" logic
     oracle.addListener('download.completed', async (e, downloadItem) => {
         // TODO
@@ -45,8 +50,8 @@ export default (oracle: EventFrameEmitter, chrome: Chrome, context: Object) => {
         ];
 
         // ? Make https-based DNS request
-        const targetDomain = downloadItem.originDomain;
-        const $authedHash = await http.get(GOOGLE_DNS_HTTPS_RI_FN(riLeft, riRight, targetDomain));
+        const targetDomain = downloadItem;
+        const $authedHash = await http.get(GOOGLE_DNS_HTTPS_BACKEND_QUERY(riLeft, riRight, targetDomain));
 
         authedHashRaw = !$authedHash.data.Answer ? '<no answer>' : $authedHash.data.Answer.slice(-1)[0].data;
         authedHash = authedHashRaw.replace(/[^0-9a-f]/gi, '');

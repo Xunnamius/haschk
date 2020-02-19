@@ -2,23 +2,24 @@
 
 import {
     bufferToHex,
-    extractOriginDomainFromURI,
+    extractBDCandidatesFromURI,
 } from 'universe'
 
-test("extractOriginDomainFromURI doesn't work without protocol", () => {
-    expect(() => extractOriginDomainFromURI('xunn.io')).toThrow();
+test("extractBDCandidatesFromURI doesn't work on URIs without a protocol", () => {
+    expect(() => extractBDCandidatesFromURI('xunn.io')).toThrow();
 });
 
-test('extractOriginDomainFromURI works with http and https', () => {
-    expect(extractOriginDomainFromURI('http://xunn.io')).toBe(extractOriginDomainFromURI('https://xunn.io'));
+test('extractBDCandidatesFromURI works with http and https URIs', () => {
+    expect(extractBDCandidatesFromURI('http://xunn.io')).toEqual(extractBDCandidatesFromURI('https://xunn.io'));
 });
 
-test('extractOriginDomainFromURI returns base domain from sub domain', () => {
-    expect(extractOriginDomainFromURI('http://return.base.domain.xunn.io')).toBe('xunn.io');
+test('extractBDCandidatesFromURI returns 3LD and 2LD from URI', () => {
+    expect(extractBDCandidatesFromURI('http://return.base.domain.xunn.io')).toEqual(['domain.xunn.io', 'xunn.io']);
 });
 
-test('extractOriginDomainFromURI returns base domain from deep path', () => {
-    expect(extractOriginDomainFromURI('https://return.base.domain.xunn.io/paper/4/paper/4.faker?something=5&other&nother=fake#hash-mash.cash')).toBe('xunn.io');
+test('extractBDCandidatesFromURI returns 3LD and 2LD URI with a deep path', () => {
+    expect(extractBDCandidatesFromURI('https://return.base.domain.xunn.io/paper/4/paper/4.faker?something=5&other&nother=fake#hash-mash.cash'))
+        .toBe(['domain.xunn.io', 'xunn.io']);
 });
 
 test('bufferToHex translate buffer to hex as expected', () => {
