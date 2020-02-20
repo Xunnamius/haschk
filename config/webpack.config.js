@@ -10,7 +10,11 @@ import WriteFileWebpackPlugin from 'write-file-webpack-plugin'
 
 require('dotenv').config();
 
-const { HASHING_ALGORITHM, APPLICATION_LABEL } = process.env;
+const {
+    HASHING_ALGORITHM,
+    APPLICATION_LABEL,
+    MAX_REQUEST_HISTORY,
+} = process.env;
 
 const paths = {};
 
@@ -77,7 +81,8 @@ const configure = (NODE_ENV: ?string) => {
         new webpack.DefinePlugin({
             _NODE_ENV: JSON.stringify(NODE_ENV),
             _HASHING_ALGORITHM: JSON.stringify(HASHING_ALGORITHM || 'SHA-256'),
-            _APPLICATION_LABEL: JSON.stringify(APPLICATION_LABEL || '_haschk')
+            _APPLICATION_LABEL: JSON.stringify(APPLICATION_LABEL || '_haschk'),
+            _MAX_REQUEST_HISTORY: JSON.stringify(MAX_REQUEST_HISTORY || 1000),
         }),
 
         new CopyWebpackPlugin([{
@@ -119,7 +124,8 @@ const configure = (NODE_ENV: ?string) => {
 
         new HtmlWebpackPlugin({
             template: `${paths.src}/welcome.html`,
-            filename: 'welcome.html'
+            filename: 'welcome.html',
+            chunks: []
         }),
 
         new WriteFileWebpackPlugin()

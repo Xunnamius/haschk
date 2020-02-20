@@ -13,10 +13,12 @@ export type Chrome = chrome;
 declare var _NODE_ENV: string;
 declare var _HASHING_ALGORITHM: string;
 declare var _APPLICATION_LABEL: string;
+declare var _MAX_REQUEST_HISTORY: string;
 
 export const NODE_ENV = _NODE_ENV;
 export const HASHING_ALGORITHM = _HASHING_ALGORITHM;
 export const APPLICATION_LABEL = _APPLICATION_LABEL;
+export const MAX_REQUEST_HISTORY = parseInt(_MAX_REQUEST_HISTORY);
 
 // ? Returns a string HTTPS endpoint URI used to query the backend for URNs. See
 // ? the paper for details on what C1, C2, and BD are.
@@ -45,6 +47,15 @@ export const extractBDCandidatesFromURI = (uri: string) => {
 };
 
 /**
+ * Extracts the actual DNS response from the Google DoH API response object.
+ *
+ * @param {*} response The DoH response JSON object
+ */
+export const extractAnswerDataFromResponse = (response: any) => {
+    return !response.data.Answer ? '<no answer>' : response.data.Answer.slice(-1)[0].data;
+};
+
+/**
  * A set of cheap debugging tools that are automatically disabled if NODE_ENV is
  * not `development`!
  */
@@ -54,8 +65,8 @@ export const Debug = {
      *
      * @param  {*} [args]
      */
-    log(...args: Array<any>) {
-        NODE_ENV === 'development' && console.log(...args);
+    log(chrome: Chrome, ...args: Array<any>) {
+        NODE_ENV === 'development' && chrome.extension.getBackgroundPage().console.log(...args);
     },
 
     /**

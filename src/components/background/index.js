@@ -8,7 +8,7 @@ import { EventFrameEmitter } from 'universe/events'
 
 import registerChromeEvents from 'components/background/events.chrome'
 import registerCoreEvents from 'components/background/events.core'
-import registerUIEvents from 'components/background/events.ui'
+import registerDebugEvents from 'components/background/events.debug'
 
 // ? `oracle` emits the events that you should be hooking into. Feel free to add
 // ? more events as they become necessary.
@@ -38,10 +38,10 @@ import registerUIEvents from 'components/background/events.ui'
 const oracle = new EventFrameEmitter();
 const context = {
     // ? (download) id -> DownloadItem
-    downloadItems: new Map(),
+    downloadItems: {},
 
     // ? requestId -> request stack [req n, ..., req 1]
-    // ! Limited to 1000 requests!
+    // ! Limited to MAX_REQUEST_HISTORY requests! (FIFO eviction policy)
     navHistory: new Map(),
 };
 
@@ -50,5 +50,5 @@ declare var chrome: any;
 Debug.if(() => console.warn('!! == HASCHK IS IN DEVELOPER MODE == !!'));
 
 registerChromeEvents(oracle, chrome, context);
+registerDebugEvents(oracle, chrome);
 registerCoreEvents(oracle, chrome, context);
-registerUIEvents(oracle, chrome, context);

@@ -2,6 +2,7 @@
  *  @description These are utility functions and constants for our UI system
  */
 
+import { Debug } from 'universe'
 import type { Chrome } from 'universe'
 
 declare var chrome:any;
@@ -35,4 +36,20 @@ export const guaranteeElementById = (id: string): HTMLElement => {
         throw new TypeError('getElementById did not return an element as expected');
 
     return el;
+};
+
+export const setDefaultBadgeState = () => setBadge(chrome)(' ', '#D0D6B5');
+export const setIncomingBadgeState = () => setBadge(chrome)(' ••• ', '#000000');
+export const setErrorBadgeState = () => setBadge(chrome)(' ERR ', '#000000');
+export const setSafeBadgeState = () => setBadge(chrome)(' ', '#6EEB83');
+export const setUnsafeBadgeState = () => setBadge(chrome)(' ', '#FF3C38');
+
+export const redrawPopupUI = (downloadItems: Object) => {
+    // TODO
+    Debug.log(chrome, 'redrawUI called: ', downloadItems);
+};
+
+export const clearPopupUI = () => {
+    // TODO
+    Debug.log(chrome, '(clearUI called)');
 };

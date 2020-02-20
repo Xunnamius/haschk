@@ -19,7 +19,7 @@ test('extractBDCandidatesFromURI returns 3LD and 2LD from URI', () => {
 
 test('extractBDCandidatesFromURI returns 3LD and 2LD URI with a deep path', () => {
     expect(extractBDCandidatesFromURI('https://return.base.domain.xunn.io/paper/4/paper/4.faker?something=5&other&nother=fake#hash-mash.cash'))
-        .toBe(['domain.xunn.io', 'xunn.io']);
+        .toEqual(['domain.xunn.io', 'xunn.io']);
 });
 
 test('bufferToHex translate buffer to hex as expected', () => {

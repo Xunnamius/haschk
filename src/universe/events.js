@@ -26,7 +26,7 @@ export const eventFrameToPortMessage = (eventFrame: EventFrame, args: Array<any>
  *
  * @param {Object} data
  */
-export const portMessageToEvent = ({ eventFrame, args }: { eventFrame: {}, args: Array<any> }) => {
+export const portMessageToEventFrame = ({ eventFrame, args }: { eventFrame: {}, args: Array<any> }) => {
     return {
         eventFrame: Object.assign(new EventFrame, eventFrame),
         args

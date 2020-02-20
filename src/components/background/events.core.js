@@ -3,91 +3,110 @@
  */
 
 import http from 'axios'
-import ParsedUrl from 'url-parse'
+import base32Encode from 'base32-encode'
 import { EventFrameEmitter } from 'universe/events'
-import type { Chrome } from 'universe'
 
 import {
-    bufferToHex,
+    Debug,
     HASHING_ALGORITHM,
     GOOGLE_DNS_HTTPS_BACKEND_QUERY,
+    extractAnswerDataFromResponse,
     JUDGEMENT_UNKNOWN,
     JUDGEMENT_UNSAFE,
     JUDGEMENT_SAFE,
 } from 'universe'
-import {Debug} from '../../universe'
+
+import {
+    setDefaultBadgeState,
+    setIncomingBadgeState,
+    setErrorBadgeState,
+    setSafeBadgeState,
+    setUnsafeBadgeState,
+} from 'universe/ui'
+
+import type { Chrome } from 'universe'
+import type { EventFrame } from 'universe/events'
+
+declare var crypto;
 
 export default (oracle: EventFrameEmitter, chrome: Chrome, context: Object) => {
-    Debug.if(() => oracle.addListener('download.completed', (e, downloadItem) => {
-        console.log('download.completed: ', e, downloadItem);
-    }));
+    // ? These events update the context.downloadItems cache
 
-    // ? This is the NAH vs AH core "judgement" logic
-    oracle.addListener('download.completed', async (e, downloadItem) => {
-        // TODO
-        let authedHash: ?string;
-        let nonauthedHash: ?string;
-        let authedHashRaw: ?string;
+    const updateDownloadItemInContext = downloadItem => context.downloadItems[downloadItem.id] = downloadItem;
+
+    oracle.addListener('download.incoming', (e, downloadItem) => updateDownloadItemInContext(downloadItem));
+    oracle.addListener('download.paused', (e, downloadItem) => updateDownloadItemInContext(downloadItem));
+    oracle.addListener('download.resumed', (e, downloadItem) => updateDownloadItemInContext(downloadItem));
+    oracle.addListener('download.interrupted', (e, downloadItem) => updateDownloadItemInContext(downloadItem));
+    oracle.addListener('download.completed', (e, downloadItem) => updateDownloadItemInContext(downloadItem));
+
+    // ? This event fires whenever haschk decides a download is NOT safe
+    oracle.addListener(`judgement.${JUDGEMENT_UNSAFE}`, (e: EventFrame, downloadItem) => {
+        chrome.downloads.removeFile(downloadItem.id, () => {
+            if(chrome.runtime.lastError)
+                oracle.emit('error', chrome.runtime.lastError.message);
+        });
+    });
+
+    // ? This event sets the default badge state on startup
+    oracle.addListener('startup', () => setDefaultBadgeState());
+
+    // ? This event responds to any requests for the list of known download
+    // ? items (i.e. from another component of the extension)
+    oracle.addListener('request.updateDownloadItems', () => {
+        oracle.emit('response.updateDownloadItems', context.downloadItems);
+    });
+
+    // ? These events update the badge state upon certain events happening
+
+    oracle.addListener('error', () => setErrorBadgeState());
+    oracle.addListener('download.incoming', () => setIncomingBadgeState());
+    oracle.addListener('download.paused', () => setDefaultBadgeState());
+    oracle.addListener('download.resumed', () => setIncomingBadgeState());
+    oracle.addListener('download.interrupted', () => setDefaultBadgeState());
+    oracle.addListener(`judgement.${JUDGEMENT_UNKNOWN}`, () => setDefaultBadgeState());
+    oracle.addListener(`judgement.${JUDGEMENT_SAFE}`, () => setSafeBadgeState());
+    oracle.addListener(`judgement.${JUDGEMENT_UNSAFE}`, () => setUnsafeBadgeState());
+
+    // ? This event is the heart of the extension where we implement the HASCHK
+    // ? protocol
+    oracle.addListener('download.completed', async (e: EventFrame, downloadItem) => {
+        if(downloadItem.judgement === JUDGEMENT_UNKNOWN) {
+            oracle.emit(`judgement.${JUDGEMENT_UNKNOWN}`, downloadItem);
+            return;
+        }
 
         // ? Since it's finished downloading, grab the file's data
-        const $file = await http.get(`file://${downloadItem.filename}`, { responseType: 'arraybuffer' });
+        const file = await http.get(`file://${downloadItem.filename}`, { responseType: 'arraybuffer' });
 
         // ? Hash file data with proper algorithm
-        // flow-disable-line
-        nonauthedHash = bufferToHex(await crypto.subtle.digest('SHA-256', $file.data));
+        const base32FileHash = base32Encode(await crypto.subtle.digest(HASHING_ALGORITHM, file.data), 'Crockford', {
+            padding: false
+        });
 
-        // ? Determine resource identifier and prepare for DNS request
-        const resourcePath = (new ParsedUrl(downloadItem.url, {})).pathname;
-        const resourceIdentifier = bufferToHex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(resourcePath)));
-        const outputLength = parseInt(HASHING_ALGORITHM);
+        // ? Construct BASE32 encoded URN and slice it up to yield C1 and C2
+        const base32Urn = base32Encode((new TextEncoder()).encode(`urn:hash::sha256:${base32FileHash}`), 'Crockford', {
+            padding: true
+        });
 
-        if(!resourceIdentifier || resourceIdentifier.length != outputLength)
-            throw new Error('failed to hash resource identifier');
+        Debug.if(() =>
+            base32Urn.length % 2 !== 0 && console.warn(`URN length is not an even number (${base32Urn.length})!`));
 
-        const [ riLeft, riRight ] = [
-            resourceIdentifier.slice(0, outputLength / 2),
-            resourceIdentifier.slice(outputLength / 2, outputLength)
+        const [ C1, C2 ] = [
+            base32Urn.slice(0, base32Urn.length / 2),
+            base32Urn.slice(base32Urn.length / 2, base32Urn.length),
         ];
 
         // ? Make https-based DNS request
-        const targetDomain = downloadItem;
-        const $authedHash = await http.get(GOOGLE_DNS_HTTPS_BACKEND_QUERY(riLeft, riRight, targetDomain));
+        const queryUri = GOOGLE_DNS_HTTPS_BACKEND_QUERY(C1, C2, downloadItem.backendDomain);
+        const data = extractAnswerDataFromResponse(await http.get(queryUri));
 
-        authedHashRaw = !$authedHash.data.Answer ? '<no answer>' : $authedHash.data.Answer.slice(-1)[0].data;
-        authedHash = authedHashRaw.replace(/[^0-9a-f]/gi, '');
+        Debug.log(chrome, `C1: ${C1}`);
+        Debug.log(chrome, `C2: ${C2}`);
+        Debug.log(chrome, `backend domain: ${downloadItem.backendDomain}`);
+        Debug.log(chrome, `query response data: ${data}`);
 
-        if(!authedHash || !authedHashRaw)
-            throw new TypeError('unexpected null type encountered');
-
-        // ? Compare DNS result (auth) with hashed local file data (nonauthed)
-        if(authedHash.length !== authedHashRaw.length - 2)
-            oracle.emit('judgement.unknown', downloadItem);
-
-        else
-            oracle.emit(`judgement.${authedHash !== nonauthedHash ? 'unsafe' : 'safe'}`, downloadItem);
-    });
-
-    oracle.addListener('judgement.unknown', downloadItem => {
-        // TODO
-        context.judgedDownloadItems.push({
-            downloadItem: downloadItem,
-            judgement: JUDGEMENT_UNKNOWN
-        });
-    });
-
-    oracle.addListener('judgement.safe', downloadItem => {
-        // TODO
-        context.judgedDownloadItems.push({
-            downloadItem: downloadItem,
-            judgement: JUDGEMENT_SAFE
-        });
-    });
-
-    oracle.addListener('judgement.unsafe', downloadItem => {
-        // TODO
-        context.judgedDownloadItems.push({
-            downloadItem: downloadItem,
-            judgement: JUDGEMENT_UNSAFE
-        });
+        // ? Compare DNS result with expected
+        oracle.emit(`judgement.${data === '"OK"' ? JUDGEMENT_SAFE : JUDGEMENT_UNSAFE}`, downloadItem);
     });
 };
