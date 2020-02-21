@@ -188,7 +188,7 @@ export default (oracle: EventFrameEmitter, chrome: Chrome, context: Object) => {
                             const response = await http.get(GOOGLE_DNS_HTTPS_BACKEND_EXISTS(candidate));
                             const data = extractAnswerDataFromResponse(response);
 
-                            if(data == '"OK"') {
+                            if(data === 'ok') {
                                 downloadItem.backendDomain = candidate;
                                 downloadItem.judgement = JUDGEMENT_UNDECIDED;
                                 break loop;

@@ -8,12 +8,14 @@ import { EventFrameEmitter } from 'universe/events'
 
 import {
     Debug,
+    URN_PREFIX,
     HASHING_ALGORITHM,
     GOOGLE_DNS_HTTPS_BACKEND_QUERY,
     extractAnswerDataFromResponse,
     JUDGEMENT_UNKNOWN,
     JUDGEMENT_UNSAFE,
     JUDGEMENT_SAFE,
+    BASE32_URN_LENGTH,
 } from 'universe'
 
 import {
@@ -85,12 +87,12 @@ export default (oracle: EventFrameEmitter, chrome: Chrome, context: Object) => {
         });
 
         // ? Construct BASE32 encoded URN and slice it up to yield C1 and C2
-        const base32Urn = base32Encode((new TextEncoder()).encode(`urn:hash::sha256:${base32FileHash}`), 'Crockford', {
+        const base32Urn = base32Encode((new TextEncoder()).encode(`${URN_PREFIX}${base32FileHash}`), 'Crockford', {
             padding: true
         });
 
-        Debug.if(() =>
-            base32Urn.length % 2 !== 0 && console.warn(`URN length is not an even number (${base32Urn.length})!`));
+        if(base32Urn.length !== BASE32_URN_LENGTH)
+            throw new Error(`URN length is not ${BASE32_URN_LENGTH}, got ${base32Urn.length} instead`);
 
         const [ C1, C2 ] = [
             base32Urn.slice(0, base32Urn.length / 2),
@@ -104,9 +106,9 @@ export default (oracle: EventFrameEmitter, chrome: Chrome, context: Object) => {
         Debug.log(chrome, `C1: ${C1}`);
         Debug.log(chrome, `C2: ${C2}`);
         Debug.log(chrome, `backend domain: ${downloadItem.backendDomain}`);
-        Debug.log(chrome, `query response data: ${data}`);
+        Debug.log(chrome, `query response data: ${data || 'null'}`);
 
         // ? Compare DNS result with expected
-        oracle.emit(`judgement.${data === '"OK"' ? JUDGEMENT_SAFE : JUDGEMENT_UNSAFE}`, downloadItem);
+        oracle.emit(`judgement.${data === 'ok' ? JUDGEMENT_SAFE : JUDGEMENT_UNSAFE}`, downloadItem);
     });
 };

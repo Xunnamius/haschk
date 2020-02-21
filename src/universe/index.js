@@ -14,11 +14,15 @@ declare var _NODE_ENV: string;
 declare var _HASHING_ALGORITHM: string;
 declare var _APPLICATION_LABEL: string;
 declare var _MAX_REQUEST_HISTORY: string;
+declare var _BASE32_URN_LENGTH: string;
+declare var _URN_PREFIX: string;
 
 export const NODE_ENV = _NODE_ENV;
+export const URN_PREFIX = _URN_PREFIX;
 export const HASHING_ALGORITHM = _HASHING_ALGORITHM;
 export const APPLICATION_LABEL = _APPLICATION_LABEL;
 export const MAX_REQUEST_HISTORY = parseInt(_MAX_REQUEST_HISTORY);
+export const BASE32_URN_LENGTH = parseInt(_BASE32_URN_LENGTH);
 
 // ? Returns a string HTTPS endpoint URI used to query the backend for URNs. See
 // ? the paper for details on what C1, C2, and BD are.
@@ -49,10 +53,12 @@ export const extractBDCandidatesFromURI = (uri: string) => {
 /**
  * Extracts the actual DNS response from the Google DoH API response object.
  *
- * @param {*} response The DoH response JSON object
+ * @param {*} response The DoH answer string or NULL if there was no answer
  */
 export const extractAnswerDataFromResponse = (response: any) => {
-    return !response.data.Answer ? '<no answer>' : response.data.Answer.slice(-1)[0].data;
+    return !response.data.Answer
+        ? null
+        : response.data.Answer.slice(-1)[0].data.replace(/[^0-9a-z]/gi, '').toLowerCase();
 };
 
 /**
@@ -78,31 +84,3 @@ export const Debug = {
         NODE_ENV === 'development' && fn();
     }
 };
-
-/**
- * Accepts an ArrayBuffer instance from the `SubtleCrypto` interface and returns
- * a hex string.
- *
- * @param {ArrayBuffer} buffer
- */
-export const bufferToHex = (buffer: ArrayBuffer) => {
-    let hexCodes = [];
-    let view = new DataView(buffer);
-
-    if(buffer.byteLength % 4 !== 0)
-        throw new Error('Buffer byte length must be a multiple of 4');
-
-    for(let i = 0; i < view.byteLength; i += 4) {
-        // ? Using getUint32 reduces the number of iterations needed (we process 4 bytes each time)
-        let value = view.getUint32(i)
-        // ? toString(16) will give the hex representation of the number without padding
-        let stringValue = value.toString(16)
-        // ? We use concatenation and slice for padding
-        let padding = '00000000'
-        let paddedValue = (padding + stringValue).slice(-padding.length)
-        hexCodes.push(paddedValue);
-    }
-
-    // ? Join all the hex strings into one
-    return hexCodes.join('');
-}

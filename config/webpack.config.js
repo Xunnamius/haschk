@@ -11,9 +11,11 @@ import WriteFileWebpackPlugin from 'write-file-webpack-plugin'
 require('dotenv').config();
 
 const {
+    URN_PREFIX,
     HASHING_ALGORITHM,
     APPLICATION_LABEL,
     MAX_REQUEST_HISTORY,
+    BASE32_URN_LENGTH,
 } = process.env;
 
 const paths = {};
@@ -83,6 +85,8 @@ const configure = (NODE_ENV: ?string) => {
             _HASHING_ALGORITHM: JSON.stringify(HASHING_ALGORITHM || 'SHA-256'),
             _APPLICATION_LABEL: JSON.stringify(APPLICATION_LABEL || '_haschk'),
             _MAX_REQUEST_HISTORY: JSON.stringify(MAX_REQUEST_HISTORY || 1000),
+            _BASE32_URN_LENGTH: JSON.stringify(BASE32_URN_LENGTH || 112),
+            _URN_PREFIX: JSON.stringify(URN_PREFIX || '::::'),
         }),
 
         new CopyWebpackPlugin([{
