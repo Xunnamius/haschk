@@ -16,7 +16,6 @@
     "options_page": "options.html",
     "permissions": [
         "<all_urls>",
-        "file://*/",
         "downloads",
         "webRequest"
     ],

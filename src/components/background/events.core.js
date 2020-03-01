@@ -32,16 +32,6 @@ import type { EventFrame } from 'universe/events'
 declare var crypto;
 
 export default (oracle: EventFrameEmitter, chrome: Chrome, context: Object) => {
-    // ? These events update the context.downloadItems cache
-
-    const updateDownloadItemInContext = downloadItem => context.downloadItems[downloadItem.id] = downloadItem;
-
-    oracle.addListener('download.incoming', (e, downloadItem) => updateDownloadItemInContext(downloadItem));
-    oracle.addListener('download.paused', (e, downloadItem) => updateDownloadItemInContext(downloadItem));
-    oracle.addListener('download.resumed', (e, downloadItem) => updateDownloadItemInContext(downloadItem));
-    oracle.addListener('download.interrupted', (e, downloadItem) => updateDownloadItemInContext(downloadItem));
-    oracle.addListener('download.completed', (e, downloadItem) => updateDownloadItemInContext(downloadItem));
-
     // ? This event fires whenever haschk decides a download is NOT safe
     oracle.addListener(`judgement.${JUDGEMENT_UNSAFE}`, (e: EventFrame, downloadItem) => {
         chrome.downloads.removeFile(downloadItem.id, () => {
@@ -78,11 +68,29 @@ export default (oracle: EventFrameEmitter, chrome: Chrome, context: Object) => {
             return;
         }
 
-        // ? Since it's finished downloading, grab the file's data
-        const file = await http.get(`file://${downloadItem.filename}`, { responseType: 'arraybuffer' });
+        const hasFilesystemAccess = await new Promise(res => chrome.extension.isAllowedFileSchemeAccess(t => res(t)));
+
+        if(!hasFilesystemAccess)
+            throw new Error(`HASCHK needs file scheme access to operate. Please allow access to file URLs in settings`);
+
+        // ? Since it's finished downloading, grab the file's data, but we need
+        // ? to use custom XHR because fetch (and Axios) can't handle status
+        // ? code 0 (pathetic)
+        const fetchLocal = async url => {
+            return new Promise(function(resolve, reject) {
+                const xhr = new XMLHttpRequest();
+                xhr.onload = () => resolve(xhr.response);
+                xhr.onerror = () => reject(new Error('file://XMLHttpRequest request failed'));
+                xhr.responseType = 'arraybuffer';
+                xhr.open('GET', url);
+                xhr.send(null);
+            });
+        };
+
+        const fileData = await fetchLocal(`file://${downloadItem.filename}`);
 
         // ? Hash file data with proper algorithm
-        const base32FileHash = base32Encode(await crypto.subtle.digest(HASHING_ALGORITHM, file.data), 'Crockford', {
+        const base32FileHash = base32Encode(await crypto.subtle.digest(HASHING_ALGORITHM, fileData), 'Crockford', {
             padding: false
         });
 
