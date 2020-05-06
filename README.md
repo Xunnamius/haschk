@@ -10,7 +10,7 @@ members](#meet-the-team) from University of Chicago, Michigan State University,
 and Walter Payton College Preparatory High School.
 
 Paper can be found
-[here](https://git.xunn.io/closed-source/research/psd-mirrored/haschk-paper).
+[here](https://github.com/closed-source/research/psd-mirrored/haschk-paper).
 The DNS-enabled extension, i.e. HASCHK, can be downloaded from the Chrome store
 [here](https://haschk.dev/install). The DNS-enabled HotCRP demo can be played
 with [here](https://hotcrp.haschk.dev).
@@ -60,7 +60,7 @@ npm run build
 ## Literature
 
 See [the
-paper](https://git.xunn.io/closed-source/research/psd-mirrored/haschk-paper).
+paper](https://github.com/closed-source/research/psd-mirrored/haschk-paper).
 
 ## Meet the Team
 
@@ -76,7 +76,7 @@ paper](https://git.xunn.io/closed-source/research/psd-mirrored/haschk-paper).
 ## References
 
 See [the
-paper](https://git.xunn.io/closed-source/research/psd-mirrored/haschk-paper).
+paper](https://github.com/closed-source/research/psd-mirrored/haschk-paper).
 
 [bd3]: docs/pics/bernard.jpg [rawalvarez731]: docs/pics/richard.jpg
 [hankhoffmann]: docs/pics/hank.jpg [ilopilop538]: docs/pics/trevor.jpg
