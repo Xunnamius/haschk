@@ -64,7 +64,7 @@
     "axios": "^0.19.2",
     "base32-encode": "^1.1.1",
     "dotenv": "^8.2.0",
-    "eventemitter3": "^4.0.0",
+    "eventemitter3": "^4.0.7",
     "hex-to-array-buffer": "^1.1.0",
     "install": "^0.13.0",
     "url-parse": "^1.4.7"
