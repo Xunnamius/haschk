@@ -61,7 +61,7 @@
     "@babel/preset-env": "^7.8.4",
     "@babel/preset-flow": "^7.8.3",
     "array-buffer-to-hex": "^1.0.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.0",
     "base32-encode": "^1.1.1",
     "dotenv": "^8.2.0",
     "eventemitter3": "^4.0.0",
